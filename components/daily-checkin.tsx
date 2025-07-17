@@ -282,29 +282,37 @@ export default function DailyCheckin() {
     )
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-lg">{t("checkin.pleaseLogin")}</div>
-      </div>
-    )
-  }
+  // 新的未登录态友好展示
+  const NotLoggedInBanner = () => (
+    <div className="w-full flex flex-col items-center justify-center py-8">
+      <div className="text-lg text-gray-200 mb-4 font-semibold">Please log in to use this feature</div>
+      <button
+        className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
+        onClick={() => window.location.href = '/auth/signin'}
+      >
+        Login / Register
+      </button>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6 relative">
         {/* 页面标题 */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">{t("checkin.title")}</h1>
           <p className="text-gray-300">{t("checkin.subtitle")}</p>
         </div>
 
+        {/* 未登录提示 */}
+        {!user && <NotLoggedInBanner />}
+
         {/* 统计卡片 - 优化显示 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 opacity-{!user ? '50' : '100'} pointer-events-{!user ? 'none' : 'auto'}">
           <Card className="bg-gray-900/50 backdrop-blur-sm border-white/10">
             <CardContent className="p-4 relative">
               <div className="absolute right-4 top-4 text-3xl font-bold text-coral drop-shadow-lg select-none pointer-events-none">
-                {userStats.currentStreak}
+                {user ? userStats.currentStreak : '--'}
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-300 whitespace-pre-line">{t("checkin.currentStreak")}</div>
@@ -315,7 +323,7 @@ export default function DailyCheckin() {
           <Card className="bg-gray-900/50 backdrop-blur-sm border-white/10">
             <CardContent className="p-4 relative">
               <div className="absolute right-4 top-4 text-3xl font-bold text-coral drop-shadow-lg select-none pointer-events-none">
-                {userStats.maxStreak}
+                {user ? userStats.maxStreak : '--'}
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-300 whitespace-pre-line">{t("checkin.maxStreak")}</div>
@@ -326,7 +334,7 @@ export default function DailyCheckin() {
           <Card className="bg-gray-900/50 backdrop-blur-sm border-white/10">
             <CardContent className="p-4 relative">
               <div className="absolute right-4 top-4 text-3xl font-bold text-coral drop-shadow-lg select-none pointer-events-none">
-                {userStats.successRate}%
+                {user ? userStats.successRate + '%' : '--'}
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-300">{t("checkin.successRate")}</div>
@@ -337,7 +345,7 @@ export default function DailyCheckin() {
           <Card className="bg-gray-900/50 backdrop-blur-sm border-white/10">
             <CardContent className="p-4 relative">
               <div className="absolute right-4 top-4 text-3xl font-bold text-coral drop-shadow-lg select-none pointer-events-none">
-                {userStats.totalDays}
+                {user ? userStats.totalDays : '--'}
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-300">{t("checkin.totalDays")}</div>
@@ -347,22 +355,29 @@ export default function DailyCheckin() {
           </Card>
         </div>
 
-        {/* 日历组件 - 全宽显示 */}
-        <div className="w-full">
-          <CalendarComponent selectedDate={selectedDate} onDateSelect={handleDateSelect} checkinData={checkinData} />
+        {/* 日历组件 - 全宽显示，未登录时加灰色蒙层 */}
+        <div className="w-full relative">
+          <CalendarComponent selectedDate={selectedDate} onDateSelect={user ? handleDateSelect : undefined} checkinData={user ? checkinData : {}} />
+          {!user && (
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center z-10 rounded-lg">
+              <div className="text-white text-base mb-2">Please log in to use this feature</div>
+            </div>
+          )}
         </div>
 
-        {/* 打卡弹窗 */}
-        <CheckinModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          selectedDate={selectedDate}
-          existingData={checkinData[selectedDate]}
-          onSave={handleSaveCheckin}
-          userId={user?.id}
-          onVideoSaved={handleVideoSaved}
-          onReset={handleResetCheckin}
-        />
+        {/* 打卡弹窗，仅登录后可用 */}
+        {user && (
+          <CheckinModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            selectedDate={selectedDate}
+            existingData={checkinData[selectedDate]}
+            onSave={handleSaveCheckin}
+            userId={user?.id}
+            onVideoSaved={handleVideoSaved}
+            onReset={handleResetCheckin}
+          />
+        )}
       </div>
     </div>
   )

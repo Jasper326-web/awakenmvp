@@ -21,7 +21,7 @@ interface CalendarDay {
 
 interface CalendarProps {
   selectedDate: string
-  onDateSelect: (date: string) => void
+  onDateSelect?: (date: string) => void
   checkinData: Record<
     string,
     {
@@ -182,7 +182,7 @@ export default function CalendarComponent({
   }
 
   const handleDateClick = (day: CalendarDay) => {
-    if (day.isCurrentMonth && day.permissions.canClick) {
+    if (onDateSelect && day.isCurrentMonth && day.permissions.canClick) {
       onDateSelect(day.date)
     }
   }
