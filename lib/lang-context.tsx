@@ -270,6 +270,8 @@ const translations = {
     "pricing.member_access": "会员可立即访问全部专属内容。",
     "pricing.cancel_info": "会员可随时取消，享受7天无理由退款保障。",
     "pricing.contact_support": "如有疑问请联系客服。",
+    "pricing.free_trial": "免费试用",
+    "pricing.join_membership": "加入会员",
 
     // === 新增打卡页面相关 ===
     "checkin.title": "每日打卡",
@@ -850,6 +852,8 @@ const translations = {
     "pricing.member_access": "Members can access all exclusive content immediately.",
     "pricing.cancel_info": "Membership can be cancelled anytime, 7-day no-questions-asked refund guarantee.",
     "pricing.contact_support": "Contact support if you have any questions.",
+    "pricing.free_trial": "Free Trial",
+    "pricing.join_membership": "Join Membership",
 
     // === 新增打卡页面相关 ===
     "checkin.title": "Daily Check-in",
