@@ -129,7 +129,7 @@ export const authService = {
 
   // 监听认证状态变化
   onAuthStateChange(callback: (event: string, session: Session | null) => void) {
-    return supabase.auth.onAuthStateChange((event, session) => {
+    return supabase.auth.onAuthStateChange((event: string, session: Session | null) => {
       console.log("[authService] 认证状态变化:", event, session ? "有会话" : "无会话")
       callback(event, session)
     })
@@ -150,5 +150,33 @@ export const authService = {
   // 刷新会话
   async refreshSession() {
     return await supabase.auth.refreshSession()
+  },
+
+  // 游客一键登录
+  async guestSignIn() {
+    // 检查当前是否已登录
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session && sessionData.session.user) {
+      // 已有用户，直接返回
+      return { user: sessionData.session.user, isGuest: sessionData.session.user.user_metadata?.isGuest };
+    }
+    // 生成随机邮箱和密码
+    const randomId = Math.random().toString(36).substring(2, 12);
+    const email = `guest_${randomId}@guest.awaken`;
+    const password = Math.random().toString(36).slice(2) + 'A1!';
+    // 注册游客账号
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { isGuest: true, username: `Guest_${randomId}` },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) return { error };
+    // 自动登录
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) return { error: signInError };
+    return { user: signInData.user, isGuest: true };
   },
 }

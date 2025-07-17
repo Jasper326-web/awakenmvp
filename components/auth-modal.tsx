@@ -176,6 +176,21 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     }
   }
 
+  // 游客登录
+  const handleGuestSignIn = async () => {
+    setLoading("guest")
+    setError("")
+    const { error } = await authService.guestSignIn()
+    if (error) {
+      setError(error.message)
+      setLoading(null)
+    } else {
+      onOpenChange(false)
+      router.push("/")
+      router.refresh()
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-background border-border">
@@ -183,7 +198,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center space-x-2">
               <Flame className="w-5 h-5 text-primary" />
-              <span className="text-xl font-bold text-foreground">{mode === 'login' ? '登录 Awaken' : '注册 Awaken'}</span>
+              <span className="text-xl font-bold text-foreground">登录 Awaken</span>
             </DialogTitle>
             <DialogClose asChild>
               <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground hover:bg-muted">
@@ -192,43 +207,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </DialogClose>
           </div>
           <DialogDescription className="pt-2 text-muted-foreground">
-            {mode === 'login' ? '选择您喜欢的方式登录，新用户将自动创建账户。' : '注册新账号，体验 Awaken 全部功能。'}
+            选择您喜欢的方式登录，新用户将自动创建账户。
           </DialogDescription>
         </DialogHeader>
         <div className="p-6 space-y-4">
-          {mode === 'login' ? (
-            <>
-              {loginError && <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md">{loginError}</div>}
-              <Input type="email" placeholder="邮箱" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" disabled={loginLoading} />
-              <Input type="password" placeholder="密码" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" disabled={loginLoading} />
-              <Button onClick={handleLogin} className="w-full" disabled={loginLoading}>{loginLoading ? '登录中...' : '登录'}</Button>
-            </>
-          ) : (
-            <>
-              {registerError && <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md">{registerError}</div>}
-              {registerSuccess && <div className="p-3 bg-success/10 border border-success/20 text-success text-sm rounded-md">{registerSuccess}</div>}
-              <Input type="email" placeholder="邮箱" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" disabled={registerLoading} />
-              <Input type="password" placeholder="密码（至少6位）" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" disabled={registerLoading} />
-              <Input type="password" placeholder="确认密码" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} autoComplete="new-password" disabled={registerLoading} />
-              <div className="flex gap-2">
-                <Input type="text" placeholder="验证码" value={code} onChange={e => setCode(e.target.value)} disabled={registerLoading} />
-                <Button onClick={handleSendCode} disabled={codeLoading || codeTimer > 0 || !email.match(/^[^@]+@[^@]+\.[^@]+$/)} type="button" variant="outline" className="whitespace-nowrap">
-                  {codeLoading ? '发送中...' : codeTimer > 0 ? `${codeTimer}s后重试` : '获取验证码'}
-                </Button>
-              </div>
-              <Button onClick={handleRegister} className="w-full" disabled={registerLoading}>{registerLoading ? '注册中...' : '注册'}</Button>
-            </>
-          )}
-
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-background text-muted-foreground">或</span>
-            </div>
-          </div>
-
+          {error && <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md">{error}</div>}
           <Button
             onClick={handleGoogleSignIn}
             disabled={loading !== null}
@@ -260,7 +243,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </>
             )}
           </Button>
-
           <Button
             onClick={handleGitHubSignIn}
             disabled={loading !== null}
@@ -277,15 +259,21 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </>
             )}
           </Button>
+          <Button
+            onClick={handleGuestSignIn}
+            disabled={loading !== null}
+            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300 h-11 flex items-center justify-center space-x-3 font-medium shadow-sm hover:shadow-md transition-all duration-150"
+          >
+            {loading === "guest" ? (
+              <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <span>Continue as Guest</span>
+              </>
+            )}
+          </Button>
         </div>
         <DialogFooter className="p-6 pt-4 bg-muted/50 border-t border-border">
-          <div className="w-full flex justify-center">
-            {mode === 'login' ? (
-              <span className="text-xs text-muted-foreground">没有账号？<button className="text-primary hover:underline ml-1" onClick={() => { setMode('register'); setLoginError(''); }}>去注册</button></span>
-            ) : (
-              <span className="text-xs text-muted-foreground">已有账号？<button className="text-primary hover:underline ml-1" onClick={() => { setMode('login'); setRegisterError(''); setRegisterSuccess(''); }}>去登录</button></span>
-            )}
-          </div>
           <p className="text-xs text-muted-foreground text-center w-full mt-2">
             登录即表示您同意我们的{' '}
             <Link href="/terms" className="text-foreground hover:underline font-medium" onClick={() => onOpenChange(false)}>
