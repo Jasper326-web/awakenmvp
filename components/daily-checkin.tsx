@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, TrendingUp, Award } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/lib/lang-context"
-import AuthModal from "@/components/auth-modal"
+import AuthModal from './auth-modal'
 
 interface CheckinData {
   [date: string]: {
@@ -308,7 +308,6 @@ export default function DailyCheckin() {
 
         {/* 未登录提示 */}
         {!user && <NotLoggedInBanner />}
-        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
 
         {/* 统计卡片 - 优化显示 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 opacity-{!user ? '50' : '100'} pointer-events-{!user ? 'none' : 'auto'}">
@@ -382,6 +381,8 @@ export default function DailyCheckin() {
           />
         )}
       </div>
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 }
