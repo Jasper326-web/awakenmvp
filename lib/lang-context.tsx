@@ -554,6 +554,13 @@ const translations = {
     "profile.level_prefix": "Lv.",
     "profile.next_level_days": "距离下一个等级还需",
     "profile.days": "天",
+
+    // === 新增登录弹窗相关 ===
+    "auth.login_title": "登录 Awaken",
+    "auth.login_description": "选择您喜欢的方式登录，新用户将自动创建账户。",
+    "auth.google_login": "使用 Google 登录",
+    "auth.github_login": "使用 GitHub 登录",
+    "auth.continue_as_guest": "Continue as Guest",
   },
   en: {
     // Navigation
@@ -1136,6 +1143,13 @@ const translations = {
     "profile.level_prefix": "Lv.",
     "profile.next_level_days": "Days to next level",
     "profile.days": "days",
+
+    // === 新增登录弹窗相关 ===
+    "auth.login_title": "Login Awaken",
+    "auth.login_description": "Choose your preferred login method, new users will automatically create an account.",
+    "auth.google_login": "Sign in with Google",
+    "auth.github_login": "Sign in with GitHub",
+    "auth.continue_as_guest": "Continue as Guest",
   },
 }
 
