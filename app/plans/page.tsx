@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -38,11 +38,13 @@ import ReactMarkdown from 'react-markdown'
 import { generateTasksByAddictionLevel } from "../../lib/plan-tasks"
 import { CoralSeparator } from '@/components/ui/separator';
 import { useLanguage } from '@/lib/lang-context'
+import AuthModal from '@/components/auth-modal'
 
 export default function PlansPage() {
   const router = useRouter()
   const { isPro, isPremium, isFree } = useSubscription()
   const { t, language } = useLanguage()
+  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   // 戒色计划阶段配置
   const PLAN_STAGES = {
@@ -272,8 +274,9 @@ export default function PlansPage() {
       const currentUser = await authService.getCurrentUser()
 
       if (!currentUser) {
-        alert("Please log in first")
-        router.push("/auth/signin")
+        // 移除 alert 和 router.push，改为设置未登录状态
+        setUser(null)
+        setLoading(false)
         return
       }
 
@@ -288,8 +291,9 @@ export default function PlansPage() {
         .limit(1)
 
       if (!testResult || testResult.length === 0) {
-        alert("Please complete the addiction test first")
-        router.push("/test")
+        // 移除 alert，改为友好的提示
+        setTestData(null)
+        setLoading(false)
         return
       }
 
@@ -397,6 +401,32 @@ export default function PlansPage() {
     return testData.addiction_level
   })()
 
+  // 未登录状态友好展示
+  const NotLoggedInBanner = () => (
+    <div className="w-full flex flex-col items-center justify-center py-8">
+      <div className="text-lg text-gray-200 mb-4 font-semibold">Please log in to use this feature</div>
+      <button
+        className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
+        onClick={() => setAuthModalOpen(true)}
+      >
+        Login / Register
+      </button>
+    </div>
+  )
+
+  // 未完成测试友好展示
+  const NoTestBanner = () => (
+    <div className="w-full flex flex-col items-center justify-center py-8">
+      <div className="text-lg text-gray-200 mb-4 font-semibold">Please complete the addiction test first</div>
+      <button
+        className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
+        onClick={() => router.push("/test")}
+      >
+        Take Test
+      </button>
+    </div>
+  )
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center">
@@ -417,46 +447,54 @@ export default function PlansPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900">
       <div className="container mx-auto px-4 py-8">
-        {/* 测试结果概览 */}
-        <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-8">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-white flex items-center">
-                <Target className="w-6 h-6 mr-2" />
-                {t("plans.overview_title")}
-              </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white/30 text-white bg-transparent hover:bg-white/10"
-                onClick={() => router.push("/test")}
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                {t("plans.retest")}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-2">{testData?.test_score || 0}/80</div>
-                <p className="text-gray-300">{t("plans.test_score")}</p>
-              </div>
-              <div className="text-center">
-                <Badge className="text-lg px-4 py-2 bg-orange-900/50 text-orange-200 border border-orange-500/50">
-                  {addictionLevelText}
-                </Badge>
-                <p className="text-gray-300 mt-2">{t("plans.addiction_level")}</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">{totalTasks}</div>
-                <p className="text-gray-300">{t("plans.daily_tasks")}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* 未登录提示 */}
+        {!user && <NotLoggedInBanner />}
+        
+        {/* 未完成测试提示 */}
+        {user && !testData && <NoTestBanner />}
 
-        {/* 用户状态卡片 */}
+        {/* 测试结果概览 - 未登录时禁用 */}
+        {user && testData && (
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-8">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center">
+                  <Target className="w-6 h-6 mr-2" />
+                  {t("plans.overview_title")}
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-white/30 text-white bg-transparent hover:bg-white/10"
+                  onClick={() => router.push("/test")}
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  {t("plans.retest")}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-400 mb-2">{testData?.test_score || 0}/80</div>
+                  <p className="text-gray-300">{t("plans.test_score")}</p>
+                </div>
+                <div className="text-center">
+                  <Badge className="text-lg px-4 py-2 bg-orange-900/50 text-orange-200 border border-orange-500/50">
+                    {addictionLevelText}
+                  </Badge>
+                  <p className="text-gray-300 mt-2">{t("plans.addiction_level")}</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-400 mb-2">{totalTasks}</div>
+                  <p className="text-gray-300">{t("plans.daily_tasks")}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* 用户状态卡片 - 未登录时显示占位符 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-3">
@@ -466,11 +504,11 @@ export default function PlansPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold mb-2">{userStats?.current_streak || 0} {t("plans.days")}</div>
-              <Badge className={stageInfo.color}>{stageInfo.name}</Badge>
+              <div className="text-3xl font-bold mb-2">
+                {user ? (userStats?.current_streak || 0) : '--'} {t("plans.days")}
+              </div>
             </CardContent>
           </Card>
-
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -479,172 +517,167 @@ export default function PlansPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold mb-2">Lv.{userStats?.level || 1}</div>
-              <div className="text-sm opacity-80">{stageInfo.days}</div>
+              <div className="text-3xl font-bold mb-2">
+                {user ? (userStats?.level || 1) : '--'}
+              </div>
             </CardContent>
           </Card>
-
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <CheckCircle className="h-5 w-5" />
+                <Activity className="h-5 w-5" />
                 {t("plans.todays_progress")}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold mb-2">
-                {completedCount}/{totalTasks}
+              <div className="text-3xl font-bold mb-2">
+                {user ? `${completedCount}/${totalTasks}` : '--'}
               </div>
-              <Progress value={(completedCount / totalTasks) * 100} className="h-2" />
             </CardContent>
           </Card>
         </div>
 
-        {/* 免费任务区域 */}
-        <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20 text-white">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <Gift className="h-5 w-5 text-green-400" />
-              {t("plans.free_tasks")} - {addictionLevelText} {t("plans.addiction_plan")}
-              <Badge className="ml-2 bg-green-500/20 text-green-300 border-green-500/50">
-                {freeTasks.length} {t("plans.tasks")}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {freeTasks.map((task) => {
-                const isCompleted = completedTasks.has(task.id)
-                const Icon = ICON_MAP[task.icon as keyof typeof ICON_MAP]
-                return (
-                  <div
-                    key={task.id}
-                    className={`p-4 rounded-lg border transition-all ${
-                      isCompleted
-                        ? "bg-green-500/20 border-green-400/50"
-                        : "bg-white/5 border-white/20 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-5 h-5" />
+        {/* 任务区域 - 未登录时显示前两个任务，其余用遮罩 */}
+        {user && testData && (
+          <>
+            {/* 免费任务 */}
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-6">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <CheckCircle className="w-6 h-6 mr-2" />
+                  {t("plans.free_tasks")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {freeTasks.map((task, index) => (
+                    <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                                                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                           {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
+                         </div>
                         <div>
-                          <h3 className={`font-medium ${isCompleted ? "text-green-300" : "text-white"}`}>
-                            {task.title}
-                          </h3>
-                          <p className="text-gray-400 text-sm">{task.description}</p>
+                          <h3 className="font-medium text-white">{task.title}</h3>
+                          <p className="text-sm text-gray-300">{task.description}</p>
                         </div>
                       </div>
-                      {isCompleted && <CheckCircle className="h-5 w-5 text-green-400" />}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-white/30 text-white bg-transparent hover:bg-white/10"
+                        onClick={() => handleTaskAction(task)}
+                      >
+                        {task.buttonText}
+                      </Button>
                     </div>
-
-                    <Button
-                      onClick={() => handleTaskAction(task)}
-                      className={`w-full ${
-                        isCompleted ? "bg-green-600 hover:bg-green-700" : "bg-green-600 hover:bg-green-700"
-                      }`}
-                      disabled={isCompleted}
-                    >
-                      {isCompleted ? "Completed" : "Start"}
-                    </Button>
-                  </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 付费任务区域 */}
-        <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20 text-white">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-yellow-400" />
-              {t("plans.premium_tasks")}
-              <Badge className="ml-2 bg-yellow-500/20 text-yellow-300 border-yellow-500/50">
-                {premiumTasks.length} {t("plans.advanced_tasks")}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {premiumTasks.map((task) => {
-                const isCompleted = completedTasks.has(task.id)
-                const Icon = ICON_MAP[task.icon as keyof typeof ICON_MAP]
-                return (
-                  <div
-                    key={task.id}
-                    className={`p-4 rounded-lg border transition-all relative ${
-                      isCompleted
-                        ? "bg-green-500/20 border-green-400/50"
-                        : "bg-white/5 border-white/20 hover:bg-white/10"
-                    }`}
-                  >
-                    {/* 付费标识 */}
-                    {!isPro && !isPremium && (
-                      <div className="absolute top-2 right-2">
-                        <Lock className="w-4 h-4 text-yellow-400" />
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-5 h-5" />
-                        <div>
-                          <h3 className={`font-medium ${isCompleted ? "text-green-300" : "text-white"}`}>
-                            {task.title}
-                          </h3>
-                          <p className="text-gray-400 text-sm">{task.description}</p>
-                        </div>
-                      </div>
-                      {isCompleted && <CheckCircle className="h-5 w-5 text-green-400" />}
-                    </div>
-
-                    <Button
-                      onClick={() => handleTaskAction(task)}
-                      className={`w-full ${isPro || isPremium ? "bg-yellow-600 hover:bg-yellow-700" : "bg-gray-600 hover:bg-gray-700"}`}
-                      disabled={isFree && !task.isFree}
-                    >
-                      {isPro || isPremium ? "Start" : "Upgrade to Unlock"}
-                    </Button>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* 升级提示 */}
-            {isFree && (
-              <div className="mt-6 p-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Zap className="w-6 h-6 text-yellow-400" />
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-yellow-300 mb-1">{t("plans.unlock_full")}</h4>
-                    <p className="text-gray-300 text-sm">
-                      {t("plans.unlock_desc").replace("{count}", premiumTasks.length.toString())}
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => router.push("/pricing")}
-                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                  >
-                    <Crown className="w-4 h-4 mr-2" />
-                    {t("plans.upgrade_now")}
-                  </Button>
+                  ))}
                 </div>
-              </div>
-            )}
+              </CardContent>
+            </Card>
 
-            {/* 在会员专属任务区下方添加紧急情况按钮和弹窗 */}
-            <Button
-              className="mt-8 w-full bg-red-600 hover:bg-red-700 text-white font-bold text-lg py-3 rounded-xl"
-              onClick={() => {
-                setEmergencyStep(0)
-                setEmergencyOpen(true)
-              }}
-            >
-              {t("plans.emergency_button")}
-            </Button>
-          </CardContent>
-        </Card>
+            {/* 会员任务 - 显示前两个，其余用遮罩 */}
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-6">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Crown className="w-6 h-6 mr-2" />
+                  {t("plans.premium_tasks")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {premiumTasks.slice(0, 2).map((task, index) => (
+                    <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                                                 <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                           {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
+                         </div>
+                        <div>
+                          <h3 className="font-medium text-white">{task.title}</h3>
+                          <p className="text-sm text-gray-300">{task.description}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-white/30 text-white bg-transparent hover:bg-white/10"
+                        onClick={() => handleTaskAction(task)}
+                      >
+                        {task.buttonText}
+                      </Button>
+                    </div>
+                  ))}
+                  {premiumTasks.length > 2 && (
+                    <div className="relative p-4 bg-white/5 rounded-lg">
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                        <div className="text-center">
+                          <div className="text-white text-lg mb-2">Please log in to use this feature</div>
+                          <button
+                            className="px-4 py-2 rounded bg-coral text-white font-medium hover:bg-coral/90 transition"
+                            onClick={() => setAuthModalOpen(true)}
+                          >
+                            Login / Register
+                          </button>
+                        </div>
+                      </div>
+                      <div className="opacity-50">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                              <Lock className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="font-medium text-white">Premium Tasks</h3>
+                              <p className="text-sm text-gray-300">Unlock more tasks</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {/* 未登录时显示占位任务 */}
+        {!user && (
+          <div className="space-y-6">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <CheckCircle className="w-6 h-6 mr-2" />
+                  Sample Tasks
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 opacity-50">
+                  {[1, 2].map((index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-white">Sample Task {index}</h3>
+                          <p className="text-sm text-gray-300">This is a sample task description</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-white/30 text-white bg-transparent"
+                        disabled
+                      >
+                        Sample
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* 会员专享功能区域 */}
         <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20 text-white">
@@ -1006,6 +1039,8 @@ export default function PlansPage() {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
       />
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 }
