@@ -126,7 +126,6 @@ export default function HomePage() {
         <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
           {/* 主标题+火焰 */}
           <div className="flex items-center justify-center mb-4">
-            <img src="/fire.png" alt="logo" style={{height:'1.2em',verticalAlign:'middle',marginRight:12}} />
             <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight tracking-wide">
               Awaken
             </h1>
@@ -144,7 +143,7 @@ export default function HomePage() {
                 <span className="text-lg md:text-2xl font-semibold text-white/90">{t("home.hero_line1")}</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold text-white mb-1">
-                <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent">{t("home.hero_awaken")}</span> {t("home.hero_willpower")}
+                <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent">{t("home.hero_awaken")}</span>{' '}{t("home.hero_willpower")}
               </div>
               <div className="text-base md:text-xl font-medium text-gray-200">{t("home.hero_line3")}</div>
             </div>
