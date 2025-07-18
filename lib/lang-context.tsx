@@ -21,7 +21,7 @@ const translations = {
     "nav.plans": "戒色方案",
     "nav.pricing": "定价",
     "nav.profile": "我的",
-    "nav.signin": "Log in",
+    "nav.signin": "登录",
     "nav.signup": "注册",
     "nav.signout": "登出",
 
@@ -558,9 +558,9 @@ const translations = {
     "auth.continue_as_guest": "Continue as Guest",
 
     // === 首页 Hero 区相关 ===
-    "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
-    "home.hero_line2": "💡 Awaken your willpower ignite the fire of self-growth",
-    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
+    "home.hero_line1": "🌏 全球首个支持视频打卡的自律平台",
+    "home.hero_line2": "💡 唤醒意志力，点燃自我成长之火",
+    "home.hero_line3": "🌿 以东方智慧，见证你的每一次改变",
     "home.please_login": "请先登录以使用此功能",
   },
   en: {
