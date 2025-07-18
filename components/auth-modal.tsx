@@ -217,17 +217,10 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-background border-border">
         <DialogHeader className="p-6 pb-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center space-x-2">
-              <Flame className="w-5 h-5 text-primary" />
-              <span className="text-xl font-bold text-foreground">{t("auth.login_title")}</span>
-            </DialogTitle>
-            <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground hover:bg-muted">
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogClose>
-          </div>
+          <DialogTitle className="flex items-center space-x-2">
+            <Flame className="w-5 h-5 text-primary" />
+            <span className="text-xl font-bold text-foreground">{t("auth.login_title")}</span>
+          </DialogTitle>
           <DialogDescription className="pt-2 text-muted-foreground">
             {t("auth.login_description")}
           </DialogDescription>

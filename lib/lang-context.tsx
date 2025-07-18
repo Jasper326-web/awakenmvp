@@ -21,7 +21,7 @@ const translations = {
     "nav.plans": "戒色方案",
     "nav.pricing": "定价",
     "nav.profile": "我的",
-    "nav.signin": "登录",
+    "nav.signin": "Log in",
     "nav.signup": "注册",
     "nav.signout": "登出",
 
@@ -67,7 +67,7 @@ const translations = {
 
     // === 新增首页相关 ===
     "home.awaken_title": "Awaken 戒色助手",
-    "home.awaken_subtitle": "如果你在戒色中痛苦挣扎，试过无数的方法后依然破戒，试试awaken经过多年的戒色沉淀后总结的利用中华传统文化的中式戒色方法，一定会让你突破最大戒色天数，直至成功！",
+    "home.awaken_subtitle": "Awaken your willpower. Track your journey with wisdom from Eastern traditions.",
     "home.awaken_slogan": "✨ 30天助你清除色瘾，信任与坚持定将逆转命运！ ✨",
     "home.start_test_button": "开启用户测试",
     "home.world_first": "世界上第一个支持免费视频打卡的",
@@ -423,22 +423,7 @@ const translations = {
     "plans.level.moderate": "中度依赖",
     "plans.level.severe": "重度依赖",
 
-    // === 新增 plans 概览区及相关 key ===
-    "plans.overview_title": "测试结果概览",
-    "plans.retest": "重新测试",
-    "plans.test_score": "测试得分",
-    "plans.addiction_level": "依赖等级",
-    "plans.daily_tasks": "每日任务",
-    "plans.current_streak": "当前连续天数",
-    "plans.days": "天",
-    "plans.current_level": "当前等级",
-    "plans.todays_progress": "今日进度",
-    "plans.free_tasks": "免费任务",
-    "plans.addiction_plan": "依赖方案",
-    "plans.tasks": "个任务",
-    "plans.premium_tasks": "会员专享任务",
-    "plans.advanced_tasks": "个高级任务",
-    "plans.premium_exclusive_tasks": "会员专享任务",
+
     "plans.premium_features": "会员专享功能",
     "plans.personalized_guidance": "个性化指导",
     "plans.customized_plan": "基于测试结果的定制化戒色方案",
@@ -556,10 +541,10 @@ const translations = {
     "profile.days": "天",
 
     // === 新增登录弹窗相关 ===
-    "auth.login_title": "登录 Awaken",
-    "auth.login_description": "选择您喜欢的方式登录，新用户将自动创建账户。",
-    "auth.google_login": "使用 Google 登录",
-    "auth.github_login": "使用 GitHub 登录",
+    "auth.login_title": "Log in to continue",
+    "auth.login_description": "Choose your preferred login method, new users will automatically create an account.",
+    "auth.google_login": "Log in with Google",
+    "auth.github_login": "Log in with GitHub",
     "auth.continue_as_guest": "Continue as Guest",
   },
   en: {
@@ -571,7 +556,7 @@ const translations = {
     "nav.plans": "NoFap Plans",
     "nav.pricing": "Pricing",
     "nav.profile": "Profile",
-    "nav.signin": "Sign In",
+    "nav.signin": "Log in",
     "nav.signup": "Sign Up",
     "nav.signout": "Sign Out",
 
@@ -619,7 +604,7 @@ const translations = {
 
     // === 新增首页相关 ===
     "home.awaken_title": "Awaken NoFap Assistant",
-    "home.awaken_subtitle": "If you're struggling with NoFap, trying countless methods but still relapsing, try Awaken's traditional Chinese NoFap methods refined over years of practice. This will definitely help you break your longest streak and achieve success!",
+    "home.awaken_subtitle": "Awaken your willpower. Track your journey with wisdom from Eastern traditions.",
     "home.awaken_slogan": "✨ 30 days to clear your addiction, trust and persistence will reverse your destiny! ✨",
     "home.start_test_button": "Start User Test",
     "home.world_first": "The world's first",
@@ -1012,22 +997,7 @@ const translations = {
     "plans.level.moderate": "Moderate",
     "plans.level.severe": "Severe",
 
-    // === 新增 plans 概览区及相关 key ===
-    "plans.overview_title": "Test Overview",
-    "plans.retest": "Retake Test",
-    "plans.test_score": "Test Score",
-    "plans.addiction_level": "Addiction Level",
-    "plans.daily_tasks": "Daily Tasks",
-    "plans.current_streak": "Current Streak",
-    "plans.days": "Days",
-    "plans.current_level": "Current Level",
-    "plans.todays_progress": "Today's Progress",
-    "plans.free_tasks": "Free Tasks",
-    "plans.addiction_plan": "Addiction Plan",
-    "plans.tasks": "tasks",
-    "plans.premium_tasks": "Premium Exclusive Tasks",
-    "plans.advanced_tasks": "advanced tasks",
-    "plans.premium_exclusive_tasks": "Premium Exclusive Tasks",
+
     "plans.premium_features": "Premium Exclusive Features",
     "plans.personalized_guidance": "Personalized Guidance",
     "plans.customized_plan": "Customized NoFap plan based on test results",
@@ -1145,10 +1115,10 @@ const translations = {
     "profile.days": "days",
 
     // === 新增登录弹窗相关 ===
-    "auth.login_title": "Login Awaken",
+    "auth.login_title": "Log in to continue",
     "auth.login_description": "Choose your preferred login method, new users will automatically create an account.",
-    "auth.google_login": "Sign in with Google",
-    "auth.github_login": "Sign in with GitHub",
+    "auth.google_login": "Log in with Google",
+    "auth.github_login": "Log in with GitHub",
     "auth.continue_as_guest": "Continue as Guest",
   },
 }

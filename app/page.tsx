@@ -122,23 +122,23 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* 英雄区 */}
-        <section className="container mx-auto px-4 py-20 text-center">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight">
-              {t("home.awaken_title")}
-            </h1>
-            <p className="text-xl md:text-2xl text-white font-medium leading-relaxed">
-              {t("home.awaken_subtitle")}
-            </p>
+        <section className="container mx-auto px-4 py-24 text-center">
+          <div className="max-w-3xl mx-auto space-y-8">
+            {/* 主标题 - 更简洁的设计 */}
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight">
+                Awaken
+              </h1>
+              <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto">
+                {t("home.awaken_subtitle")}
+              </p>
+            </div>
 
-            <p className="text-base md:text-lg text-gray-300 font-medium">
-              {t("home.awaken_slogan")}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto pt-6">
+            {/* 行动按钮 - 更现代的设计 */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto pt-8">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 text-lg font-semibold rounded-lg flex items-center justify-center"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 text-lg font-semibold rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 onClick={() => router.push("/test")}
               >
                 <TestTube className="w-5 h-5 mr-2" />
@@ -146,18 +146,19 @@ export default function HomePage() {
               </Button>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2 pt-4">
-              <div className="bg-blue-600/15 border border-blue-600/25 rounded-full px-3 py-1.5">
-                <span className="text-blue-400 text-xs font-medium">{t("home.tag_video_checkin")}</span>
+            {/* 标签 - 更简洁的布局 */}
+            <div className="flex flex-wrap justify-center gap-3 pt-8">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2">
+                <span className="text-white/80 text-sm font-medium">{t("home.tag_video_checkin")}</span>
               </div>
-              <div className="bg-purple-600/15 border border-purple-600/25 rounded-full px-3 py-1.5">
-                <span className="text-purple-400 text-xs font-medium">{t("home.tag_free_use")}</span>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2">
+                <span className="text-white/80 text-sm font-medium">{t("home.tag_free_use")}</span>
               </div>
-              <div className="bg-yellow-600/15 border border-yellow-600/25 rounded-full px-3 py-1.5">
-                <span className="text-yellow-400 text-xs font-medium">{t("home.tag_buddhist")}</span>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2">
+                <span className="text-white/80 text-sm font-medium">{t("home.tag_buddhist")}</span>
               </div>
-              <div className="bg-red-600/15 border border-red-600/25 rounded-full px-3 py-1.5">
-                <span className="text-red-400 text-xs font-medium">{t("home.tag_gpt")}</span>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2">
+                <span className="text-white/80 text-sm font-medium">{t("home.tag_gpt")}</span>
               </div>
             </div>
           </div>

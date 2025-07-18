@@ -409,7 +409,7 @@ export default function PlansPage() {
         className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
         onClick={() => setAuthModalOpen(true)}
       >
-        Login / Register
+                                    Log in
       </button>
     </div>
   )
@@ -615,7 +615,7 @@ export default function PlansPage() {
                             className="px-4 py-2 rounded bg-coral text-white font-medium hover:bg-coral/90 transition"
                             onClick={() => setAuthModalOpen(true)}
                           >
-                            Login / Register
+                            Log in
                           </button>
                         </div>
                       </div>
