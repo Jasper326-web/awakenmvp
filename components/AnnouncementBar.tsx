@@ -1,16 +1,22 @@
+import { useLanguage } from '@/lib/lang-context';
+
 export default function AnnouncementBar() {
-  const text = "🚀 This is our evolving MVP version. We’re continuously refining and improving our features. Your feedback is incredibly valuable and will directly help us grow faster. If you encounter any issues or have suggestions, please don’t hesitate to reach out. Thank you for your patience and support as we build a better platform together!";
+  const { t } = useLanguage();
+  const text = t('announcement.motd');
   return (
-    <div className="w-full bg-gradient-to-r from-[#FF7E5F] via-[#FEB47B] to-[#FF9966] h-10 flex items-center">
-      {/* @ts-ignore */}
-      <marquee
-        className="w-full text-sm font-semibold text-white drop-shadow"
-        behavior="scroll"
-        direction="left"
-        scrollamount="4"
-      >
+    <div className="w-full bg-gradient-to-r from-[#FF7E5F] via-[#FEB47B] to-[#FF9966] h-10 flex items-center overflow-hidden relative">
+      <div className="whitespace-nowrap animate-scroll text-sm font-semibold text-white drop-shadow" style={{animation: 'scroll 30s linear infinite'}}>
         {text}
-      </marquee>
+      </div>
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+        .animate-scroll {
+          animation: scroll 30s linear infinite;
+        }
+      `}</style>
     </div>
   );
 } 

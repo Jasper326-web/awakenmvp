@@ -165,7 +165,7 @@ export default function Navigation() {
       <nav className="bg-slate-900/80 backdrop-blur sticky top-0 z-40 border-b border-slate-800">
         <div className="container mx-auto px-4 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 group" scroll={true}>
+            <Link href="/" className="flex items-center gap-2 group" scroll={true} onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>
               <img src="/mantra/fire.png" alt="logo" width={32} height={32} className="shrink-0 transition-transform group-hover:scale-110" />
               <span className="text-xl font-bold text-white tracking-wide select-none transition-colors group-hover:text-orange-400">Awaken</span>
             </Link>
