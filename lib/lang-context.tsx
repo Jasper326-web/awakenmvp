@@ -551,18 +551,15 @@ const translations = {
     "profile.days": "天",
 
     // === 新增登录弹窗相关 ===
-    "auth.login_title": "Log in to continue",
-    "auth.login_description": "Choose your preferred login method, new users will automatically create an account.",
-    "auth.google_login": "Log in with Google",
-    "auth.github_login": "Log in with GitHub",
-    "auth.continue_as_guest": "Continue as Guest",
+    "auth.login_title": "登录以继续",
+    "auth.login_description": "请选择你喜欢的登录方式，新用户会自动创建账号。",
+    "auth.google_login": "使用 Google 登录",
+    "auth.github_login": "使用 GitHub 登录",
+    "auth.continue_as_guest": "以游客身份继续",
 
     // === 首页 Hero 区相关 ===
-    "home.hero_line1": "🌏 全球首个支持视频打卡的自律平台",
-    "home.hero_line2": "💡 唤醒你的意志力，点燃自我成长之火",
-    "home.hero_line3": "🌿 以东方智慧，见证你的每一次改变",
-    "home.please_login": "请先登录以使用此功能",
-    "home.hero_willpower": "你的意志力",
+    "home.hero_awaken": "唤醒你的意志力",
+    "home.hero_willpower": "",
   },
   en: {
     // Navigation
@@ -1149,11 +1146,8 @@ const translations = {
     "auth.continue_as_guest": "Continue as Guest",
 
     // === 首页 Hero 区相关 ===
-    "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
-    "home.hero_line2": "💡 Awaken your willpower ignite the fire of self-growth",
-    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
-    "home.please_login": "Please log in to use this feature",
-    "home.hero_willpower": "your willpower",
+    "home.hero_awaken": "Awaken your willpower",
+    "home.hero_willpower": "",
   },
 }
 
