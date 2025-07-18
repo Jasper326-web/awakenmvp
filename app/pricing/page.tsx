@@ -34,28 +34,40 @@ export default function PricingPage() {
     setIsDialogOpen(true)
   }
 
-  const freeFeatures = t("pricing.free_features")
-  const premiumFeatures = t("pricing.premium_features")
+  const freeFeatures = [
+    "免费视频打卡3次/月",
+    "基础AI助教5次/月", 
+    "基础打卡功能",
+    "社区基础功能"
+  ]
+  const premiumFeatures = [
+    "无限次视频打卡",
+    "无限次AI助教对话",
+    "专属冥想课程",
+    "个性化戒色计划",
+    "高级数据分析",
+    "优先客服支持"
+  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t("pricing.title")}</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">{t("pricing.subtitle")}</p>
+          <h1 className="text-4xl font-bold text-white mb-4">{t("pricing.title")}</h1>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">{t("pricing.subtitle")}</p>
         </div>
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Free Plan */}
-          <Card className="relative border-2 border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+          <Card className="relative border-2 border-gray-600 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 bg-slate-800/50 backdrop-blur-sm">
             <CardHeader className="text-center pb-8">
-              <CardTitle className="text-2xl font-bold text-gray-900">{t("pricing.free_plan")}</CardTitle>
-              <CardDescription className="text-gray-600 mt-2">{t("pricing.free_desc")}</CardDescription>
+              <CardTitle className="text-2xl font-bold text-white">{t("pricing.free_plan")}</CardTitle>
+              <CardDescription className="text-gray-300 mt-2">{t("pricing.free_desc")}</CardDescription>
               <div className="mt-6">
-                <span className="text-4xl font-bold text-gray-900">¥0</span>
-                <span className="text-gray-600 ml-2">{t("pricing.forever")}</span>
+                <span className="text-4xl font-bold text-white">¥0</span>
+                <span className="text-gray-300 ml-2">{t("pricing.forever")}</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -63,19 +75,19 @@ export default function PricingPage() {
                 {freeFeatures.map((feature, index) => (
                   <div key={index} className="flex items-center">
                     <Check className="w-5 h-5 text-green-500 mr-3" />
-                    <span className="text-gray-600">{feature}</span>
+                    <span className="text-gray-300">{feature}</span>
                   </div>
                 ))}
                 {premiumFeatures.map((feature, index) => (
                   <div key={index} className="flex items-center">
                     <X className="w-5 h-5 text-red-500 mr-3" />
-                    <span className="text-gray-400 line-through">{feature}</span>
+                    <span className="text-gray-500 line-through">{feature}</span>
                   </div>
                 ))}
               </div>
               <Button
                 onClick={handleFreeTrial}
-                className="w-full py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-medium transition-colors"
+                className="w-full py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium transition-colors"
               >
                 {t("pricing.free_trial")}
               </Button>
@@ -83,20 +95,20 @@ export default function PricingPage() {
           </Card>
 
           {/* Premium Plan */}
-          <Card className="relative border-2 border-red-500 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-white to-red-50">
+          <Card className="relative border-2 border-orange-500 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-800/50 to-orange-900/20 backdrop-blur-sm">
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <div className="bg-red-500 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center">
+              <div className="bg-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center">
                 <Star className="w-4 h-4 mr-1" />
                 {t("pricing.recommended")}
               </div>
             </div>
             <CardHeader className="text-center pb-8 pt-8">
-              <CardTitle className="text-2xl font-bold text-gray-900">{t("pricing.premium_plan")}</CardTitle>
-              <CardDescription className="text-gray-600 mt-2">{t("pricing.premium_desc")}</CardDescription>
+              <CardTitle className="text-2xl font-bold text-white">{t("pricing.premium_plan")}</CardTitle>
+              <CardDescription className="text-gray-300 mt-2">{t("pricing.premium_desc")}</CardDescription>
               <div className="mt-6">
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-2xl text-gray-400 line-through">$20</span>
-                  <span className="text-4xl font-bold text-red-600">$10</span>
+                  <span className="text-2xl text-gray-400 line-through">$9.99</span>
+                  <span className="text-4xl font-bold text-red-600">$5.99</span>
                 </div>
                 <span className="text-gray-600 text-sm mt-2 block">{t("pricing.per_month")}</span>
               </div>
@@ -105,17 +117,17 @@ export default function PricingPage() {
               <ul className="space-y-4">
                 {premiumFeatures.map((feature, index) => (
                   <li key={index} className="flex items-center">
-                    <Check className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-900">{feature}</span>
+                    <Check className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span className="text-white">{feature}</span>
                   </li>
                 ))}
                 <li className="flex items-center">
-                  <Check className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
-                  <span className="text-gray-900">{t("pricing.continuous_update")}</span>
+                  <Check className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
+                  <span className="text-white">{t("pricing.continuous_update")}</span>
                 </li>
               </ul>
               <Button
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
+                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition-colors"
                 onClick={async () => {
                   const res = await fetch("/api/create-creem-session", { method: "POST" });
                   const { checkout_url } = await res.json();
@@ -128,7 +140,7 @@ export default function PricingPage() {
               >
                 {t("pricing.join_membership")}
               </Button>
-              <div className="text-center text-gray-500 text-xs mt-4">
+              <div className="text-center text-gray-400 text-xs mt-4">
                 {t("pricing.payment_success")}<br />
                 {t("pricing.member_access")}
               </div>
@@ -138,7 +150,7 @@ export default function PricingPage() {
 
         {/* FAQ or Additional Info */}
         <div className="text-center mt-16">
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-400 max-w-2xl mx-auto">
             {t("pricing.cancel_info")}
             <br />
             {t("pricing.contact_support")}

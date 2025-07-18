@@ -137,8 +137,10 @@ export default function HomePage() {
             <span className="text-lg md:text-2xl font-semibold text-white/90">The world’s first self-discipline platform with video check-ins.</span>
           </div>
           {/* 品牌价值表达 */}
-          <div className="max-w-2xl mx-auto text-base md:text-lg text-gray-200 font-normal mb-8">
-            Awaken your willpower. Track your journey with wisdom from Eastern traditions.
+          <div className="max-w-2xl mx-auto text-base md:text-lg text-gray-200 font-normal mb-8 flex items-center justify-center gap-2">
+            <Sparkles className="w-4 h-4 text-yellow-400" />
+            <span>Awaken your willpower. Track your journey with wisdom from Eastern traditions.</span>
+            <Sparkles className="w-4 h-4 text-yellow-400" />
           </div>
           {/* 标签 - 多彩风格 */}
           <div className="flex flex-wrap justify-center gap-2 pt-2">

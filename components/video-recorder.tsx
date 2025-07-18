@@ -375,6 +375,45 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
       setUploadError(null)
       addDebugLog("准备上传视频...")
 
+      // 检查用户视频打卡限制
+      if (userId) {
+        try {
+          const response = await fetch("/api/check-video-limit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId }),
+          })
+
+          const limitData = await response.json()
+          
+          if (!response.ok) {
+            throw new Error(limitData.error || "检查限制失败")
+          }
+
+          if (!limitData.canUpload) {
+            // 显示升级提示弹窗
+            setUploadError(limitData.message)
+            // 触发升级提示
+            if (typeof window !== "undefined") {
+              // 这里可以触发一个全局事件来显示升级弹窗
+              window.dispatchEvent(new CustomEvent("showUpgradeModal", {
+                detail: {
+                  title: "升级为会员",
+                  message: limitData.message,
+                  feature: "video_checkin"
+                }
+              }))
+            }
+            return
+          }
+
+          addDebugLog(`用户限制检查通过: ${limitData.message}`)
+        } catch (limitError) {
+          addDebugLog(`检查用户限制失败: ${limitError}`)
+          // 如果检查失败，继续上传（避免阻塞用户）
+        }
+      }
+
       // 检查文件大小
       if (file.size > MAX_FILE_SIZE) {
         throw new Error(`文件过大 (${formatFileSize(file.size)})，最大支持 ${formatFileSize(MAX_FILE_SIZE)}`)

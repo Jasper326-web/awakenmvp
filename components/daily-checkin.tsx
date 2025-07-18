@@ -9,6 +9,7 @@ import { Calendar, TrendingUp, Award } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/lib/lang-context"
 import AuthModal from './auth-modal'
+import UpgradeModal from './upgrade-modal'
 
 interface CheckinData {
   [date: string]: {
@@ -43,10 +44,32 @@ export default function DailyCheckin() {
   const [user, setUser] = useState<any>(null)
   const [session, setSession] = useState<any>(null)
   const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false)
+  const [upgradeModalData, setUpgradeModalData] = useState({
+    title: "",
+    message: "",
+    feature: ""
+  })
 
   useEffect(() => {
     checkUser()
     loadCheckinData()
+
+    // 监听升级弹窗事件
+    const handleShowUpgradeModal = (event: CustomEvent) => {
+      setUpgradeModalData({
+        title: event.detail.title || "升级为会员",
+        message: event.detail.message || "您本月的免费打卡次数已用完，升级为会员享受无限次打卡。",
+        feature: event.detail.feature || ""
+      })
+      setUpgradeModalOpen(true)
+    }
+
+    window.addEventListener("showUpgradeModal", handleShowUpgradeModal as EventListener)
+
+    return () => {
+      window.removeEventListener("showUpgradeModal", handleShowUpgradeModal as EventListener)
+    }
   }, [])
 
   const checkUser = async () => {
@@ -382,6 +405,15 @@ export default function DailyCheckin() {
       </div>
       {/* Auth Modal */}
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal 
+        open={upgradeModalOpen} 
+        onOpenChange={setUpgradeModalOpen}
+        title={upgradeModalData.title}
+        message={upgradeModalData.message}
+        feature={upgradeModalData.feature}
+      />
     </div>
   )
 }
