@@ -18,7 +18,6 @@ import { authService } from "@/lib/auth"
 import { useLanguage } from "@/lib/lang-context"
 import { Flame, Mail, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { v4 as uuidv4 } from 'uuid';
 import { supabase } from "@/lib/supabaseClient";
 
 interface AuthModalProps {
@@ -195,9 +194,9 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       guestResult = await supabase.auth.signInAnonymously()
     } else {
       // 兼容无 signInAnonymously 的 supabase-js 版本，自动注册随机邮箱
-      const guestId = uuidv4()
+      const guestId = crypto.randomUUID()
       const guestEmail = `guest_${guestId}@guest.awaken`
-      const guestPassword = uuidv4().slice(0, 12)
+      const guestPassword = crypto.randomUUID().slice(0, 12)
       guestResult = await authService.signUp(guestEmail, guestPassword)
     }
     setGuestLoading(false)
