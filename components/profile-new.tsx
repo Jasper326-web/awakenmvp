@@ -43,6 +43,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { CoralSeparator } from '@/components/ui/separator';
 import { CoralButton } from '@/components/ui/button';
 import { useLanguage } from '@/lib/lang-context'
+import AuthModal from './auth-modal'
 
 interface UserProfile {
   id: string
@@ -74,6 +75,7 @@ export default function ProfileNew() {
   const [editMottoOpen, setEditMottoOpen] = useState(false)
   const [newMotto, setNewMotto] = useState("")
   const [editingMotto, setEditingMotto] = useState("")
+  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   const debouncedMotto = useDebounce(editingMotto, 1000) // 1秒防抖
   
@@ -120,7 +122,12 @@ export default function ProfileNew() {
   const loadUserProfile = async () => {
     try {
       const currentUser = await authService.getCurrentUser()
-      if (!currentUser) return
+      if (!currentUser) {
+        // 未登录时设置用户为 null，不显示错误提示
+        setUser(null)
+        setLoading(false)
+        return
+      }
 
       // 获取用户基本信息
       const { data: userData, error: userError } = await supabase
@@ -144,11 +151,8 @@ export default function ProfileNew() {
       })
     } catch (error) {
       console.error("加载用户资料失败:", error)
-      toast({
-        title: "加载失败",
-        description: "无法加载用户资料，请稍后重试",
-        variant: "destructive",
-      })
+      // 移除 toast 提示，改为友好的错误处理
+      setUser(null)
     } finally {
       setLoading(false)
     }
@@ -401,33 +405,104 @@ export default function ProfileNew() {
     }
   }
 
+  // 未登录状态友好展示
+  const NotLoggedInBanner = () => (
+    <div className="w-full flex flex-col items-center justify-center py-8">
+      <div className="text-lg text-gray-200 mb-4 font-semibold">Please log in to view your profile</div>
+      <button
+        className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
+        onClick={() => setAuthModalOpen(true)}
+      >
+        Login / Register
+      </button>
+    </div>
+  )
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="container mx-auto px-4 py-8">
-          <Card className="w-full bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="p-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto"></div>
-                <p className="text-white mt-4">加载中...</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="flex items-center justify-center py-12">
+        <div className="text-white text-lg">Loading...</div>
       </div>
     )
   }
 
+  // 未登录状态显示友好引导
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="container mx-auto px-4 py-8">
-          <Card className="w-full bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="p-12 text-center">
-              <p className="text-white">请先登录查看个人资料</p>
+      <div className="space-y-6">
+        <NotLoggedInBanner />
+        
+        {/* 占位内容 - 显示示例个人资料 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Trophy className="h-5 w-5" />
+                Current Streak
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold mb-2">--</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Star className="h-5 w-5" />
+                Best Streak
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold mb-2">--</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Activity className="h-5 w-5" />
+                Total Days
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold mb-2">--</div>
             </CardContent>
           </Card>
         </div>
+
+        {/* 占位功能区域 */}
+        <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center">
+              <User className="w-6 h-6 mr-2" />
+              Profile Features
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-50">
+              {[
+                { icon: Calendar, title: "Daily Check-in", desc: "Record your progress" },
+                { icon: Target, title: "NoFap Plans", desc: "Personalized guidance" },
+                { icon: Trophy, title: "Leaderboard", desc: "View rankings" },
+                { icon: Brain, title: "AI Coach", desc: "Intelligent consultation" },
+                { icon: Users, title: "Community", desc: "Connect with others" },
+                { icon: Settings, title: "Settings", desc: "Manage your account" }
+              ].map((item, index) => (
+                <div key={index} className="flex items-center space-x-3 p-4 bg-white/5 rounded-lg">
+                  <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                    <item.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-white">{item.title}</h3>
+                    <p className="text-sm text-gray-300">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Auth Modal */}
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
       </div>
     )
   }
@@ -765,6 +840,8 @@ export default function ProfileNew() {
           </Tabs>
         </div>
       </div>
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 } 

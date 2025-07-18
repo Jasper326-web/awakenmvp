@@ -61,7 +61,6 @@ export default function DailyCheckin() {
 
     if (!user) {
       console.log("[打卡页面] 用户未登录")
-      toast.error(t("checkin.pleaseLogin"))
       return
     }
 
