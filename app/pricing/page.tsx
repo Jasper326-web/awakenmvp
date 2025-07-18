@@ -34,19 +34,20 @@ export default function PricingPage() {
     setIsDialogOpen(true)
   }
 
+  // 权益key数组
   const freeFeatures = [
-    "免费视频打卡3次/月",
-    "基础AI助教5次/月", 
-    "基础打卡功能",
-    "社区基础功能"
+    t("pricing.benefit.free.status"),
+    t("pricing.benefit.free.journal"),
+    t("pricing.benefit.free.video"),
+    t("pricing.benefit.free.ai")
   ]
   const premiumFeatures = [
-    "无限次视频打卡",
-    "无限次AI助教对话",
-    "专属冥想课程",
-    "个性化戒色计划",
-    "高级数据分析",
-    "优先客服支持"
+    t("pricing.benefit.premium.all_free"),
+    t("pricing.benefit.premium.daily_push"),
+    t("pricing.benefit.premium.video"),
+    t("pricing.benefit.premium.ai"),
+    t("pricing.benefit.premium.plan"),
+    t("pricing.benefit.premium.analytics")
   ]
 
   return (
@@ -74,14 +75,8 @@ export default function PricingPage() {
               <div className="space-y-4">
                 {freeFeatures.map((feature, index) => (
                   <div key={index} className="flex items-center">
-                    <Check className="w-5 h-5 text-green-500 mr-3" />
+                    <Check className="w-5 h-5 text-green-400 mr-3" />
                     <span className="text-gray-300">{feature}</span>
-                  </div>
-                ))}
-                {premiumFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-center">
-                    <X className="w-5 h-5 text-red-500 mr-3" />
-                    <span className="text-gray-500 line-through">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -95,39 +90,39 @@ export default function PricingPage() {
           </Card>
 
           {/* Premium Plan */}
-          <Card className="relative border-2 border-orange-500 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-slate-800/50 to-orange-900/20 backdrop-blur-sm">
+          <Card className="relative border-2 border-orange-500 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 bg-slate-800/50 backdrop-blur-sm">
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
               <div className="bg-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center">
-                <Star className="w-4 h-4 mr-1" />
+                <Star className="w-4 h-4 mr-1 text-yellow-300 drop-shadow" />
                 {t("pricing.recommended")}
               </div>
             </div>
             <CardHeader className="text-center pb-8 pt-8">
-              <CardTitle className="text-2xl font-bold text-white">{t("pricing.premium_plan")}</CardTitle>
-              <CardDescription className="text-gray-300 mt-2">{t("pricing.premium_desc")}</CardDescription>
+              <CardTitle className="text-2xl font-extrabold text-yellow-300 drop-shadow">{t("pricing.premium_plan")}</CardTitle>
+              <CardDescription className="text-yellow-100 mt-2 font-medium">{t("pricing.premium_desc")}</CardDescription>
               <div className="mt-6">
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-2xl text-gray-400 line-through">$9.99</span>
-                  <span className="text-4xl font-bold text-red-600">$5.99</span>
+                  <span className="text-4xl font-bold text-orange-500 drop-shadow">$5.99</span>
                 </div>
-                <span className="text-gray-600 text-sm mt-2 block">{t("pricing.per_month")}</span>
+                <span className="text-yellow-200 text-sm mt-2 block">{t("pricing.per_month")}</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <ul className="space-y-4">
                 {premiumFeatures.map((feature, index) => (
                   <li key={index} className="flex items-center">
-                    <Check className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
-                    <span className="text-white">{feature}</span>
+                    <Check className="w-5 h-5 text-yellow-400 mr-3 flex-shrink-0 drop-shadow" />
+                    <span className="text-yellow-100 font-medium drop-shadow">{feature}</span>
                   </li>
                 ))}
                 <li className="flex items-center">
-                  <Check className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
-                  <span className="text-white">{t("pricing.continuous_update")}</span>
+                  <Check className="w-5 h-5 text-yellow-400 mr-3 flex-shrink-0 drop-shadow" />
+                  <span className="text-yellow-100 font-medium drop-shadow">{t("pricing.continuous_update")}</span>
                 </li>
               </ul>
               <Button
-                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition-colors"
+                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-lg transition-colors"
                 onClick={async () => {
                   const res = await fetch("/api/create-creem-session", { method: "POST" });
                   const { checkout_url } = await res.json();
@@ -140,7 +135,7 @@ export default function PricingPage() {
               >
                 {t("pricing.join_membership")}
               </Button>
-              <div className="text-center text-gray-400 text-xs mt-4">
+              <div className="text-center text-yellow-200 text-xs mt-4">
                 {t("pricing.payment_success")}<br />
                 {t("pricing.member_access")}
               </div>
