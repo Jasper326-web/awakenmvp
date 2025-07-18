@@ -126,7 +126,7 @@ export default function HomePage() {
         <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
           {/* 主标题+火焰 */}
           <div className="flex items-center justify-center mb-4">
-            <img src="/mantra/fire.png" alt="logo" style={{height:'1.2em',verticalAlign:'middle',marginRight:12}} />
+            <img src="/fire.png" alt="logo" style={{height:'1.2em',verticalAlign:'middle',marginRight:12}} />
             <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight tracking-wide">
               Awaken
             </h1>

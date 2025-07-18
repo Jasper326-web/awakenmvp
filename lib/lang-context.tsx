@@ -559,9 +559,10 @@ const translations = {
 
     // === 首页 Hero 区相关 ===
     "home.hero_line1": "🌏 全球首个支持视频打卡的自律平台",
-    "home.hero_line2": "💡 唤醒意志力，点燃自我成长之火",
+    "home.hero_line2": "💡 唤醒你的意志力，点燃自我成长之火",
     "home.hero_line3": "🌿 以东方智慧，见证你的每一次改变",
     "home.please_login": "请先登录以使用此功能",
+    "home.hero_willpower": "你的意志力",
   },
   en: {
     // Navigation
@@ -1152,6 +1153,7 @@ const translations = {
     "home.hero_line2": "💡 Awaken your willpower ignite the fire of self-growth",
     "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
     "home.please_login": "Please log in to use this feature",
+    "home.hero_willpower": "your willpower",
   },
 }
 
