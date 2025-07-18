@@ -143,7 +143,7 @@ export default function HomePage() {
                 <span className="text-lg md:text-2xl font-semibold text-white/90">{t("home.hero_line1")}</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold text-white mb-1">
-                <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent">{t("home.hero_awaken")}</span>{' '}{t("home.hero_willpower")}
+                <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent">{t("home.hero_line2")}</span>
               </div>
               <div className="text-base md:text-xl font-medium text-gray-200">{t("home.hero_line3")}</div>
             </div>
