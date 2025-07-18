@@ -15,6 +15,7 @@ import { generateTasksByAddictionLevel } from "../lib/plan-tasks"
 import { CoralButton } from '@/components/ui/button';
 import { CoralSeparator } from '@/components/ui/separator';
 import { useLanguage } from '@/lib/lang-context'
+import SolidFlame from "@/components/solid-flame";
 
 const ICON_MAP = { Calendar, FileText, Video, Headphones, BookOpen, Sparkles, Brain, Heart, Activity }
 
@@ -121,45 +122,37 @@ export default function HomePage() {
   if (!user || !testData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        {/* 英雄区 */}
-        <section className="container mx-auto px-4 py-24 text-center">
-          <div className="max-w-3xl mx-auto space-y-8">
-            {/* 主标题 - 更简洁的设计 */}
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight">
-                Awaken
-              </h1>
-              <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto">
-                {t("home.awaken_subtitle")}
-              </p>
+        {/* Hero Section 重构 */}
+        <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
+          {/* 主标题+火焰 */}
+          <div className="flex items-center justify-center mb-4">
+            <SolidFlame size={44} className="mr-3 drop-shadow-lg" />
+            <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight tracking-wide">
+              Awaken
+            </h1>
+          </div>
+          {/* slogan + 摄像头icon */}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Video className="w-6 h-6 text-blue-400" />
+            <span className="text-lg md:text-2xl font-semibold text-white/90">The world’s first self-discipline platform with video check-ins.</span>
+          </div>
+          {/* 品牌价值表达 */}
+          <div className="max-w-2xl mx-auto text-base md:text-lg text-gray-200 font-normal mb-8">
+            Awaken your willpower. Track your journey with wisdom from Eastern traditions.
+          </div>
+          {/* 标签 - 多彩风格 */}
+          <div className="flex flex-wrap justify-center gap-2 pt-2">
+            <div className="bg-blue-600/15 border border-blue-600/25 rounded-full px-3 py-1.5">
+              <span className="text-blue-400 text-xs font-medium">{t("home.tag_video_checkin")}</span>
             </div>
-
-            {/* 行动按钮 - 更现代的设计 */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto pt-8">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 text-lg font-semibold rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                onClick={() => router.push("/test")}
-              >
-                <TestTube className="w-5 h-5 mr-2" />
-                {t("home.start_test_button")}
-              </Button>
+            <div className="bg-purple-600/15 border border-purple-600/25 rounded-full px-3 py-1.5">
+              <span className="text-purple-400 text-xs font-medium">{t("home.tag_free_use")}</span>
             </div>
-
-            {/* 标签 - 恢复多彩风格 */}
-            <div className="flex flex-wrap justify-center gap-2 pt-8">
-              <div className="bg-blue-600/15 border border-blue-600/25 rounded-full px-3 py-1.5">
-                <span className="text-blue-400 text-xs font-medium">{t("home.tag_video_checkin")}</span>
-              </div>
-              <div className="bg-purple-600/15 border border-purple-600/25 rounded-full px-3 py-1.5">
-                <span className="text-purple-400 text-xs font-medium">{t("home.tag_free_use")}</span>
-              </div>
-              <div className="bg-yellow-600/15 border border-yellow-600/25 rounded-full px-3 py-1.5">
-                <span className="text-yellow-400 text-xs font-medium">{t("home.tag_buddhist")}</span>
-              </div>
-              <div className="bg-red-600/15 border border-red-600/25 rounded-full px-3 py-1.5">
-                <span className="text-red-400 text-xs font-medium">{t("home.tag_gpt")}</span>
-              </div>
+            <div className="bg-yellow-600/15 border border-yellow-600/25 rounded-full px-3 py-1.5">
+              <span className="text-yellow-400 text-xs font-medium">{t("home.tag_buddhist")}</span>
+            </div>
+            <div className="bg-red-600/15 border border-red-600/25 rounded-full px-3 py-1.5">
+              <span className="text-red-400 text-xs font-medium">{t("home.tag_gpt")}</span>
             </div>
           </div>
         </section>
