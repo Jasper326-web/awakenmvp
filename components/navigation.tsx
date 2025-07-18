@@ -224,7 +224,7 @@ export default function Navigation() {
             ) : (
               <Button
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1.5 h-auto"
+                className="bg-orange-400 hover:bg-orange-500 text-white text-xs px-3 py-1.5 h-auto"
                 onClick={() => setAuthModalOpen(true)}
               >
                 {t("nav.signin")}

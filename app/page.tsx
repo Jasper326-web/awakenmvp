@@ -304,7 +304,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* 英雄区 - 登录用户版本 */}
-      <section className="container mx-auto px-4 pt-16 pb-8 text-center">
+      <section className="container mx-auto px-4 pt-28 pb-20 flex flex-col items-center justify-center text-center">
         {/* 主标题 */}
         <h1 className="text-5xl md:text-6xl font-extrabold text-gradient-coral tracking-wide mb-4 drop-shadow-lg">
           Awaken

@@ -1,17 +1,17 @@
 import React from "react";
 
-export default function SolidFlame({ size = 32, className = "" }) {
+export default function SolidFlame({ size = 48, className = "" }) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 48 48"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
       <defs>
-        <linearGradient id="flame-gradient" x1="16" y1="30" x2="16" y2="2" gradientUnits="userSpaceOnUse">
+        <linearGradient id="flame-gradient" x1="24" y1="44" x2="24" y2="4" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FF2D2D" />
           <stop offset="60%" stopColor="#FF7F50" />
           <stop offset="100%" stopColor="#FFD600" />
@@ -19,14 +19,17 @@ export default function SolidFlame({ size = 32, className = "" }) {
       </defs>
       {/* 外部火焰轮廓 */}
       <path
-        d="M16 2C16 2 10 10 13 18C14.5 22 10 25 10 28C10 29.5 12 30 16 30C20 30 22 29.5 22 28C22 25 17.5 22 19 18C22 10 16 2 16 2Z"
-        fill="url(#flame-gradient)"
+        d="M24 4C24 4 13 20 18 32C20.5 38 13 42 13 44C13 46 18 46 24 46C30 46 35 46 35 44C35 42 27.5 38 30 32C35 20 24 4 24 4Z"
+        fill="none"
+        stroke="url(#flame-gradient)"
+        strokeWidth="4"
+        strokeLinejoin="round"
       />
       {/* 镂空内部火苗 */}
       <path
-        d="M16 8C16 8 13.5 13 15 17C15.7 18.8 13.5 20.5 13.5 22C13.5 23 15 23.5 16 23.5C17 23.5 18.5 23 18.5 22C18.5 20.5 16.3 18.8 17 17C18.5 13 16 8 16 8Z"
+        d="M24 13C24 13 18 23 21 31C22.2 34.2 18 37 18 39C18 40 21 40.5 24 40.5C27 40.5 30 40 30 39C30 37 25.8 34.2 27 31C30 23 24 13 24 13Z"
         fill="#fff"
-        fillOpacity="0.85"
+        fillOpacity="0.9"
       />
     </svg>
   );
