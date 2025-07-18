@@ -131,16 +131,17 @@ export default function HomePage() {
               Awaken
             </h1>
           </div>
-          {/* slogan + 摄像头icon */}
+          {/* slogan 无标点 */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <Video className="w-6 h-6 text-blue-400" />
-            <span className="text-lg md:text-2xl font-semibold text-white/90">The world’s first self-discipline platform with video check-ins.</span>
+            <span className="text-lg md:text-2xl font-semibold text-white/90">{t("home.hero_slogan")}</span>
           </div>
-          {/* 品牌价值表达 */}
-          <div className="max-w-2xl mx-auto text-base md:text-lg text-gray-200 font-normal mb-8 flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span>Awaken your willpower. Track your journey with wisdom from Eastern traditions.</span>
-            <Sparkles className="w-4 h-4 text-yellow-400" />
+          {/* 品牌价值表达分两行，突出Eastern traditions */}
+          <div className="max-w-2xl mx-auto text-center mb-8">
+            <div className="text-2xl md:text-3xl font-bold text-white mb-1">{t("home.hero_value1")}</div>
+            <div className="text-base md:text-xl font-medium text-gray-200">
+              {t("home.hero_value2_pre")} <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent text-xl md:text-2xl font-bold">{t("home.hero_value2_emph")}</span>
+            </div>
           </div>
           {/* 标签 - 多彩风格 */}
           <div className="flex flex-wrap justify-center gap-2 pt-2">

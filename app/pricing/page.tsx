@@ -103,9 +103,10 @@ export default function PricingPage() {
               <div className="mt-6">
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-2xl text-gray-400 line-through">$9.99</span>
-                  <span className="text-4xl font-bold text-orange-500 drop-shadow">$5.99</span>
+                  <span className="text-4xl font-bold text-orange-500 drop-shadow flex items-end">$5.99
+                    <span className="text-base font-medium text-yellow-200 ml-2 pb-1">{t("pricing.per_month")}</span>
+                  </span>
                 </div>
-                <span className="text-yellow-200 text-sm mt-2 block">{t("pricing.per_month")}</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">

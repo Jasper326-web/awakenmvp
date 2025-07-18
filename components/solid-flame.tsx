@@ -11,14 +11,14 @@ export default function SolidFlame({ size = 32, className = "" }) {
       className={className}
     >
       <defs>
-        <linearGradient id="flame-gradient" x1="50%" y1="100%" x2="50%" y2="0%">
+        <linearGradient id="flame-gradient" x1="16" y1="30" x2="16" y2="2" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#FF2D2D" />
-          <stop offset="50%" stopColor="#FF7F50" />
+          <stop offset="60%" stopColor="#FF7F50" />
           <stop offset="100%" stopColor="#FFD600" />
         </linearGradient>
       </defs>
       <path
-        d="M16 2C16 2 12 8 12 14C12 18 16 22 16 28C16 22 20 18 20 14C20 8 16 2 16 2Z"
+        d="M16 2C16 2 10 10 13 18C14.5 22 10 25 10 28C10 29.5 12 30 16 30C20 30 22 29.5 22 28C22 25 17.5 22 19 18C22 10 16 2 16 2Z"
         fill="url(#flame-gradient)"
       />
     </svg>
