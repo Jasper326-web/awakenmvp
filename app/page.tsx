@@ -131,18 +131,25 @@ export default function HomePage() {
               Awaken
             </h1>
           </div>
-          {/* slogan 无标点 */}
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Video className="w-6 h-6 text-blue-400" />
-            <span className="text-lg md:text-2xl font-semibold text-white/90">{t("home.hero_slogan")}</span>
-          </div>
-          {/* 品牌价值表达分两行，突出Eastern traditions */}
-          <div className="max-w-2xl mx-auto text-center mb-8">
-            <div className="text-2xl md:text-3xl font-bold text-white mb-1">{t("home.hero_value1")}</div>
-            <div className="text-base md:text-xl font-medium text-gray-200">
-              {t("home.hero_value2_pre")} <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent text-xl md:text-2xl font-bold">{t("home.hero_value2_emph")}</span>
+          {/* 中文三行文案 */}
+          {t("lang") === 'zh' ? (
+            <div className="max-w-2xl mx-auto text-center mb-8 space-y-1">
+              <div className="text-lg md:text-xl font-semibold text-white">{t("home.hero_slogan")}</div>
+              <div className="text-2xl md:text-3xl font-bold text-white">{t("home.hero_value1")}</div>
+              <div className="text-base md:text-xl font-medium text-orange-200">{t("home.hero_value2")}</div>
             </div>
-          </div>
+          ) : (
+            <div className="max-w-2xl mx-auto text-center mb-8">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Video className="w-6 h-6 text-blue-400" />
+                <span className="text-lg md:text-2xl font-semibold text-white/90">{t("home.hero_line1")}</span>
+              </div>
+              <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                <span className="bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent">Awaken</span> your willpower
+              </div>
+              <div className="text-base md:text-xl font-medium text-gray-200">{t("home.hero_line3")}</div>
+            </div>
+          )}
           {/* 标签 - 多彩风格 */}
           <div className="flex flex-wrap justify-center gap-2 pt-2">
             <div className="bg-blue-600/15 border border-blue-600/25 rounded-full px-3 py-1.5">

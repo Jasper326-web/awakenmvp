@@ -558,10 +558,9 @@ const translations = {
     "auth.continue_as_guest": "Continue as Guest",
 
     // === 首页 Hero 区相关 ===
-    "home.hero_slogan": "全球首个支持视频打卡的自律平台",
-    "home.hero_value1": "唤醒你的意志力",
-    "home.hero_value2_pre": "用东方智慧记录你的成长之路",
-    "home.hero_value2_emph": "东方传统",
+    "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
+    "home.hero_line2": "💡 Awaken your willpower ignite the fire of self-growth",
+    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
     "home.please_login": "请先登录以使用此功能",
   },
   en: {
@@ -1149,10 +1148,9 @@ const translations = {
     "auth.continue_as_guest": "Continue as Guest",
 
     // === 首页 Hero 区相关 ===
-    "home.hero_slogan": "The world's first self-discipline platform with video check-ins",
-    "home.hero_value1": "Awaken your willpower",
-    "home.hero_value2_pre": "Track your journey with wisdom from",
-    "home.hero_value2_emph": "Eastern traditions",
+    "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
+    "home.hero_line2": "💡 Awaken your willpower ignite the fire of self-growth",
+    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
     "home.please_login": "Please log in to use this feature",
   },
 }
