@@ -2,11 +2,11 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Star, Send, MessageSquare, CheckCircle } from "lucide-react"
+import { Star, Send, MessageSquare, CheckCircle, Upload, X, Image as ImageIcon } from "lucide-react"
 import { useLanguage } from "@/lib/lang-context"
 import { supabase } from "@/lib/supabaseClient"
 
@@ -16,8 +16,12 @@ export default function FeedbackSection() {
   const [hoveredRating, setHoveredRating] = useState(0)
   const [email, setEmail] = useState("")
   const [feedback, setFeedback] = useState("")
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const content = {
     zh: {
@@ -28,6 +32,11 @@ export default function FeedbackSection() {
       feedbackLabel: t("feedback.feedback_label"),
       feedbackPlaceholder: t("feedback.feedback_placeholder"),
       ratingLabel: t("feedback.rating_label"),
+      imageLabel: t("feedback.image_label"),
+      imagePlaceholder: t("feedback.image_placeholder"),
+      imageUploading: t("feedback.image_uploading"),
+      imageUploadFailed: t("feedback.image_upload_failed"),
+      imageRemove: t("feedback.image_remove"),
       submitButton: t("feedback.submit"),
       submittingButton: t("feedback.submitting"),
       successTitle: t("feedback.success_title"),
@@ -42,6 +51,11 @@ export default function FeedbackSection() {
       feedbackLabel: t("feedback.feedback_label"),
       feedbackPlaceholder: t("feedback.feedback_placeholder"),
       ratingLabel: t("feedback.rating_label"),
+      imageLabel: t("feedback.image_label"),
+      imagePlaceholder: t("feedback.image_placeholder"),
+      imageUploading: t("feedback.image_uploading"),
+      imageUploadFailed: t("feedback.image_upload_failed"),
+      imageRemove: t("feedback.image_remove"),
       submitButton: t("feedback.submit"),
       submittingButton: t("feedback.submitting"),
       successTitle: t("feedback.success_title"),
@@ -51,6 +65,77 @@ export default function FeedbackSection() {
   }
 
   const currentContent = content[language]
+
+  const handleImageUpload = async (file: File): Promise<string | null> => {
+    if (!file) return null
+
+    // 检查文件大小（5MB限制）
+    if (file.size > 5 * 1024 * 1024) {
+      alert("图片大小不能超过5MB")
+      return null
+    }
+
+    // 检查文件类型
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      alert("只支持 JPG、PNG、GIF、WebP 格式的图片")
+      return null
+    }
+
+    try {
+      setIsUploadingImage(true)
+      
+      // 生成唯一文件名
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      
+      // 上传到Supabase存储
+      const { data, error } = await supabase.storage
+        .from('feedback-images')
+        .upload(fileName, file)
+
+      if (error) {
+        console.error("图片上传失败:", error)
+        alert(currentContent.imageUploadFailed)
+        return null
+      }
+
+      // 获取公共URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('feedback-images')
+        .getPublicUrl(fileName)
+
+      return publicUrl
+    } catch (error) {
+      console.error("图片上传出错:", error)
+      alert(currentContent.imageUploadFailed)
+      return null
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      
+      // 创建预览
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,11 +149,22 @@ export default function FeedbackSection() {
         data: { user },
       } = await supabase.auth.getUser()
 
+      // 如果有图片，先上传图片
+      let imageUrl = null
+      if (imageFile) {
+        imageUrl = await handleImageUpload(imageFile)
+        if (!imageUrl) {
+          setIsSubmitting(false)
+          return
+        }
+      }
+
       const feedbackData = {
         user_id: user?.id || null,
         email: email.trim() || null,
         rating: rating || null,
         feedback: feedback.trim(),
+        image_url: imageUrl,
         created_at: new Date().toISOString(),
       }
 
@@ -85,6 +181,8 @@ export default function FeedbackSection() {
       setRating(0)
       setEmail("")
       setFeedback("")
+      setImageFile(null)
+      setImagePreview(null)
     } catch (error) {
       console.error("提交反馈时出错:", error)
       alert("提交失败，请稍后重试")
@@ -98,6 +196,8 @@ export default function FeedbackSection() {
     setRating(0)
     setEmail("")
     setFeedback("")
+    setImageFile(null)
+    setImagePreview(null)
   }
 
   if (isSubmitted) {
@@ -192,6 +292,45 @@ export default function FeedbackSection() {
                 required
                 className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 resize-none"
               />
+            </div>
+
+            {/* 图片上传 */}
+            <div className="space-y-3">
+              <Label htmlFor="image" className="text-base font-medium text-white">
+                {currentContent.imageLabel}
+              </Label>
+              <div className="flex items-center space-x-3">
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  ref={fileInputRef}
+                />
+                                 <button
+                   type="button"
+                   onClick={() => fileInputRef.current?.click()}
+                   className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg transition-all duration-200 flex items-center"
+                   disabled={isUploadingImage}
+                 >
+                   <Upload className="w-5 h-5 mr-2" />
+                   {isUploadingImage ? currentContent.imageUploading : currentContent.imagePlaceholder}
+                 </button>
+                {imagePreview && (
+                  <div className="relative w-16 h-16 rounded-md overflow-hidden">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-0 right-0 bg-red-500/20 text-white rounded-full p-1 hover:bg-red-500/30"
+                      title={currentContent.imageRemove}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* 提交按钮 */}

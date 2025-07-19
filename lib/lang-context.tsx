@@ -23,7 +23,8 @@ const translations = {
     "nav.profile": "我的",
     "nav.signin": "登录",
     "nav.signup": "注册",
-    "nav.signout": "登出",
+    "nav.signout": "退出登录",
+    "nav.settings": "设置",
 
     // Hero section
     "hero.title": "戒色是你唯一选择",
@@ -69,7 +70,7 @@ const translations = {
     "home.awaken_title": "Awaken 戒色助手",
     "home.awaken_subtitle": "Awaken your willpower. Track your journey with wisdom from Eastern traditions.",
     "home.awaken_slogan": "✨ 30天助你清除色瘾，信任与坚持定将逆转命运！ ✨",
-    "home.start_test_button": "开启用户测试",
+    "home.start_test_button": "开始测试",
     "home.world_first": "世界上第一个支持免费视频打卡的",
     "home.buddhist": "佛学",
     "home.nofap_site": "戒色网站",
@@ -91,7 +92,8 @@ const translations = {
     "home.tag_video_checkin": "视频打卡",
     "home.tag_free_use": "免费使用",
     "home.tag_buddhist": "佛学断念",
-    "home.tag_gpt": "GPT-3.5 Turbo",
+    "home.tag_gpt": "GPT助教",
+    "home.login_guide_title": "立即登录以开始专业测试，获得个性报告及戒色方案",
 
     // === 新增隐私政策相关 ===
     "privacy.title": "隐私政策",
@@ -263,6 +265,11 @@ const translations = {
     "feedback.success_title": "感谢您的反馈",
     "feedback.success_message": "我们已收到您的意见，将认真考虑并持续改进。",
     "feedback.submit_another": "提交其他反馈",
+    "feedback.image_label": "上传图片（可选）",
+    "feedback.image_placeholder": "点击上传图片，支持 JPG、PNG、GIF、WebP 格式，最大 5MB",
+    "feedback.image_uploading": "上传中...",
+    "feedback.image_upload_failed": "图片上传失败",
+    "feedback.image_remove": "移除图片",
 
     // === 新增定价页相关 ===
     "pricing.title": "定价与会员方案",
@@ -644,6 +651,7 @@ const translations = {
     "nav.signin": "Log in",
     "nav.signup": "Sign Up",
     "nav.signout": "Sign Out",
+    "nav.settings": "Settings",
 
     // Hero section
     "hero.title": "NoFap is Your Only Choice",
@@ -713,7 +721,10 @@ const translations = {
     "home.tag_video_checkin": "Video Check-in",
     "home.tag_free_use": "Free Use",
     "home.tag_buddhist": "Buddhist NoFap",
-    "home.tag_gpt": "GPT-3.5 Turbo",
+    "home.tag_gpt": "GPT Assistant",
+    "home.login_guide_title": "Login now to start professional testing and get personalized reports and NoFap plans",
+    "home.test_guide_title": "Start professional testing to get personalized reports and NoFap plans",
+    "home.start_test_button": "Start Test",
 
     // === 新增隐私政策相关 ===
     "privacy.title": "Privacy Policy",
@@ -922,6 +933,11 @@ const translations = {
     "feedback.success_title": "Thank you for your feedback",
     "feedback.success_message": "We have received your opinion and will carefully consider it for continuous improvement.",
     "feedback.submit_another": "Submit Another Feedback",
+    "feedback.image_label": "Upload Image (Optional)",
+    "feedback.image_placeholder": "Click to upload image, supports JPG, PNG, GIF, WebP formats, max 5MB",
+    "feedback.image_uploading": "Uploading...",
+    "feedback.image_upload_failed": "Image upload failed",
+    "feedback.image_remove": "Remove Image",
 
     // === 新增定价页相关 ===
     "pricing.title": "Pricing & Membership Plans",

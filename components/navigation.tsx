@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { authService } from "@/lib/auth"
 import type { User } from "@supabase/supabase-js"
-import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown } from "lucide-react"
+import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown, Settings } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -225,6 +225,13 @@ export default function Navigation() {
                     </div>
                   )}
                   <DropdownMenuSeparator className="bg-slate-700" />
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile")}
+                    className="cursor-pointer text-slate-300 hover:text-white hover:bg-slate-700 text-xs"
+                  >
+                    <Settings className="mr-2 h-3.5 w-3.5" />
+                    <span>{t("nav.settings")}</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleSignOut}
                     className="cursor-pointer text-slate-300 hover:text-white hover:bg-slate-700 text-xs"

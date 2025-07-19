@@ -146,6 +146,7 @@ export default function PlansPage() {
   const [loading, setLoading] = useState(true)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
+
   // 弹窗状态
   const [audioModalOpen, setAudioModalOpen] = useState(false)
   const [pdfModalOpen, setPdfModalOpen] = useState(false)
@@ -324,6 +325,8 @@ export default function PlansPage() {
     }
   }
 
+
+
   const loadUserStats = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -380,41 +383,43 @@ export default function PlansPage() {
         break
     }
 
-    // 标记任务为已完成并写入数据库
-    try {
-      const today = new Date().toISOString().slice(0, 10)
-      
-      console.log("[handleTaskAction] 写入数据库:", {
-        user_id: user.id,
-        task_id: task.id,
-        date: today
-      })
-      
-      // 写入数据库
-      const { error } = await supabase.from("user_task_progress").upsert({
-        user_id: user.id,
-        task_id: task.id, // 使用字符串类型的task.id
-        date: today,
-        completed: true,
-        completed_at: new Date().toISOString(),
-      }, { onConflict: ["user_id", "task_id", "date"] })
+    // 只有登录用户才写入数据库
+    if (user) {
+      try {
+        const today = new Date().toISOString().slice(0, 10)
+        
+        console.log("[handleTaskAction] 写入数据库:", {
+          user_id: user.id,
+          task_id: task.id,
+          date: today
+        })
+        
+        // 写入数据库
+        const { error } = await supabase.from("user_task_progress").upsert({
+          user_id: user.id,
+          task_id: task.id, // 使用字符串类型的task.id
+          date: today,
+          completed: true,
+          completed_at: new Date().toISOString(),
+        }, { onConflict: ["user_id", "task_id", "date"] })
 
-      if (error) {
+        if (error) {
+          console.error("保存任务完成状态失败:", error)
+          return
+        }
+
+        console.log("[handleTaskAction] 数据库写入成功，更新前端状态")
+      } catch (error) {
         console.error("保存任务完成状态失败:", error)
-        return
       }
-
-      console.log("[handleTaskAction] 数据库写入成功，更新前端状态")
-
-      // 更新前端状态
-      setCompletedTasks(prev => {
-        const newSet = new Set([...prev, task.id])
-        localStorage.setItem('completedTasks', JSON.stringify(Array.from(newSet)))
-        return newSet
-      })
-    } catch (error) {
-      console.error("保存任务完成状态失败:", error)
     }
+
+    // 更新前端状态（登录和未登录用户都适用）
+    setCompletedTasks(prev => {
+      const newSet = new Set([...prev, task.id])
+      localStorage.setItem('completedTasks', JSON.stringify(Array.from(newSet)))
+      return newSet
+    })
   }
 
   const toggleTaskCompletion = async (taskId: string) => {
@@ -428,40 +433,43 @@ export default function PlansPage() {
         today
       })
 
-      if (isCurrentlyCompleted) {
-        // 取消任务完成状态
-        console.log("[toggleTaskCompletion] 取消任务完成状态")
-        const { error } = await supabase
-          .from("user_task_progress")
-          .delete()
-          .eq("user_id", user.id)
-          .eq("task_id", taskId)
-          .eq("date", today)
+      // 只有登录用户才操作数据库
+      if (user) {
+        if (isCurrentlyCompleted) {
+          // 取消任务完成状态
+          console.log("[toggleTaskCompletion] 取消任务完成状态")
+          const { error } = await supabase
+            .from("user_task_progress")
+            .delete()
+            .eq("user_id", user.id)
+            .eq("task_id", taskId)
+            .eq("date", today)
 
-        if (error) {
-          console.error("取消任务完成状态失败:", error)
-          return
-        }
-        console.log("[toggleTaskCompletion] 数据库删除成功")
-      } else {
-        // 标记任务为已完成
-        console.log("[toggleTaskCompletion] 标记任务为已完成")
-        const { error } = await supabase.from("user_task_progress").upsert({
-          user_id: user.id,
-          task_id: taskId, // 使用字符串类型的taskId
-          date: today,
-          completed: true,
-          completed_at: new Date().toISOString(),
-        }, { onConflict: ["user_id", "task_id", "date"] })
+          if (error) {
+            console.error("取消任务完成状态失败:", error)
+            return
+          }
+          console.log("[toggleTaskCompletion] 数据库删除成功")
+        } else {
+          // 标记任务为已完成
+          console.log("[toggleTaskCompletion] 标记任务为已完成")
+          const { error } = await supabase.from("user_task_progress").upsert({
+            user_id: user.id,
+            task_id: taskId, // 使用字符串类型的taskId
+            date: today,
+            completed: true,
+            completed_at: new Date().toISOString(),
+          }, { onConflict: ["user_id", "task_id", "date"] })
 
-        if (error) {
-          console.error("保存任务完成状态失败:", error)
-          return
+          if (error) {
+            console.error("保存任务完成状态失败:", error)
+            return
+          }
+          console.log("[toggleTaskCompletion] 数据库写入成功")
         }
-        console.log("[toggleTaskCompletion] 数据库写入成功")
       }
 
-      // 更新前端状态
+      // 更新前端状态（登录和未登录用户都适用）
       setCompletedTasks((prev) => {
         const newSet = new Set(prev)
         if (newSet.has(taskId)) {
@@ -521,7 +529,7 @@ export default function PlansPage() {
       <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseCompleteTest")}</div>
       <button
         className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
-        onClick={() => router.push("/test")}
+        onClick={() => router.push("/addiction-test")}
       >
         {t("common.takeTest")}
       </button>
@@ -551,10 +559,10 @@ export default function PlansPage() {
         {/* 未登录提示 */}
         {!user && <NotLoggedInBanner />}
         
-        {/* 未完成测试提示 */}
+        {/* 已登录但未完成测试提示 */}
         {user && !testData && <NoTestBanner />}
 
-        {/* 测试结果概览 - 未登录时禁用 */}
+        {/* 测试结果概览 - 仅登录用户可见 */}
         {user && testData && (
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-8">
             <CardHeader>
@@ -646,7 +654,7 @@ export default function PlansPage() {
           </Card>
         </div>
 
-        {/* 任务区域 - 未登录时显示前两个任务，其余用遮罩 */}
+        {/* 任务区域 - 仅登录用户可见 */}
         {user && testData && (
           <>
             {/* 免费任务 */}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Target, TestTube, Sparkles, RefreshCw, Flame, Users, Calendar, FileText, Video, Headphones, BookOpen, Brain, Heart, Activity } from "lucide-react"
+import { Target, TestTube, Sparkles, RefreshCw, Flame, Users, Calendar, FileText, Video, Headphones, BookOpen, Brain, Heart, Activity, UserIcon } from "lucide-react"
 import { authService } from "@/lib/auth"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter } from "next/navigation"
@@ -63,7 +63,17 @@ export default function HomePage() {
       }
     })
 
-    return () => subscription.unsubscribe()
+    // 监听打开登录弹窗事件
+    const handleOpenAuthModal = () => {
+      setAuthModalOpen(true)
+    }
+    
+    window.addEventListener('openAuthModal', handleOpenAuthModal)
+    
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('openAuthModal', handleOpenAuthModal)
+    }
   }, [])
 
   const loadTestData = async (userId: string) => {
@@ -161,6 +171,32 @@ export default function HomePage() {
             </div>
             <div className="bg-red-600/15 border border-red-600/25 rounded-full px-3 py-1.5">
               <span className="text-red-400 text-xs font-medium">{t("home.tag_gpt")}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* 登录引导区 */}
+        <section className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-2xl p-8 backdrop-blur-sm">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  {t("home.login_guide_title")}
+                </h2>
+              </div>
+              <div className="flex justify-center">
+                <Button
+                  size="lg"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                  onClick={() => router.push("/addiction-test")}
+                >
+                  <Target className="w-5 h-5 mr-2" />
+                  {t("home.start_test_button")}
+                </Button>
+              </div>
             </div>
           </div>
         </section>
