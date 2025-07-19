@@ -626,8 +626,8 @@ export default function PlansPage() {
                               <Lock className="w-4 h-4 text-white" />
                             </div>
                             <div>
-                              <h3 className="font-medium text-white">Premium Tasks</h3>
-                              <p className="text-sm text-gray-300">Unlock more tasks</p>
+                              <h3 className="font-medium text-white">{t("plans.premium_tasks")}</h3>
+                              <p className="text-sm text-gray-300">{t("plans.unlock_more_tasks")}</p>
                             </div>
                           </div>
                         </div>
@@ -647,7 +647,7 @@ export default function PlansPage() {
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
                   <CheckCircle className="w-6 h-6 mr-2" />
-                  Sample Tasks
+                  {t("plans.sample_tasks")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -659,8 +659,8 @@ export default function PlansPage() {
                           <CheckCircle className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                          <h3 className="font-medium text-white">Sample Task {index}</h3>
-                          <p className="text-sm text-gray-300">This is a sample task description</p>
+                          <h3 className="font-medium text-white">{t("plans.sample_task")} {index}</h3>
+                          <p className="text-sm text-gray-300">{t("plans.sample_task_desc")}</p>
                         </div>
                       </div>
                       <Button
@@ -669,7 +669,7 @@ export default function PlansPage() {
                         className="border-white/30 text-white bg-transparent"
                         disabled
                       >
-                        Sample
+                        {t("plans.sample_button")}
                       </Button>
                     </div>
                   ))}

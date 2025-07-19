@@ -189,6 +189,17 @@ const translations = {
     "plans.premium_tasks": "会员专享任务",
     "plans.advanced_tasks": "个高级任务",
     "plans.premium_exclusive_tasks": "会员专享任务",
+    "plans.days": "天",
+    "plans.sample_tasks": "示例任务",
+    "plans.sample_task": "示例任务",
+    "plans.sample_task_desc": "这是一个示例任务描述",
+    "plans.sample_button": "示例",
+    "plans.premium_features": "会员专享功能",
+    "plans.personalized_guidance": "个性化指导",
+    "plans.customized_plan": "定制化方案",
+    "plans.ai_analysis": "AI分析",
+    "plans.online_counseling": "在线咨询",
+    "plans.progress_tracking": "进度跟踪",
 
     // === 新增任务相关 ===
     "task.daily_checkin": "每日打卡",
@@ -562,7 +573,7 @@ const translations = {
     "home.hero_willpower": "",
     "home.hero_line1": "🌏 全球首个支持视频打卡的自律平台",
     "home.hero_line2": "唤醒你的意志力",
-    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
+    "home.hero_line3": "以东方智慧，见证你的每一次改变",
 
     // === 新增通用提示相关 ===
     "common.loadFailed": "加载失败",
@@ -579,6 +590,23 @@ const translations = {
     // === 新增定价页面相关 ===
     "pricing.benefit.free.professional_test": "专业色瘾测试",
     "pricing.benefit.free.professional_analysis": "专业色瘾程度分析",
+
+    // === 新增个人资料相关 ===
+    "profile.total_days": "总天数",
+    "profile.features": "个人资料功能",
+    "profile.feature_daily_checkin": "每日打卡",
+    "profile.feature_daily_checkin_desc": "记录您的进度",
+    "profile.feature_plans": "戒色方案",
+    "profile.feature_plans_desc": "个性化指导",
+    "profile.feature_leaderboard": "排行榜",
+    "profile.feature_leaderboard_desc": "查看排名",
+    "profile.feature_ai_coach": "AI教练",
+    "profile.feature_ai_coach_desc": "智能咨询",
+    "profile.feature_community": "社区",
+    "profile.feature_community_desc": "与他人联系",
+    "profile.feature_settings": "设置",
+    "profile.feature_settings_desc": "管理您的账户",
+    "plans.unlock_more_tasks": "解锁更多任务",
   },
   en: {
     // Navigation
@@ -759,6 +787,17 @@ const translations = {
     "plans.premium_tasks": "Premium Exclusive Tasks",
     "plans.advanced_tasks": "advanced tasks",
     "plans.premium_exclusive_tasks": "Premium Exclusive Tasks",
+    "plans.days": "days",
+    "plans.sample_tasks": "Sample Tasks",
+    "plans.sample_task": "Sample Task",
+    "plans.sample_task_desc": "This is a sample task description",
+    "plans.sample_button": "Sample",
+    "plans.premium_features": "Premium Exclusive Features",
+    "plans.personalized_guidance": "Personalized Guidance",
+    "plans.customized_plan": "Customized NoFap plan based on test results",
+    "plans.ai_analysis": "AI intelligent analysis and suggestions",
+    "plans.online_counseling": "Professional online psychological counseling",
+    "plans.progress_tracking": "Personal progress tracking and analysis reports",
 
     // === 新增任务相关 ===
     "task.daily_checkin": "Daily Check-in",
@@ -1169,7 +1208,7 @@ const translations = {
     "home.hero_willpower": "",
     "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
     "home.hero_line2": "Awaken your willpower",
-    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
+    "home.hero_line3": "以东方智慧，见证你的每一次改变",
 
     // === 新增通用提示相关 ===
     "common.loadFailed": "Load Failed",
@@ -1186,6 +1225,23 @@ const translations = {
     // === 新增定价页面相关 ===
     "pricing.benefit.free.professional_test": "Professional Addiction Test",
     "pricing.benefit.free.professional_analysis": "Professional Addiction Level Analysis",
+
+    // === 新增个人资料相关 ===
+    "profile.total_days": "Total Days",
+    "profile.features": "Profile Features",
+    "profile.feature_daily_checkin": "Daily Check-in",
+    "profile.feature_daily_checkin_desc": "Record your progress",
+    "profile.feature_plans": "NoFap Plans",
+    "profile.feature_plans_desc": "Personalized guidance",
+    "profile.feature_leaderboard": "Leaderboard",
+    "profile.feature_leaderboard_desc": "View rankings",
+    "profile.feature_ai_coach": "AI Coach",
+    "profile.feature_ai_coach_desc": "Intelligent consultation",
+    "profile.feature_community": "Community",
+    "profile.feature_community_desc": "Connect with others",
+    "profile.feature_settings": "Settings",
+    "profile.feature_settings_desc": "Manage your account",
+    "plans.unlock_more_tasks": "Unlock more tasks",
   },
 }
 

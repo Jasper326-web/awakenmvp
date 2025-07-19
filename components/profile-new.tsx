@@ -438,7 +438,7 @@ export default function ProfileNew() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Trophy className="h-5 w-5" />
-                Current Streak
+                {t("profile.current_streak")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -449,7 +449,7 @@ export default function ProfileNew() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Star className="h-5 w-5" />
-                Best Streak
+                {t("profile.max_streak")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -460,7 +460,7 @@ export default function ProfileNew() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Activity className="h-5 w-5" />
-                Total Days
+                {t("profile.total_days")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -474,18 +474,18 @@ export default function ProfileNew() {
           <CardHeader>
             <CardTitle className="text-white flex items-center">
               <User className="w-6 h-6 mr-2" />
-              Profile Features
+              {t("profile.features")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-50">
               {[
-                { icon: Calendar, title: "Daily Check-in", desc: "Record your progress" },
-                { icon: Target, title: "NoFap Plans", desc: "Personalized guidance" },
-                { icon: Trophy, title: "Leaderboard", desc: "View rankings" },
-                { icon: Brain, title: "AI Coach", desc: "Intelligent consultation" },
-                { icon: Users, title: "Community", desc: "Connect with others" },
-                { icon: Settings, title: "Settings", desc: "Manage your account" }
+                { icon: Calendar, title: t("profile.feature_daily_checkin"), desc: t("profile.feature_daily_checkin_desc") },
+                { icon: Target, title: t("profile.feature_plans"), desc: t("profile.feature_plans_desc") },
+                { icon: Trophy, title: t("profile.feature_leaderboard"), desc: t("profile.feature_leaderboard_desc") },
+                { icon: Brain, title: t("profile.feature_ai_coach"), desc: t("profile.feature_ai_coach_desc") },
+                { icon: Users, title: t("profile.feature_community"), desc: t("profile.feature_community_desc") },
+                { icon: Settings, title: t("profile.feature_settings"), desc: t("profile.feature_settings_desc") }
               ].map((item, index) => (
                 <div key={index} className="flex items-center space-x-3 p-4 bg-white/5 rounded-lg">
                   <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
