@@ -254,27 +254,45 @@ export default function PlansPage() {
 
   // 拉取今日任务完成状态
   const loadCompletedTasks = async (userId: string, todayTasks: any[]) => {
-    const today = new Date().toISOString().slice(0, 10)
-    const { data, error } = await supabase
-      .from("user_task_progress")
-      .select("task_id")
-      .eq("user_id", userId)
-      .eq("date", today)
-      .eq("completed", true)
-    if (error) return
-    // 任务id兼容字符串/数字
-    // 将completedSet强制为Set<string>
-    const completedSet = new Set<string>((data || []).map((row: any) => String(row.task_id)))
-    setCompletedTasks(completedSet)
+    try {
+      const today = new Date().toISOString().slice(0, 10)
+      
+      console.log("[loadCompletedTasks] 开始加载用户任务完成状态:", userId, today)
+      
+      // 从数据库获取今日已完成的任务
+      const { data: completedTasksData, error } = await supabase
+        .from("user_task_progress")
+        .select("task_id, completed")
+        .eq("user_id", userId)
+        .eq("date", today)
+        .eq("completed", true)
+
+      if (error) {
+        console.error("获取已完成任务失败:", error)
+        return
+      }
+
+      console.log("[loadCompletedTasks] 数据库返回的已完成任务:", completedTasksData)
+
+      // 将数据库中的已完成任务ID转换为Set
+      const completedTaskIds = new Set<string>(completedTasksData.map((item: any) => String(item.task_id)))
+      console.log("[loadCompletedTasks] 设置已完成任务集合:", Array.from(completedTaskIds))
+      
+      setCompletedTasks(completedTaskIds)
+      
+      // 同时保存到localStorage作为缓存
+      localStorage.setItem('completedTasks', JSON.stringify(Array.from(completedTaskIds)))
+    } catch (error) {
+      console.error("加载已完成任务失败:", error)
+    }
   }
 
   // 修改loadUserData，拉取完成状态
   const loadUserData = async () => {
     try {
+      setLoading(true)
       const currentUser = await authService.getCurrentUser()
-
       if (!currentUser) {
-        // 移除 alert 和 router.push，改为设置未登录状态
         setUser(null)
         setLoading(false)
         return
@@ -282,30 +300,25 @@ export default function PlansPage() {
 
       setUser(currentUser)
 
-      // 检查是否完成测试
-      const { data: testResult } = await supabase
+      // 获取用户测试数据
+      const { data: testDataResult, error: testError } = await supabase
         .from("addiction_tests")
         .select("*")
         .eq("user_id", currentUser.id)
         .order("created_at", { ascending: false })
         .limit(1)
+        .single()
 
-      if (!testResult || testResult.length === 0) {
-        // 移除 alert，改为友好的提示
-        setTestData(null)
-        setLoading(false)
-        return
+      if (testDataResult) {
+        setTestData(testDataResult)
+        const tasks = generateTasksByAddictionLevel(testDataResult.addiction_level, t)
+        setTodayTasks(tasks)
+        await loadCompletedTasks(currentUser.id, tasks)
       }
 
-      setTestData(testResult[0])
-
-      // 加载用户统计
       await loadUserStats(currentUser.id)
-
-      // 根据测试结果生成任务
-      await loadCompletedTasks(currentUser.id, generateTasksByAddictionLevel(testResult[0].addiction_level, t))
     } catch (error) {
-      console.error("Failed to load user data:", error)
+      console.error("加载用户数据失败:", error)
     } finally {
       setLoading(false)
     }
@@ -338,6 +351,14 @@ export default function PlansPage() {
       return
     }
 
+    // 如果任务已经完成，直接返回
+    if (completedTasks.has(task.id)) {
+      console.log("[handleTaskAction] 任务已完成，跳过:", task.id)
+      return
+    }
+
+    console.log("[handleTaskAction] 开始处理任务:", task.id)
+
     switch (task.action) {
       case "redirect":
         router.push(task.target)
@@ -359,36 +380,116 @@ export default function PlansPage() {
         break
     }
 
-    // 写入user_task_progress
-    if (!completedTasks.has(task.id)) {
+    // 标记任务为已完成并写入数据库
+    try {
       const today = new Date().toISOString().slice(0, 10)
-      await supabase.from("user_task_progress").upsert({
+      
+      console.log("[handleTaskAction] 写入数据库:", {
         user_id: user.id,
         task_id: task.id,
+        date: today
+      })
+      
+      // 写入数据库
+      const { error } = await supabase.from("user_task_progress").upsert({
+        user_id: user.id,
+        task_id: task.id, // 使用字符串类型的task.id
         date: today,
         completed: true,
         completed_at: new Date().toISOString(),
       }, { onConflict: ["user_id", "task_id", "date"] })
-      setCompletedTasks(prev => new Set([...prev, task.id]))
+
+      if (error) {
+        console.error("保存任务完成状态失败:", error)
+        return
+      }
+
+      console.log("[handleTaskAction] 数据库写入成功，更新前端状态")
+
+      // 更新前端状态
+      setCompletedTasks(prev => {
+        const newSet = new Set([...prev, task.id])
+        localStorage.setItem('completedTasks', JSON.stringify(Array.from(newSet)))
+        return newSet
+      })
+    } catch (error) {
+      console.error("保存任务完成状态失败:", error)
     }
   }
 
-  const toggleTaskCompletion = (taskId: string) => {
-    setCompletedTasks((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(taskId)) {
-        newSet.delete(taskId)
+  const toggleTaskCompletion = async (taskId: string) => {
+    try {
+      const today = new Date().toISOString().slice(0, 10)
+      const isCurrentlyCompleted = completedTasks.has(taskId)
+
+      console.log("[toggleTaskCompletion] 切换任务状态:", {
+        taskId,
+        isCurrentlyCompleted,
+        today
+      })
+
+      if (isCurrentlyCompleted) {
+        // 取消任务完成状态
+        console.log("[toggleTaskCompletion] 取消任务完成状态")
+        const { error } = await supabase
+          .from("user_task_progress")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("task_id", taskId)
+          .eq("date", today)
+
+        if (error) {
+          console.error("取消任务完成状态失败:", error)
+          return
+        }
+        console.log("[toggleTaskCompletion] 数据库删除成功")
       } else {
-        newSet.add(taskId)
+        // 标记任务为已完成
+        console.log("[toggleTaskCompletion] 标记任务为已完成")
+        const { error } = await supabase.from("user_task_progress").upsert({
+          user_id: user.id,
+          task_id: taskId, // 使用字符串类型的taskId
+          date: today,
+          completed: true,
+          completed_at: new Date().toISOString(),
+        }, { onConflict: ["user_id", "task_id", "date"] })
+
+        if (error) {
+          console.error("保存任务完成状态失败:", error)
+          return
+        }
+        console.log("[toggleTaskCompletion] 数据库写入成功")
       }
-      return newSet
-    })
+
+      // 更新前端状态
+      setCompletedTasks((prev) => {
+        const newSet = new Set(prev)
+        if (newSet.has(taskId)) {
+          newSet.delete(taskId)
+          console.log("[toggleTaskCompletion] 从前端状态中移除任务:", taskId)
+        } else {
+          newSet.add(taskId)
+          console.log("[toggleTaskCompletion] 向前端状态中添加任务:", taskId)
+        }
+        localStorage.setItem('completedTasks', JSON.stringify(Array.from(newSet)))
+        return newSet
+      })
+    } catch (error) {
+      console.error("切换任务完成状态失败:", error)
+    }
   }
+
+  // 检查任务是否已完成
+  const isTaskCompleted = (taskId: string) => {
+    return completedTasks.has(taskId)
+  }
+
+  // 获取今日已完成任务数量
+  const completedCount = completedTasks.size
 
   // 获取免费任务和付费任务
   const freeTasks = todayTasks.filter(task => task.isFree)
   const premiumTasks = todayTasks.filter(task => !task.isFree)
-  const completedCount = completedTasks.size
   const totalTasks = todayTasks.length
 
   // 在 useLanguage 解构后添加 addictionLevelText 变量
@@ -533,6 +634,14 @@ export default function PlansPage() {
               <div className="text-3xl font-bold mb-2">
                 {user ? `${completedCount}/${totalTasks}` : '--'}
               </div>
+              {user && (
+                <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                  <div 
+                    className="bg-yellow-400 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: `${totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0}%` }}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -541,33 +650,44 @@ export default function PlansPage() {
         {user && testData && (
           <>
             {/* 免费任务 */}
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-6">
+            <Card className="bg-purple-100/20 backdrop-blur-sm border-purple-300/30 text-white mb-6">
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
-                  <CheckCircle className="w-6 h-6 mr-2" />
+                  <CheckCircle className="w-6 h-6 mr-2 text-green-400" />
                   {t("plans.free_tasks")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {freeTasks.map((task, index) => (
-                    <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                                                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                           {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
-                         </div>
-                        <div>
-                          <h3 className="font-medium text-white">{task.title}</h3>
-                          <p className="text-sm text-gray-300">{task.description}</p>
+                    <div key={task.id} className="flex flex-col p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                          {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-white">{task.title.replace(/\{count\}/g, '')}</h3>
+                          <p className="text-sm text-purple-200">{task.description}</p>
                         </div>
                       </div>
                       <Button
-                        variant="outline"
                         size="sm"
-                        className="border-white/30 text-white bg-transparent hover:bg-white/10"
-                        onClick={() => handleTaskAction(task)}
+                        className={`w-full ${
+                          isTaskCompleted(task.id) 
+                            ? "bg-green-600 hover:bg-green-700 text-white" 
+                            : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                        }`}
+                        onClick={() => {
+                          if (isTaskCompleted(task.id)) {
+                            // 如果任务已完成，点击取消完成状态
+                            toggleTaskCompletion(task.id)
+                          } else {
+                            // 如果任务未完成，点击执行任务并标记为完成
+                            handleTaskAction(task)
+                          }
+                        }}
                       >
-                        {task.buttonText}
+                        {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
                       </Button>
                     </div>
                   ))}
@@ -575,44 +695,55 @@ export default function PlansPage() {
               </CardContent>
             </Card>
 
-            {/* 会员任务 - 显示前两个，其余用遮罩 */}
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-6">
+            {/* 会员任务 */}
+            <Card className="bg-purple-100/20 backdrop-blur-sm border-purple-300/30 text-white mb-6">
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
-                  <Crown className="w-6 h-6 mr-2" />
+                  <Crown className="w-6 h-6 mr-2 text-yellow-400" />
                   {t("plans.premium_tasks")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {premiumTasks.slice(0, 2).map((task, index) => (
-                    <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                                                 <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                           {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
-                         </div>
-                        <div>
-                          <h3 className="font-medium text-white">{task.title}</h3>
-                          <p className="text-sm text-gray-300">{task.description}</p>
+                    <div key={task.id} className="flex flex-col p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                          {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-white">{task.title.replace(/\{count\}/g, '')}</h3>
+                          <p className="text-sm text-purple-200">{task.description}</p>
                         </div>
                       </div>
                       <Button
-                        variant="outline"
                         size="sm"
-                        className="border-white/30 text-white bg-transparent hover:bg-white/10"
-                        onClick={() => handleTaskAction(task)}
+                        className={`w-full ${
+                          isTaskCompleted(task.id) 
+                            ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
+                            : "bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
+                        }`}
+                        onClick={() => {
+                          if (isTaskCompleted(task.id)) {
+                            // 如果任务已完成，点击取消完成状态
+                            toggleTaskCompletion(task.id)
+                          } else {
+                            // 如果任务未完成，点击执行任务并标记为完成
+                            handleTaskAction(task)
+                          }
+                        }}
                       >
-                        {task.buttonText}
+                        {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
                       </Button>
                     </div>
                   ))}
-                  {premiumTasks.length > 2 && (
-                    <div className="relative p-4 bg-white/5 rounded-lg">
+                  {premiumTasks.length > 2 && !isPremium && (
+                    <div className="relative p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                         <div className="text-center">
                           <div className="text-white text-lg mb-2">{t("common.pleaseLoginToUse")}</div>
                           <button
-                            className="px-4 py-2 rounded bg-coral text-white font-medium hover:bg-coral/90 transition"
+                            className="px-4 py-2 rounded bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-medium hover:from-yellow-700 hover:to-orange-700 transition"
                             onClick={() => setAuthModalOpen(true)}
                           >
                             {t("common.loginButton")}
@@ -620,20 +751,53 @@ export default function PlansPage() {
                         </div>
                       </div>
                       <div className="opacity-50">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                        <div className="flex flex-col">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
                               <Lock className="w-4 h-4 text-white" />
                             </div>
-                            <div>
+                            <div className="flex-1">
                               <h3 className="font-medium text-white">{t("plans.premium_tasks")}</h3>
-                              <p className="text-sm text-gray-300">{t("plans.unlock_more_tasks")}</p>
+                              <p className="text-sm text-purple-200">{t("plans.unlock_more_tasks")}</p>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   )}
+                  {/* 会员用户可以看到所有任务 */}
+                  {isPremium && premiumTasks.slice(2).map((task, index) => (
+                    <div key={task.id} className="flex flex-col p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                          {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-white">{task.title.replace(/\{count\}/g, '')}</h3>
+                          <p className="text-sm text-purple-200">{task.description}</p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        className={`w-full ${
+                          isTaskCompleted(task.id) 
+                            ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
+                            : "bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
+                        }`}
+                        onClick={() => {
+                          if (isTaskCompleted(task.id)) {
+                            // 如果任务已完成，点击取消完成状态
+                            toggleTaskCompletion(task.id)
+                          } else {
+                            // 如果任务未完成，点击执行任务并标记为完成
+                            handleTaskAction(task)
+                          }
+                        }}
+                      >
+                        {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

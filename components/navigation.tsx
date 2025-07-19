@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { authService } from "@/lib/auth"
 import type { User } from "@supabase/supabase-js"
-import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard } from "lucide-react"
+import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -158,7 +158,7 @@ export default function Navigation() {
   // 检查是否为VIP用户
   const isVipUser = subscriptionData?.is_premium || subscriptionData?.subscription_type === "premium"
 
-  console.log("[Navigation] 当前状态 - loading:", loading, "user:", user ? user.email : "无用户")
+  console.log("[Navigation] 当前状态 - loading:", loading, "user:", user ? user.email : "无用户", "VIP:", isVipUser)
 
   return (
     <>
@@ -199,6 +199,13 @@ export default function Navigation() {
             >
               {language === 'en' ? 'EN' : '中'}
             </button>
+            {/* VIP标识 */}
+            {isVipUser && (
+              <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs font-semibold text-white">
+                <Crown className="w-3 h-3" />
+                <span>VIP</span>
+              </div>
+            )}
             {/* 登录/头像 */}
             {user ? (
               <DropdownMenu>
@@ -212,6 +219,11 @@ export default function Navigation() {
                   <div className="px-3 py-2 text-xs text-slate-400">
                     {user.email}
                   </div>
+                  {isVipUser && (
+                    <div className="px-3 py-1 text-xs text-yellow-400 font-semibold">
+                      ⭐ Premium Member
+                    </div>
+                  )}
                   <DropdownMenuSeparator className="bg-slate-700" />
                   <DropdownMenuItem
                     onClick={handleSignOut}

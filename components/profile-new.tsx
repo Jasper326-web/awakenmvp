@@ -44,6 +44,7 @@ import { CoralSeparator } from '@/components/ui/separator';
 import { CoralButton } from '@/components/ui/button';
 import { useLanguage } from '@/lib/lang-context'
 import AuthModal from './auth-modal'
+import { useSubscription } from '@/hooks/use-subscription'
 
 interface UserProfile {
   id: string
@@ -64,6 +65,7 @@ const logoutButton = "bg-transparent border border-red-400 text-red-400 hover:bg
 
 export default function ProfileNew() {
   const { t } = useLanguage()
+  const { isPremium, isPro } = useSubscription()
   const [user, setUser] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [editAvatarOpen, setEditAvatarOpen] = useState(false)
@@ -535,6 +537,13 @@ export default function ProfileNew() {
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl font-bold">{user.username}</span>
+                      {/* 会员标识 */}
+                      {(isPremium || isPro) && (
+                        <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs font-semibold text-white">
+                          <Crown className="w-3 h-3" />
+                          <span>{isPremium ? 'Premium' : 'Pro'}</span>
+                        </div>
+                      )}
                       <button
                         className="ml-2 text-gray-400 hover:text-white"
                         onClick={() => { setNewName(user.username || ''); setEditNameOpen(true) }}

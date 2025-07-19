@@ -45,8 +45,8 @@ export function generateTasksByAddictionLevel(level: string, t?: (key: string, v
   const premiumTasks = [
     {
       id: "audio",
-      title: t ? t("task.audio_listen", { count: audioCount }) : `听戒色录音（第1-${audioCount}集）`,
-      description: t ? t("task.audio_desc", { count: audioCount }) : `聆听戒色音频${audioCount}集，提升意志力` ,
+      title: t ? t("task.audio_listen") : "听戒色录音",
+      description: t ? t("task.audio_desc") : "聆听戒色音频，提升意志力" ,
       type: "audio",
       icon: "Headphones",
       action: "modal",
@@ -55,8 +55,8 @@ export function generateTasksByAddictionLevel(level: string, t?: (key: string, v
     },
     {
       id: "article",
-      title: t ? t("task.article_read", { count: articleCount }) : `读戒色文章（第1-${articleCount}章）`,
-      description: t ? t("task.article_desc", { count: articleCount }) : `阅读戒色文章${articleCount}章，增长智慧`,
+      title: t ? t("task.article_read") : "读戒色文章",
+      description: t ? t("task.article_desc") : "阅读戒色文章，增长智慧",
       type: "article",
       icon: "BookOpen",
       action: "modal",
@@ -65,8 +65,8 @@ export function generateTasksByAddictionLevel(level: string, t?: (key: string, v
     },
     {
       id: "mantra",
-      title: t ? t("task.mantra_chant", { count: mantraCount }) : `念诵准提神咒${mantraCount}遍`,
-      description: t ? t("task.mantra_desc", { count: mantraCount }) : `净化心灵，增强定力，今日目标${mantraCount}遍`,
+      title: t ? t("task.mantra_chant") : "念诵准提神咒",
+      description: t ? t("task.mantra_desc") : "净化心灵，增强定力",
       type: "mantra",
       icon: "Sparkles",
       action: "modal",
