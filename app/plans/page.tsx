@@ -404,12 +404,12 @@ export default function PlansPage() {
   // 未登录状态友好展示
   const NotLoggedInBanner = () => (
     <div className="w-full flex flex-col items-center justify-center py-8">
-      <div className="text-lg text-gray-200 mb-4 font-semibold">Please log in to use this feature</div>
+      <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseLoginToUse")}</div>
       <button
         className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
         onClick={() => setAuthModalOpen(true)}
       >
-                                    Log in
+        {t("common.loginButton")}
       </button>
     </div>
   )
@@ -417,12 +417,12 @@ export default function PlansPage() {
   // 未完成测试友好展示
   const NoTestBanner = () => (
     <div className="w-full flex flex-col items-center justify-center py-8">
-      <div className="text-lg text-gray-200 mb-4 font-semibold">Please complete the addiction test first</div>
+      <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseCompleteTest")}</div>
       <button
         className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
         onClick={() => router.push("/test")}
       >
-        Take Test
+        {t("common.takeTest")}
       </button>
     </div>
   )
@@ -610,12 +610,12 @@ export default function PlansPage() {
                     <div className="relative p-4 bg-white/5 rounded-lg">
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                         <div className="text-center">
-                          <div className="text-white text-lg mb-2">Please log in to use this feature</div>
+                          <div className="text-white text-lg mb-2">{t("common.pleaseLoginToUse")}</div>
                           <button
                             className="px-4 py-2 rounded bg-coral text-white font-medium hover:bg-coral/90 transition"
                             onClick={() => setAuthModalOpen(true)}
                           >
-                            Log in
+                            {t("common.loginButton")}
                           </button>
                         </div>
                       </div>

@@ -39,7 +39,9 @@ export default function PricingPage() {
     t("pricing.benefit.free.status"),
     t("pricing.benefit.free.journal"),
     t("pricing.benefit.free.video"),
-    t("pricing.benefit.free.ai")
+    t("pricing.benefit.free.ai"),
+    t("pricing.benefit.free.professional_test"),
+    t("pricing.benefit.free.professional_analysis")
   ]
   const premiumFeatures = [
     t("pricing.benefit.premium.all_free"),

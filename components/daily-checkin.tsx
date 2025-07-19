@@ -309,12 +309,12 @@ export default function DailyCheckin() {
   // 新的未登录态友好展示
   const NotLoggedInBanner = () => (
     <div className="w-full flex flex-col items-center justify-center py-8">
-      <div className="text-lg text-gray-200 mb-4 font-semibold">Please log in to use this feature</div>
+      <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseLoginToUse")}</div>
       <button
         className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
         onClick={() => setAuthModalOpen(true)}
       >
-        Log in
+        {t("common.loginButton")}
       </button>
     </div>
   )
@@ -384,7 +384,7 @@ export default function DailyCheckin() {
           <CalendarComponent selectedDate={selectedDate} onDateSelect={user ? handleDateSelect : undefined} checkinData={user ? checkinData : {}} />
           {!user && (
             <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center z-10 rounded-lg">
-              <div className="text-white text-base mb-2">Please log in to use this feature</div>
+              <div className="text-white text-base mb-2">{t("common.pleaseLoginToUse")}</div>
             </div>
           )}
         </div>

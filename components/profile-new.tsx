@@ -408,12 +408,12 @@ export default function ProfileNew() {
   // 未登录状态友好展示
   const NotLoggedInBanner = () => (
     <div className="w-full flex flex-col items-center justify-center py-8">
-      <div className="text-lg text-gray-200 mb-4 font-semibold">Please log in to view your profile</div>
+      <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseLoginToView")}</div>
       <button
         className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
         onClick={() => setAuthModalOpen(true)}
       >
-        Log in
+        {t("common.loginButton")}
       </button>
     </div>
   )

@@ -528,7 +528,7 @@ const translations = {
     "profile.signout_error": "退出登录时发生错误",
     "profile.sign_out": "退出登录",
 
-    // === 新增 pricing 相关 ===
+    // === 新增定价 相关 ===
     "pricing.free_features": [
       "完成色情成瘾等级测试",
       "每日打卡（基础版）",
@@ -562,7 +562,23 @@ const translations = {
     "home.hero_willpower": "",
     "home.hero_line1": "🌏 全球首个支持视频打卡的自律平台",
     "home.hero_line2": "唤醒你的意志力",
-    "home.hero_line3": "�� 以东方智慧，见证你的每一次改变",
+    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
+
+    // === 新增通用提示相关 ===
+    "common.loadFailed": "加载失败",
+    "common.saveFailed": "保存失败",
+    "common.animationLoadFailed": "动画加载失败",
+    "common.userVerificationFailed": "用户验证失败",
+    "common.pleaseLogin": "请先登录",
+    "common.pleaseLoginToUse": "请登录以使用此功能",
+    "common.loginButton": "登录",
+    "common.pleaseLoginToView": "请登录以查看您的个人资料",
+    "common.pleaseCompleteTest": "请先完成色瘾测试",
+    "common.takeTest": "进行测试",
+
+    // === 新增定价页面相关 ===
+    "pricing.benefit.free.professional_test": "专业色瘾测试",
+    "pricing.benefit.free.professional_analysis": "专业色瘾程度分析",
   },
   en: {
     // Navigation
@@ -1154,6 +1170,22 @@ const translations = {
     "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
     "home.hero_line2": "Awaken your willpower",
     "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
+
+    // === 新增通用提示相关 ===
+    "common.loadFailed": "Load Failed",
+    "common.saveFailed": "Save Failed",
+    "common.animationLoadFailed": "Animation Load Failed",
+    "common.userVerificationFailed": "User Verification Failed",
+    "common.pleaseLogin": "Please login first",
+    "common.pleaseLoginToUse": "Please log in to use this feature",
+    "common.loginButton": "Log in",
+    "common.pleaseLoginToView": "Please log in to view your profile",
+    "common.pleaseCompleteTest": "Please complete the addiction test first",
+    "common.takeTest": "Take Test",
+
+    // === 新增定价页面相关 ===
+    "pricing.benefit.free.professional_test": "Professional Addiction Test",
+    "pricing.benefit.free.professional_analysis": "Professional Addiction Level Analysis",
   },
 }
 
