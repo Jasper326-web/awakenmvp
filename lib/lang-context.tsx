@@ -597,6 +597,24 @@ const translations = {
     "pricing.benefit.free.professional_test": "专业色瘾测试",
     "pricing.benefit.free.professional_analysis": "专业色瘾程度分析",
 
+    // === 新增限时挑战相关 ===
+    "challenge.limited_event": "限时活动",
+    "challenge.title": "30天打卡挑战",
+    "challenge.subtitle": "加入我们的30天戒色打卡挑战，与数万名用户一起，用坚持的力量重塑自我！",
+    "challenge.days": "挑战天数",
+    "challenge.participants": "参与用户",
+    "challenge.success_rate": "成功率",
+    "challenge.daily_checkin_title": "每日打卡",
+    "challenge.daily_checkin_desc": "记录每日状态，培养良好习惯，建立戒色信心",
+    "challenge.community_title": "社区支持",
+    "challenge.community_desc": "与志同道合的朋友一起努力，互相激励成长",
+    "challenge.achievement_title": "成就系统",
+    "challenge.achievement_desc": "解锁专属徽章，记录你的成长历程",
+    "challenge.ai_guidance_title": "AI指导",
+    "challenge.ai_guidance_desc": "智能AI助教提供个性化建议和鼓励",
+    "challenge.start_button": "立即开始挑战",
+    "challenge.reward_note": "🎁 完成挑战可获得专属会员体验券",
+
     // === 新增个人资料相关 ===
     "profile.total_days": "总天数",
     "profile.features": "个人资料功能",
@@ -1264,6 +1282,24 @@ const translations = {
     // === 新增定价页面相关 ===
     "pricing.benefit.free.professional_test": "Professional Addiction Test",
     "pricing.benefit.free.professional_analysis": "Professional Addiction Level Analysis",
+
+    // === 新增限时挑战相关 ===
+    "challenge.limited_event": "Limited Event",
+    "challenge.title": "30-Day Check-in Challenge",
+    "challenge.subtitle": "Join our 30-day NoFap check-in challenge, and together with tens of thousands of users, reshape yourself with the power of persistence!",
+    "challenge.days": "Challenge Days",
+    "challenge.participants": "Participants",
+    "challenge.success_rate": "Success Rate",
+    "challenge.daily_checkin_title": "Daily Check-in",
+    "challenge.daily_checkin_desc": "Record daily status, cultivate good habits, build NoFap confidence",
+    "challenge.community_title": "Community Support",
+    "challenge.community_desc": "Work together with like-minded friends, motivate each other to grow",
+    "challenge.achievement_title": "Achievement System",
+    "challenge.achievement_desc": "Unlock exclusive badges, record your growth journey",
+    "challenge.ai_guidance_title": "AI Guidance",
+    "challenge.ai_guidance_desc": "Intelligent AI coach provides personalized advice and encouragement",
+    "challenge.start_button": "Start Challenge Now",
+    "challenge.reward_note": "🎁 Complete the challenge to receive exclusive premium trial voucher",
 
     // === 新增个人资料相关 ===
     "profile.total_days": "Total Days",

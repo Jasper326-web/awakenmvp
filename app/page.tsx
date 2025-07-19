@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Target, TestTube, Sparkles, RefreshCw, Flame, Users, Calendar, FileText, Video, Headphones, BookOpen, Brain, Heart, Activity, UserIcon } from "lucide-react"
+import { Target, TestTube, Sparkles, RefreshCw, Flame, Users, Calendar, FileText, Video, Headphones, BookOpen, Brain, Heart, Activity, UserIcon, CheckCircle, Trophy } from "lucide-react"
 import { authService } from "@/lib/auth"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter } from "next/navigation"
@@ -196,6 +196,112 @@ export default function HomePage() {
                   <Target className="w-5 h-5 mr-2" />
                   {t("home.start_test_button")}
                 </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 特别活动专区 - 30天打卡挑战 */}
+        <section className="container mx-auto px-4 py-16">
+          <div className="relative overflow-hidden">
+            {/* 背景装饰 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-orange-600/20 rounded-3xl"></div>
+            <div className="absolute top-0 left-1/4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-pink-400/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-blue-400/10 rounded-full blur-2xl"></div>
+            
+            {/* 主要内容 */}
+            <div className="relative bg-gradient-to-br from-slate-900/90 via-purple-900/90 to-slate-900/90 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-8 md:p-12">
+              {/* 活动标签 */}
+              <div className="flex justify-center mb-6">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-yellow-900 px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                  <Flame className="w-4 h-4" />
+                  🔥 {t("challenge.limited_event")}
+                </div>
+              </div>
+              
+              {/* 主标题 */}
+              <div className="text-center mb-8">
+                <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent mb-4">
+                  {t("challenge.title")}
+                </h2>
+                <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                  {t("challenge.subtitle")}
+                </p>
+              </div>
+              
+              {/* 挑战数据 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-400 mb-2">30</div>
+                  <p className="text-gray-400">{t("challenge.days")}</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
+                  <p className="text-gray-400">{t("challenge.participants")}</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-400 mb-2">85%</div>
+                  <p className="text-gray-400">{t("challenge.success_rate")}</p>
+                </div>
+              </div>
+              
+              {/* 挑战特色 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.daily_checkin_title")}</h3>
+                    <p className="text-gray-400 text-sm">{t("challenge.daily_checkin_desc")}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.community_title")}</h3>
+                    <p className="text-gray-400 text-sm">{t("challenge.community_desc")}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Trophy className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.achievement_title")}</h3>
+                    <p className="text-gray-400 text-sm">{t("challenge.achievement_desc")}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Brain className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.ai_guidance_title")}</h3>
+                    <p className="text-gray-400 text-sm">{t("challenge.ai_guidance_desc")}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* 行动按钮 */}
+              <div className="text-center">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-yellow-900 font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  onClick={() => router.push("/checkin")}
+                >
+                  <Flame className="w-6 h-6 mr-2" />
+                  {t("challenge.start_button")}
+                </Button>
+                <p className="text-gray-400 text-sm mt-4">
+                  {t("challenge.reward_note")}
+                </p>
               </div>
             </div>
           </div>
@@ -424,6 +530,112 @@ export default function HomePage() {
         </div>
         {/* 每日推送 */}
         <DailyPushSection />
+      </section>
+
+      {/* 特别活动专区 - 30天打卡挑战 */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="relative overflow-hidden">
+          {/* 背景装饰 */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-orange-600/20 rounded-3xl"></div>
+          <div className="absolute top-0 left-1/4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-pink-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-blue-400/10 rounded-full blur-2xl"></div>
+          
+          {/* 主要内容 */}
+          <div className="relative bg-gradient-to-br from-slate-900/90 via-purple-900/90 to-slate-900/90 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-8 md:p-12">
+            {/* 活动标签 */}
+            <div className="flex justify-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-yellow-900 px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                <Flame className="w-4 h-4" />
+                🔥 限时活动
+              </div>
+            </div>
+            
+            {/* 主标题 */}
+            <div className="text-center mb-8">
+              <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent mb-4">
+                30天打卡挑战
+              </h2>
+              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                加入我们的30天戒色打卡挑战，与数万名用户一起，用坚持的力量重塑自我！
+              </p>
+            </div>
+            
+            {/* 挑战数据 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-400 mb-2">30</div>
+                <p className="text-gray-400">挑战天数</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
+                <p className="text-gray-400">参与用户</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-400 mb-2">85%</div>
+                <p className="text-gray-400">成功率</p>
+              </div>
+            </div>
+            
+            {/* 挑战特色 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-2">每日打卡</h3>
+                  <p className="text-gray-400 text-sm">记录每日状态，培养良好习惯，建立戒色信心</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-2">社区支持</h3>
+                  <p className="text-gray-400 text-sm">与志同道合的朋友一起努力，互相激励成长</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Trophy className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-2">成就系统</h3>
+                  <p className="text-gray-400 text-sm">解锁专属徽章，记录你的成长历程</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-2">AI指导</h3>
+                  <p className="text-gray-400 text-sm">智能AI助教提供个性化建议和鼓励</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* 行动按钮 */}
+            <div className="text-center">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-yellow-900 font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => router.push("/checkin")}
+              >
+                <Flame className="w-6 h-6 mr-2" />
+                立即开始挑战
+              </Button>
+              <p className="text-gray-400 text-sm mt-4">
+                🎁 完成挑战可获得专属会员体验券
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 功能展示区 */}
