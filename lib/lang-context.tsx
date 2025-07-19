@@ -573,7 +573,7 @@ const translations = {
     "home.hero_willpower": "",
     "home.hero_line1": "🌏 全球首个支持视频打卡的自律平台",
     "home.hero_line2": "唤醒你的意志力",
-    "home.hero_line3": "�� 以东方智慧，见证你的每一次改变",
+    "home.hero_line3": "🌿 以东方智慧，见证你的每一次改变",
 
     // === 新增通用提示相关 ===
     "common.loadFailed": "加载失败",
@@ -1208,7 +1208,7 @@ const translations = {
     "home.hero_willpower": "",
     "home.hero_line1": "🌏 The world's first NoFap platform with video check-ins",
     "home.hero_line2": "Awaken your willpower",
-    "home.hero_line3": "�� 以东方智慧，见证你的每一次改变",
+    "home.hero_line3": "🌿 Witness every change in you with wisdom from Eastern traditions",
 
     // === 新增通用提示相关 ===
     "common.loadFailed": "Load Failed",
