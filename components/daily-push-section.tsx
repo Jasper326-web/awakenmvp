@@ -16,7 +16,7 @@ export default function DailyPushSection() {
   const { isPremium, loading } = useUser();
   const [push, setPush] = useState<any>(null);
   const [loadingPush, setLoadingPush] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     if (loading) return;
@@ -25,7 +25,7 @@ export default function DailyPushSection() {
       setLoadingPush(true);
       try {
         const today = new Date().toISOString().slice(0, 10);
-        const response = await fetch(`/api/daily-push?date=${today}`);
+        const response = await fetch(`/api/daily-push?date=${today}&lang=${language}`);
         if (response.ok) {
           const data = await response.json();
           setPush(data);
@@ -37,7 +37,7 @@ export default function DailyPushSection() {
       }
     };
     fetchDailyPush();
-  }, [isPremium, loading]);
+  }, [isPremium, loading, language]);
 
   // loading skeleton
   if (loading || loadingPush) {

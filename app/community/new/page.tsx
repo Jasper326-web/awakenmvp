@@ -64,31 +64,29 @@ export default function NewPostPage() {
     setError("")
 
     try {
-      let mediaUrl = null
+      let images: string[] = []
 
-      // 上传图片
+      // 上传图片（如有）
       if (image) {
         const fileExt = image.name.split(".").pop()
-        const fileName = `${Date.now()}.${fileExt}`
-        const { data, error: uploadError } = await supabase.storage.from("community-images").upload(fileName, image)
-
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`
+        const { error: uploadError } = await supabase.storage.from("community-images").upload(fileName, image)
         if (uploadError) throw uploadError
-
         const { data: urlData } = supabase.storage.from("community-images").getPublicUrl(fileName)
-        mediaUrl = urlData.publicUrl
+        images = [urlData.publicUrl]
       }
 
-      // 创建帖子
-      const { error: insertError } = await supabase.from("community_posts").insert([
-        {
-          user_id: user.id,
+      // 通过 API 路由发帖
+      const res = await fetch("/api/community/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           content: content.trim(),
-          media_url: mediaUrl,
-        },
-      ])
-
-      if (insertError) throw insertError
-
+          images,
+        })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "发帖失败")
       router.push("/community")
     } catch (error) {
       console.error("发布失败:", error)

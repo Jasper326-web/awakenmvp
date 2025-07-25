@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient"
 import type { User, Session } from "@supabase/supabase-js"
+import { NextRequest } from "next/server"
 
 export const authService = {
   // 获取当前用户
@@ -47,6 +48,73 @@ export const authService = {
       return userData.user
     } catch (error) {
       console.error("[authService] getCurrentUser 异常:", error)
+      return null
+    }
+  },
+
+  // API路由认证 - 从请求头获取认证信息
+  async getCurrentUserFromRequest(request: NextRequest): Promise<User | null> {
+    try {
+      console.log("[authService] 开始从请求头获取用户信息")
+      
+      // 从请求头获取认证信息
+      const authHeader = request.headers.get('authorization')
+      const cookieHeader = request.headers.get('cookie')
+      
+      console.log("[authService] Authorization header:", authHeader)
+      console.log("[authService] Cookie header:", cookieHeader)
+      
+      // 如果有Bearer token，使用它来设置会话
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7)
+        console.log("[authService] 使用Bearer token进行认证")
+        
+        // 使用token获取用户信息
+        const { data: userData, error: userError } = await supabase.auth.getUser(token)
+        
+        if (userError) {
+          console.error("[authService] Bearer token认证失败:", userError)
+          return null
+        }
+        
+        if (userData.user) {
+          console.log("[authService] Bearer token认证成功:", userData.user.email)
+          return userData.user
+        }
+      }
+
+      // 如果没有Bearer token，尝试从会话获取用户
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+
+      if (sessionError) {
+        console.error("[authService] 获取会话失败:", sessionError)
+        return null
+      }
+
+      console.log("[authService] API会话状态:", sessionData.session ? "有会话" : "无会话")
+
+      if (!sessionData.session) {
+        console.log("[authService] API用户未登录，返回 null")
+        return null
+      }
+
+      // 获取用户信息
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+
+      if (userError) {
+        console.error("[authService] 获取用户信息失败:", userError)
+        return null
+      }
+
+      if (!userData.user) {
+        console.log("[authService] API用户数据为空")
+        return null
+      }
+
+      console.log("[authService] API成功获取用户信息:", userData.user.email)
+      return userData.user
+    } catch (error) {
+      console.error("[authService] getCurrentUserFromRequest 异常:", error)
       return null
     }
   },

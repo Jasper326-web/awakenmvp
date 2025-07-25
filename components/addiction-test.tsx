@@ -265,17 +265,48 @@ const AddictionTest = () => {
 
   // 检查是否有保存的测试结果
   React.useEffect(() => {
-    const savedResult = localStorage.getItem('awaken_test_result')
-    if (savedResult) {
-      try {
-        const parsedResult = JSON.parse(savedResult)
-        setTestResult(parsedResult)
-        setShowResult(true)
-      } catch (error) {
-        console.error('Failed to parse saved test result:', error)
-        localStorage.removeItem('awaken_test_result')
+    const checkUserAndLoadResult = async () => {
+      const user = await authService.getCurrentUser()
+      const savedResult = localStorage.getItem('awaken_test_result')
+      
+      if (savedResult) {
+        try {
+          const parsedResult = JSON.parse(savedResult)
+          
+          // 如果用户已登录，将结果保存到数据库并清除localStorage
+          if (user) {
+            const { error } = await supabase
+              .from("addiction_tests")
+              .insert([
+                {
+                  user_id: user.id,
+                  test_score: parsedResult.score,
+                  addiction_level: parsedResult.addictionLevel,
+                  answers: parsedResult.answers || {},
+                  created_at: new Date().toISOString()
+                }
+              ])
+
+            if (!error) {
+              console.log('测试结果已保存到数据库')
+              localStorage.removeItem('awaken_test_result')
+              // 重新加载页面以显示正确的测试结果
+              window.location.reload()
+              return
+            }
+          }
+          
+          // 如果用户未登录或保存失败，显示localStorage中的结果
+          setTestResult(parsedResult)
+          setShowResult(true)
+        } catch (error) {
+          console.error('Failed to parse saved test result:', error)
+          localStorage.removeItem('awaken_test_result')
+        }
       }
     }
+    
+    checkUserAndLoadResult()
   }, [])
 
   // 监听登录状态变化，登录成功后保存测试结果到数据库
@@ -472,87 +503,28 @@ const AddictionTest = () => {
             </div>
           </div>
 
-          {/* 未登录用户引导 */}
-          {!testResult.isLoggedIn && (
-            <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-xl p-6">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <UserIcon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">
-                  {language === "zh" ? "登录获取完整功能" : "Login for Full Features"}
-                </h3>
-                <p className="text-gray-300 text-base">
-                  {language === "zh" 
-                    ? "登录后可以查看详细的个性化方案、保存测试记录、跟踪进度等完整功能" 
-                    : "After login, you can view detailed personalized plans, save test records, track progress and more"
-                  }
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <Button 
-                  size="lg"
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700"
-                  onClick={() => {
-                    // 触发登录弹窗
-                    window.dispatchEvent(new CustomEvent('openAuthModal'))
-                    router.push("/")
-                  }}
-                >
-                  <UserIcon className="w-5 h-5 mr-2" />
-                  {language === "zh" ? "立即登录" : "Login Now"}
-                </Button>
-                <Button 
-                  size="lg"
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
-                  onClick={() => router.push("/plans")}
-                >
-                  {language === "zh" ? "查看方案预览" : "View Plan Preview"}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* 已登录用户操作 */}
-          {testResult.isLoggedIn && (
-            <div className="flex gap-4">
-              <Button 
-                size="lg"
-                className="flex-1 bg-purple-600 hover:bg-purple-700"
-                onClick={() => router.push("/plans")}
-              >
-                {language === "zh" ? "查看个性化方案" : "View Personalized Plan"}
-              </Button>
-              <Button 
-                size="lg"
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white"
-                onClick={() => {
-                  setShowResult(false)
-                  setCurrentQuestion(0)
-                  setAnswers({})
-                  localStorage.removeItem('awaken_test_result')
-                }}
-              >
-                {language === "zh" ? "重新测试" : "Retake Test"}
-              </Button>
-            </div>
-          )}
-
-          {/* 未登录用户重新测试 */}
-          {!testResult.isLoggedIn && (
-                          <Button 
-                size="lg"
-                className="w-full bg-green-500 hover:bg-green-600 text-white"
-                onClick={() => {
-                  setShowResult(false)
-                  setCurrentQuestion(0)
-                  setAnswers({})
-                  localStorage.removeItem('awaken_test_result')
-                }}
-              >
-                {language === "zh" ? "重新测试" : "Retake Test"}
-              </Button>
-          )}
+          {/* 用户操作按钮 */}
+          <div className="flex gap-4">
+            <Button 
+              size="lg"
+              className="flex-1 bg-purple-600 hover:bg-purple-700"
+              onClick={() => router.push("/plans")}
+            >
+              {language === "zh" ? "查看个性化方案" : "View Personalized Plan"}
+            </Button>
+            <Button 
+              size="lg"
+              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+              onClick={() => {
+                setShowResult(false)
+                setCurrentQuestion(0)
+                setAnswers({})
+                localStorage.removeItem('awaken_test_result')
+              }}
+            >
+              {language === "zh" ? "重新测试" : "Retake Test"}
+            </Button>
+          </div>
         </div>
       </div>
     )

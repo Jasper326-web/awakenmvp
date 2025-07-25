@@ -102,7 +102,7 @@ export default function Leaderboard() {
           </div>
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-            <p className="mt-4 text-white/70">{t("common.loading")}</p>
+            <p className="mt-4 text-white/70">{t("checkin.loading")}</p>
           </div>
         </div>
       </div>
@@ -112,11 +112,6 @@ export default function Leaderboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
       <div className="max-w-2xl mx-auto pt-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">🏆 {t("leaderboard.title")}</h1>
-          <p className="text-white/70">{t("leaderboard.subtitle")}</p>
-        </div>
-
         {myRank && (
           <div className="mb-6 p-6 rounded-xl bg-gradient-to-r from-green-400/20 to-blue-400/20 flex items-center justify-between shadow-lg">
             <div className="flex items-center space-x-4 min-w-0">
@@ -126,7 +121,7 @@ export default function Leaderboard() {
               <div className="min-w-0">
                 <div className="flex items-baseline space-x-2">
                   <span className="text-xl font-bold text-white truncate max-w-[120px]">{myRank.username || t("leaderboard.me")}</span>
-                  <span className="text-green-400 text-base font-semibold">({t("leaderboard.myRank", { rank: myRank.rank })})</span>
+                  <span className="text-green-400 text-base font-semibold">({t("leaderboard.myRank").replace('{rank}', myRank.rank.toString())})</span>
                 </div>
               </div>
             </div>

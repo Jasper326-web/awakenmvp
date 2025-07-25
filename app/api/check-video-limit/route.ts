@@ -15,11 +15,11 @@ export async function POST(req: NextRequest) {
       .select("subscription_type, status")
       .eq("user_id", userId)
       .eq("status", "active")
-      .single()
+      .maybeSingle()
 
-    if (subscriptionError && subscriptionError.code !== "PGRST116") {
+    if (subscriptionError) {
       console.error("查询订阅信息失败:", subscriptionError)
-      return NextResponse.json({ error: "查询订阅信息失败" }, { status: 500 })
+      // 对于非会员用户，subscriptionData为null是正常的
     }
 
     // 判断是否为会员用户

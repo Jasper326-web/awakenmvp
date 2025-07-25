@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabaseClient"
 import { authService } from "@/lib/auth"
 import { ArrowLeft, ImagePlus, Send, X, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -69,45 +69,36 @@ export default function NewPostPage() {
         return
       }
 
-      let mediaUrl = null
+      let images: string[] = []
 
       // 上传图片（如果有）
       if (imageFile) {
         const fileExt = imageFile.name.split(".").pop()
-        const fileName = `${Date.now()}.${fileExt}`
-        const filePath = `community/${fileName}`
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("images")
-          .upload(filePath, imageFile)
-
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`
+        const { error: uploadError } = await supabase.storage.from("community-images").upload(fileName, imageFile)
         if (uploadError) {
           console.error("图片上传失败:", uploadError)
           setError("图片上传失败，请重试")
           return
         }
-
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("images").getPublicUrl(filePath)
-
-        mediaUrl = publicUrl
+        const { data: urlData } = supabase.storage.from("community-images").getPublicUrl(fileName)
+        images = [urlData.publicUrl]
       }
 
-      // 创建帖子
-      const { error: postError } = await supabase.from("community_posts").insert({
-        user_id: user.id,
-        content: content.trim(),
-        media_url: mediaUrl,
+      // 通过 API 路由发帖
+      const res = await fetch("/api/community/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: content.trim(),
+          images,
+        })
       })
-
-      if (postError) {
-        console.error("发帖失败:", postError)
-        setError("发帖失败，请重试")
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || "发帖失败，请重试")
         return
       }
-
-      // 发帖成功，跳转回社区页面
       router.push("/community")
     } catch (error) {
       console.error("发帖错误:", error)

@@ -7,41 +7,47 @@ export function generateTasksByAddictionLevel(level: string, t?: (key: string, v
   const articleCount = level === "重度" ? 3 : level === "中度" ? 2 : 1
   const audioCount = level === "重度" ? 3 : level === "中度" ? 2 : 1
 
+  // 固定普通任务
   const baseTasks = [
     {
       id: "checkin",
       title: t ? t("task.daily_checkin") : "每日打卡",
-      description: t ? t("task.daily_checkin_desc") : "记录今日状态",
+      description: t
+        ? (level === "重度"
+            ? t("task.daily_checkin_desc_heavy")
+            : level === "中度"
+            ? t("task.daily_checkin_desc_moderate")
+            : t("task.daily_checkin_desc"))
+        : "记录今日状态",
       type: "checkin",
       icon: "Calendar",
       action: "redirect",
       target: "/checkin",
       isFree: true,
     },
+    {
+      id: "exercise",
+      title: t ? t("task.exercise") : "户外散步30min",
+      description: t ? t("task.exercise_desc") : "清晨户外慢走30分钟，唤醒阳气",
+      type: "exercise",
+      icon: "Activity",
+      action: "instruction",
+      instruction: t ? t("task.exercise_instruction") : "...",
+      isFree: true,
+    },
+    {
+      id: "auspicious_rest",
+      title: t ? t("task.auspicious_rest") : "吉祥卧10min",
+      description: t ? t("task.auspicious_rest_desc") : "睡前右侧卧，修复阳气，安神助眠",
+      type: "auspicious_rest",
+      icon: "Heart",
+      action: "instruction",
+      instruction: t ? t("task.auspicious_rest_instruction") : "...",
+      isFree: true,
+    },
   ]
 
-  const journalTask = {
-    id: "journal",
-    title: t ? t("task.journal") : "戒色日志",
-    description: t ? t("task.journal_desc") : "记录今日感悟",
-    type: "journal",
-    icon: "FileText",
-    action: "redirect",
-    target: "/checkin",
-    isFree: true,
-  }
-
-  const videoTask = {
-    id: "video",
-    title: t ? t("task.video_checkin") : "视频打卡",
-    description: t ? t("task.video_checkin_desc") : "录制视频分享",
-    type: "video",
-    icon: "Video",
-    action: "redirect",
-    target: "/video-record",
-    isFree: false,
-  }
-
+  // premiumTasks 保持不变
   const premiumTasks = [
     {
       id: "audio",
@@ -95,25 +101,5 @@ export function generateTasksByAddictionLevel(level: string, t?: (key: string, v
     },
   ]
 
-  const exerciseTask = {
-    id: "exercise",
-    title: t ? t("task.exercise") : "有氧运动10min",
-    description: t ? t("task.exercise_desc") : "增强体质，吸收自然能量",
-    type: "exercise",
-    icon: "Activity",
-    action: "instruction",
-    instruction: t ? t("task.exercise_instruction") : "进行10分钟有氧运动，如跑步、跳绳、快走等，提高心率，增强体质。推荐在公园晨跑，拥抱大树等户外活动，吸收自然能量。",
-    isFree: true,
-  }
-
-  switch (level) {
-    case "轻度":
-      return [...baseTasks, exerciseTask, ...premiumTasks]
-    case "中度":
-      return [...baseTasks, journalTask, exerciseTask, ...premiumTasks]
-    case "重度":
-      return [...baseTasks, journalTask, videoTask, exerciseTask, ...premiumTasks]
-    default:
-      return [...baseTasks, exerciseTask, ...premiumTasks]
-  }
+  return [...baseTasks, ...premiumTasks]
 } 

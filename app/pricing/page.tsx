@@ -49,7 +49,8 @@ export default function PricingPage() {
     t("pricing.benefit.premium.video"),
     t("pricing.benefit.premium.ai"),
     t("pricing.benefit.premium.plan"),
-    t("pricing.benefit.premium.analytics")
+    t("pricing.benefit.premium.analytics"),
+    t("pricing.benefit.premium.community")
   ]
 
   return (

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Camera, Square, AlertCircle, CheckCircle2, X, Play, VideoOff } from "lucide-react"
 import { supabase } from "@/lib/supabaseClient"
+import { useLanguage } from "@/lib/lang-context"
 
 interface VideoRecorderProps {
   onVideoSaved: (url: string) => void
@@ -14,6 +15,7 @@ interface VideoRecorderProps {
 }
 
 export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, userId }: VideoRecorderProps) {
+  const { t } = useLanguage()
   // 状态管理
   const [isRecording, setIsRecording] = useState(false)
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
@@ -708,7 +710,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
         <div className="flex items-center justify-center p-8 bg-gray-50 rounded-lg">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-            <p className="text-sm text-muted-foreground">检查设备摄像头...</p>
+            <p className="text-sm text-muted-foreground">{t("checkinModal.cameraLoading")}</p>
           </div>
         </div>
       </div>
@@ -722,16 +724,16 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
         <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <VideoOff className="w-6 h-6 text-yellow-600" />
           <div>
-            <p className="font-medium text-yellow-800">当前设备无法进行视频录制</p>
-            <p className="text-sm text-yellow-700">请使用手机或配备摄像头的设备</p>
+            <p className="font-medium text-yellow-800">{t("checkinModal.cameraError")}</p>
+            <p className="text-sm text-yellow-700">{t("checkinModal.cameraPermissionDenied")}</p>
           </div>
         </div>
 
         <div className="text-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
           <VideoOff className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-600 mb-3">没有摄像头？</p>
+          <p className="text-sm text-gray-600 mb-3">{t("checkinModal.noCamera")}</p>
           <Button variant="outline" disabled>
-            我没有摄像头 (功能开发中)
+            {t("checkinModal.noCameraButton")}
           </Button>
         </div>
       </div>
@@ -745,7 +747,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
         <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center text-green-600">
             <CheckCircle2 className="w-5 h-5 mr-2" />
-            <span className="font-medium">视频已保存</span>
+            <span className="font-medium">{t("checkinModal.videoSaved")}</span>
           </div>
           <div className="flex space-x-2">
             <Button 
@@ -755,7 +757,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
               className="bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white"
             >
               <Play className="w-4 h-4 mr-1" />
-              预览
+              {t("checkinModal.preview")}
             </Button>
             <Button
               variant="outline"
@@ -764,7 +766,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
               className="bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white"
             >
               <Camera className="w-4 h-4 mr-1" />
-              重新录制
+              {t("checkinModal.reRecord")}
             </Button>
           </div>
         </div>
@@ -779,9 +781,9 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
         <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded text-yellow-700 text-sm">
           <AlertCircle className="w-4 h-4" />
           <div>
-            <p>{cameraError}</p>
+            <p>{t("checkinModal.cameraError")}</p>
             <Button variant="link" size="sm" onClick={initializeCamera} className="p-0 h-auto text-yellow-700">
-              重试
+              {t("checkinModal.retry")}
             </Button>
           </div>
         </div>
@@ -791,7 +793,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
       {uploadError && (
         <div className="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
           <AlertCircle className="w-4 h-4" />
-          {uploadError}
+          {t("checkinModal.uploadFailed")}
         </div>
       )}
 
@@ -839,7 +841,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70">
             <div className="text-center text-white">
               <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              <p>正在初始化摄像头...</p>
+              <p>{t("checkinModal.cameraLoading")}</p>
             </div>
           </div>
         )}
@@ -849,7 +851,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70">
             <div className="text-center text-white">
               <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>点击下方按钮开始录制</p>
+              <p>{t("checkinModal.startRecording")}</p>
             </div>
           </div>
         )}
@@ -858,7 +860,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
         {isRecording && (
           <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            录制中 {formatTime(recordingTime)}
+            {t("checkinModal.recording")} {formatTime(recordingTime)}
           </div>
         )}
 
@@ -872,7 +874,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
               className="bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white"
             >
               <Camera className="w-5 h-5 mr-2" />
-              重新录制
+              {t("checkinModal.reRecord")}
             </Button>
           </div>
         )}
@@ -894,13 +896,13 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
       {isUploading && (
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>上传中...</span>
+            <span>{t("checkinModal.uploading")}</span>
             <span>{uploadProgress}%</span>
           </div>
           <Progress value={uploadProgress} className="h-2" />
           {recordedBlob && (
             <div className="text-xs text-muted-foreground text-center">
-              文件大小: {formatFileSize(recordedBlob.size)} | 速度: {uploadSpeed}
+              {t("checkinModal.fileSize")} {formatFileSize(recordedBlob.size)} | {t("checkinModal.speed")} {uploadSpeed}
             </div>
           )}
         </div>
@@ -915,14 +917,14 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
             disabled={cameraInitializing}
           >
             <Camera className="w-4 h-4 mr-2" />
-            {cameraReady ? "开始录制" : "打开摄像头"}
+            {cameraReady ? t("checkinModal.startRecordingBtn") : t("checkinModal.openCamera")}
           </Button>
         )}
 
         {currentView === "camera" && isRecording && (
           <Button onClick={stopRecording} className="bg-red-600 hover:bg-red-700 text-white flex-1">
             <Square className="w-4 h-4 mr-1" />
-            停止录制
+            {t("checkinModal.stopRecording")}
           </Button>
         )}
 
@@ -935,7 +937,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
             className="bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white"
           >
             <Camera className="w-4 h-4 mr-1" />
-            重新录制
+            {t("checkinModal.reRecord")}
           </Button>
         )}
 
@@ -946,7 +948,7 @@ export default function VideoRecorder({ onVideoSaved, existingVideoUrl, date, us
             className="flex-1 bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 hover:text-white"
           >
             <Camera className="w-4 h-4 mr-1" />
-            重新录制
+            {t("checkinModal.reRecord")}
           </Button>
         )}
       </div>

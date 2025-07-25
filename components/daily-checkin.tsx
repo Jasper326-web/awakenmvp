@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { useLanguage } from "@/lib/lang-context"
 import AuthModal from './auth-modal'
 import UpgradeModal from './upgrade-modal'
+import { calculateSuccessRate } from "@/lib/streak-calculator"
 
 interface CheckinData {
   [date: string]: {
@@ -117,11 +118,13 @@ export default function DailyCheckin() {
         return
       }
 
-      // 计算成功率
+      // 使用新的成功率计算函数
       const currentStreak = userStatsData.current_streak || 0
       const totalDays = userStatsData.total_days || 0
       const maxStreak = userStatsData.max_streak || 0
-      const successRate = totalDays > 0 ? Math.round((currentStreak / totalDays) * 100) : 0
+      
+      // 使用新的加权阶段模型计算成功率
+      const successRate = calculateSuccessRate(currentStreak)
 
       setUserStats({
         maxStreak,

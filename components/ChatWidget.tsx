@@ -319,7 +319,7 @@ export default function ChatWidget() {
               
               {/* 使用状态 */}
               <div className="flex items-center justify-between text-xs text-gray-400">
-                <span>{t("ai.today_messages")}: {usageStats?.today_usage || 0}</span>
+                <span>{t("ai.today_messages").replace('{count}', (usageStats?.today_usage ?? 0).toString())}</span>
                 {isVip ? (
                   <span className="text-green-400">{t("ai.unlimited_use")}</span>
                 ) : (

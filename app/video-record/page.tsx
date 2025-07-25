@@ -6,12 +6,14 @@ import VideoRecorder from "@/components/video-recorder"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, RotateCcw, Save, FileText } from "lucide-react"
+import { ArrowLeft, RotateCcw, Save, FileText, Crown, Lock } from "lucide-react"
 import { toast } from "sonner"
 import { supabase, getCurrentUser } from "@/lib/supabaseClient"
+import { useSubscription } from "@/hooks/use-subscription"
 
 export default function VideoRecordPage() {
   const router = useRouter()
+  const { isPremium, isPro } = useSubscription()
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0])
   const [notes, setNotes] = useState("")
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
@@ -148,6 +150,66 @@ export default function VideoRecordPage() {
   }
 
   const hasExistingData = existingData && (existingData.notes || existingData.video_url)
+
+  // 会员权限检查
+  if (!isPremium && !isPro) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* 页面头部 */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.back()}
+                className="text-gray-400 hover:text-white"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-white">视频记录</h1>
+                <p className="text-gray-300">记录每日总结视频</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 会员权限提示 */}
+          <Card className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm border-purple-500/30">
+            <CardContent className="p-8 text-center">
+              <div className="mb-6">
+                <Crown className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">会员专享功能</h2>
+                <p className="text-gray-300 mb-6">视频打卡是会员专享功能，升级为会员即可使用</p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <Lock className="w-4 h-4" />
+                  <span>视频录制与上传</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <Lock className="w-4 h-4" />
+                  <span>视频存储与管理</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <Lock className="w-4 h-4" />
+                  <span>视频分享与回顾</span>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => router.push("/pricing")}
+                className="mt-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3"
+              >
+                升级为会员
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">

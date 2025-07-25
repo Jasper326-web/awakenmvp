@@ -45,6 +45,9 @@ import { CoralButton } from '@/components/ui/button';
 import { useLanguage } from '@/lib/lang-context'
 import AuthModal from './auth-modal'
 import { useSubscription } from '@/hooks/use-subscription'
+import { getUserLevel, getLevelProgress, getLevelInfo, calculateSuccessRate } from '@/lib/streak-calculator'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import * as RadixTooltip from '@radix-ui/react-tooltip'
 
 interface UserProfile {
   id: string
@@ -509,6 +512,9 @@ export default function ProfileNew() {
     )
   }
 
+  // 在 return 语句前添加调试日志
+  console.log('profile user:', user);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
@@ -756,7 +762,7 @@ export default function ProfileNew() {
                   <div>
                     <p className="text-sm text-gray-300">{t('profile.success_rate')}</p>
                     <p className="text-3xl font-bold text-green-400">
-                      {user.total_days > 0 ? Math.round((user.current_streak / user.total_days) * 100) : 0}%
+                      {calculateSuccessRate(user.current_streak)}%
                     </p>
                   </div>
                   <TrendingUp className="w-8 h-8 text-green-500" />
@@ -788,11 +794,34 @@ export default function ProfileNew() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span>{t('profile.current_level')}</span>
-                      <span className="text-purple-400 font-semibold">Lv.{user.level}</span>
+                      <RadixTooltip.Provider>
+                        <RadixTooltip.Root>
+                          <RadixTooltip.Trigger asChild>
+                            <span>
+                              <Badge variant="outline" className="text-xs border-purple-500 text-purple-400 cursor-pointer">
+                                Lv.{user.level}
+                              </Badge>
+                            </span>
+                          </RadixTooltip.Trigger>
+                          <RadixTooltip.Portal>
+                            <RadixTooltip.Content
+                              side="top"
+                              align="center"
+                              className="bg-slate-900 text-white rounded-lg shadow-lg px-4 py-3 text-sm max-w-xs border border-purple-500 whitespace-pre-line z-[9999]"
+                            >
+                              {t('profile.level_tooltip')}
+                              <RadixTooltip.Arrow className="fill-purple-500" />
+                            </RadixTooltip.Content>
+                          </RadixTooltip.Portal>
+                        </RadixTooltip.Root>
+                      </RadixTooltip.Provider>
                     </div>
-                    <Progress value={(user.current_streak % 7) / 7 * 100} className="h-3" />
+                    <Progress value={getLevelProgress(user.current_streak)} className="h-3" />
                     <p className="text-sm text-gray-400">
-                      {t('profile.next_level_days')} {7 - (user.current_streak % 7)} {t('profile.days')}
+                      {getLevelInfo(user.current_streak).daysToNextLevel > 0 
+                        ? `${t('profile.next_level_days')} ${getLevelInfo(user.current_streak).daysToNextLevel} ${t('profile.days')}`
+                        : "已达到最高等级！"
+                      }
                     </p>
                   </div>
                 </CardContent>
@@ -817,6 +846,7 @@ export default function ProfileNew() {
                       { icon: Target, label: t('profile.checkin'), href: "/checkin", color: "text-blue-400", desc: t('profile.checkin_desc') },
                       { icon: BookOpen, label: t('profile.plans'), href: "/plans", color: "text-green-400", desc: t('profile.plans_desc') },
                       { icon: Trophy, label: t('profile.leaderboard'), href: "/leaderboard", color: "text-yellow-400", desc: t('profile.leaderboard_desc') },
+                      { icon: Users, label: t('profile.feature_community'), href: "/community", color: "text-purple-400", desc: t('profile.feature_community_desc') },
                       { icon: Brain, label: t('profile.ai_coach'), href: "/profile", color: "text-pink-400", desc: t('profile.ai_coach_desc') }
                     ].map((item, index) => (
                       <Button

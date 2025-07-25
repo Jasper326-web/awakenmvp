@@ -15,14 +15,18 @@ export function useUser() {
       // 如果用户已登录，检查会员状态
       if (data?.user) {
         try {
-          const { data: subscriptionData } = await supabase
-            .from('user_subscriptions')
-            .select('*')
-            .eq('user_id', data.user.id)
-            .eq('status', 'active')
-            .single();
-          
-          setIsPremium(!!subscriptionData);
+          const response = await fetch("/api/user-subscription", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          })
+          if (response.ok) {
+            const result = await response.json()
+            setIsPremium(!!result.data)
+          } else if (response.status === 406) {
+            setIsPremium(false)
+          } else {
+            setIsPremium(false)
+          }
         } catch (error) {
           setIsPremium(false);
         }

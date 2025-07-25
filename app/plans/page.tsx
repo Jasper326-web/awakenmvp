@@ -541,7 +541,7 @@ export default function PlansPage() {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <p>{t("common.loading")}</p>
         </div>
       </div>
     )
@@ -575,7 +575,7 @@ export default function PlansPage() {
                   variant="outline"
                   size="sm"
                   className="border-white/30 text-white bg-transparent hover:bg-white/10"
-                  onClick={() => router.push("/test")}
+                  onClick={() => router.push("/addiction-test")}
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   {t("plans.retest")}
@@ -585,7 +585,7 @@ export default function PlansPage() {
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-400 mb-2">{testData?.test_score || 0}/80</div>
+                  <div className="text-3xl font-bold text-blue-400 mb-2">{testData?.test_score || 0}/300</div>
                   <p className="text-gray-300">{t("plans.test_score")}</p>
                 </div>
                 <div className="text-center">
@@ -712,100 +712,52 @@ export default function PlansPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {premiumTasks.slice(0, 2).map((task, index) => (
-                    <div key={task.id} className="flex flex-col p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
-                          {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-white">{task.title.replace(/\{count\}/g, '')}</h3>
-                          <p className="text-sm text-purple-200">{task.description}</p>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        className={`w-full ${
-                          isTaskCompleted(task.id) 
-                            ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
-                            : "bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
-                        }`}
-                        onClick={() => {
-                          if (isTaskCompleted(task.id)) {
-                            // 如果任务已完成，点击取消完成状态
-                            toggleTaskCompletion(task.id)
-                          } else {
-                            // 如果任务未完成，点击执行任务并标记为完成
-                            handleTaskAction(task)
-                          }
-                        }}
-                      >
-                        {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
-                      </Button>
-                    </div>
-                  ))}
-                  {premiumTasks.length > 2 && !isPremium && (
-                    <div className="relative p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
-                        <div className="text-center">
-                          <div className="text-white text-lg mb-2">{t("common.pleaseLoginToUse")}</div>
-                          <button
-                            className="px-4 py-2 rounded bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-medium hover:from-yellow-700 hover:to-orange-700 transition"
-                            onClick={() => setAuthModalOpen(true)}
-                          >
-                            {t("common.loginButton")}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="opacity-50">
-                        <div className="flex flex-col">
-                          <div className="flex items-center space-x-3 mb-3">
-                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
-                              <Lock className="w-4 h-4 text-white" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-medium text-white">{t("plans.premium_tasks")}</h3>
-                              <p className="text-sm text-purple-200">{t("plans.unlock_more_tasks")}</p>
-                            </div>
+                <div className="relative">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {premiumTasks.map((task, index) => (
+                      <div key={task.id} className="flex flex-col p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                            {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-medium text-white">{task.title.replace(/\{count\}/g, '')}</h3>
+                            <p className="text-sm text-purple-200">{task.description}</p>
                           </div>
                         </div>
+                        {isPremium && (
+                          <Button
+                            size="sm"
+                            className={`w-full ${
+                              isTaskCompleted(task.id) 
+                                ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
+                                : "bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
+                            }`}
+                            onClick={() => {
+                              if (isTaskCompleted(task.id)) {
+                                toggleTaskCompletion(task.id)
+                              } else {
+                                handleTaskAction(task)
+                              }
+                            }}
+                          >
+                            {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
+                          </Button>
+                        )}
                       </div>
+                    ))}
+                  </div>
+                  {!isPremium && (
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg z-20">
+                      <div className="text-white text-xl font-bold mb-4">{t("plans.upgrade_to_premium")}</div>
+                      <button
+                        className="px-6 py-3 rounded bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-medium hover:from-yellow-700 hover:to-orange-700 transition"
+                        onClick={() => setShowUpgradeModal && setShowUpgradeModal(true)}
+                      >
+                        {t("plans.upgrade_button")}
+                      </button>
                     </div>
                   )}
-                  {/* 会员用户可以看到所有任务 */}
-                  {isPremium && premiumTasks.slice(2).map((task, index) => (
-                    <div key={task.id} className="flex flex-col p-4 bg-purple-200/10 rounded-lg border border-purple-300/20">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
-                          {React.createElement(ICON_MAP[task.icon as keyof typeof ICON_MAP], { className: "w-4 h-4 text-white" })}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-white">{task.title.replace(/\{count\}/g, '')}</h3>
-                          <p className="text-sm text-purple-200">{task.description}</p>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        className={`w-full ${
-                          isTaskCompleted(task.id) 
-                            ? "bg-yellow-600 hover:bg-yellow-700 text-white" 
-                            : "bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white"
-                        }`}
-                        onClick={() => {
-                          if (isTaskCompleted(task.id)) {
-                            // 如果任务已完成，点击取消完成状态
-                            toggleTaskCompletion(task.id)
-                          } else {
-                            // 如果任务未完成，点击执行任务并标记为完成
-                            handleTaskAction(task)
-                          }
-                        }}
-                      >
-                        {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
-                      </Button>
-                    </div>
-                  ))}
                 </div>
               </CardContent>
             </Card>

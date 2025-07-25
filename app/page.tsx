@@ -95,18 +95,28 @@ export default function HomePage() {
 
   const loadSubscriptionData = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("user_subscriptions")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("status", "active")
-        .single()
+      // 使用API路由获取订阅数据
+      const response = await fetch("/api/user-subscription", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
 
-      if (data && !error) {
-        setSubscriptionData(data)
+      if (response.ok) {
+        const result = await response.json()
+        if (result.data) {
+          setSubscriptionData(result.data)
+        } else {
+          setSubscriptionData(null)
+        }
+      } else {
+        console.error("获取订阅数据失败:", response.status)
+        setSubscriptionData(null)
       }
     } catch (error) {
       console.error("加载订阅数据异常:", error)
+      setSubscriptionData(null)
     }
   }
 
@@ -122,7 +132,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p>加载中...</p>
+          <p>{t("common.loading")}</p>
         </div>
       </div>
     )
@@ -188,15 +198,15 @@ export default function HomePage() {
                 </h2>
               </div>
               <div className="flex justify-center">
-                <Button
-                  size="lg"
+              <Button
+                size="lg"
                   className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
                   onClick={() => router.push("/addiction-test")}
-                >
+              >
                   <Target className="w-5 h-5 mr-2" />
-                  {t("home.start_test_button")}
-                </Button>
-              </div>
+                {t("home.start_test_button")}
+              </Button>
+            </div>
             </div>
           </div>
         </section>
@@ -216,17 +226,17 @@ export default function HomePage() {
               <div className="flex justify-center mb-6">
                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-yellow-900 px-4 py-2 rounded-full text-sm font-bold animate-pulse">
                   <Flame className="w-4 h-4" />
-                  🔥 {t("challenge.limited_event")}
+                  {t("home.limited_event_section.limited_event")}
                 </div>
               </div>
               
               {/* 主标题 */}
               <div className="text-center mb-8">
                 <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent mb-4">
-                  {t("challenge.title")}
+                  {t("home.limited_event_section.challenge_title")}
                 </h2>
                 <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                  {t("challenge.subtitle")}
+                  {t("home.limited_event_section.challenge_desc")}
                 </p>
               </div>
               
@@ -234,15 +244,15 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-yellow-400 mb-2">30</div>
-                  <p className="text-gray-400">{t("challenge.days")}</p>
+                  <p className="text-gray-400">{t("home.limited_event_section.challenge_days")}</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
-                  <p className="text-gray-400">{t("challenge.participants")}</p>
+                  <p className="text-gray-400">{t("home.limited_event_section.participants")}</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-purple-400 mb-2">85%</div>
-                  <p className="text-gray-400">{t("challenge.success_rate")}</p>
+                  <p className="text-gray-400">{t("home.limited_event_section.success_rate")}</p>
                 </div>
               </div>
               
@@ -253,8 +263,8 @@ export default function HomePage() {
                     <CheckCircle className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.daily_checkin_title")}</h3>
-                    <p className="text-gray-400 text-sm">{t("challenge.daily_checkin_desc")}</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.daily_checkin")}</h3>
+                    <p className="text-gray-400 text-sm">{t("home.limited_event_section.daily_checkin_desc")}</p>
                   </div>
                 </div>
                 
@@ -263,8 +273,8 @@ export default function HomePage() {
                     <Users className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.community_title")}</h3>
-                    <p className="text-gray-400 text-sm">{t("challenge.community_desc")}</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.community_support")}</h3>
+                    <p className="text-gray-400 text-sm">{t("home.limited_event_section.community_support_desc")}</p>
                   </div>
                 </div>
                 
@@ -273,8 +283,8 @@ export default function HomePage() {
                     <Trophy className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.achievement_title")}</h3>
-                    <p className="text-gray-400 text-sm">{t("challenge.achievement_desc")}</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.achievement_system")}</h3>
+                    <p className="text-gray-400 text-sm">{t("home.limited_event_section.achievement_system_desc")}</p>
                   </div>
                 </div>
                 
@@ -283,8 +293,8 @@ export default function HomePage() {
                     <Brain className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{t("challenge.ai_guidance_title")}</h3>
-                    <p className="text-gray-400 text-sm">{t("challenge.ai_guidance_desc")}</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.ai_guidance")}</h3>
+                    <p className="text-gray-400 text-sm">{t("home.limited_event_section.ai_guidance_desc")}</p>
                   </div>
                 </div>
               </div>
@@ -297,10 +307,10 @@ export default function HomePage() {
                   onClick={() => router.push("/checkin")}
                 >
                   <Flame className="w-6 h-6 mr-2" />
-                  {t("challenge.start_button")}
+                  {t("home.limited_event_section.start_challenge")}
                 </Button>
                 <p className="text-gray-400 text-sm mt-4">
-                  {t("challenge.reward_note")}
+                  {t("home.limited_event_section.reward_note")}
                 </p>
               </div>
             </div>
@@ -402,7 +412,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <h4 className="text-white font-medium">{t("footer.tools")}</h4>
               <div className="space-y-2">
-                <a href="/test" className="block text-gray-400 hover:text-white text-sm transition-colors">
+                <a href="/addiction-test" className="block text-gray-400 hover:text-white text-sm transition-colors">
                   {t("footer.test")}
                 </a>
                 <a href="/checkin" className="block text-gray-400 hover:text-white text-sm transition-colors">
@@ -450,11 +460,7 @@ export default function HomePage() {
           Awaken
         </h1>
         {/* 副标题 */}
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-          {t("home.world_first")}
-          <span className="font-extrabold text-yellow-300 drop-shadow-sm mx-1">{t("home.buddhist")}</span>
-          {t("home.nofap_site")}
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4" dangerouslySetInnerHTML={{ __html: t("home.world_first") }} />
         {/* 描述 */}
         <div className="text-lg md:text-xl font-medium text-yellow-200 mb-4">
           {t("home.traditional_method")}
@@ -479,7 +485,7 @@ export default function HomePage() {
               variant="outline"
               size="sm"
               className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 font-bold rounded-full px-6 py-2 border-0 shadow-none hover:from-yellow-500 hover:to-yellow-600 hover:text-yellow-100 transition"
-              onClick={() => router.push("/test")}
+              onClick={() => router.push("/addiction-test")}
             >
               <RefreshCw className="w-5 h-5 mr-2" />
               {t("home.retest_button")}
@@ -487,7 +493,7 @@ export default function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="text-center">
-              <div className="text-3xl font-extrabold text-yellow-300 mb-2">{testData.test_score}/80</div>
+              <div className="text-3xl font-extrabold text-yellow-300 mb-2">{testData.test_score}/300</div>
               <p className="text-white/80">{t("home.test_score")}</p>
             </div>
             <div className="text-center">
@@ -547,17 +553,17 @@ export default function HomePage() {
             <div className="flex justify-center mb-6">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-yellow-900 px-4 py-2 rounded-full text-sm font-bold animate-pulse">
                 <Flame className="w-4 h-4" />
-                🔥 限时活动
+                {t("home.limited_event_section.limited_event")}
               </div>
             </div>
             
             {/* 主标题 */}
             <div className="text-center mb-8">
               <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent mb-4">
-                30天打卡挑战
+                {t("home.limited_event_section.challenge_title")}
               </h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                加入我们的30天戒色打卡挑战，与数万名用户一起，用坚持的力量重塑自我！
+                {t("home.limited_event_section.challenge_desc")}
               </p>
             </div>
             
@@ -565,15 +571,15 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-yellow-400 mb-2">30</div>
-                <p className="text-gray-400">挑战天数</p>
+                <p className="text-gray-400">{t("home.limited_event_section.challenge_days")}</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
-                <p className="text-gray-400">参与用户</p>
+                <p className="text-gray-400">{t("home.limited_event_section.participants")}</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-400 mb-2">85%</div>
-                <p className="text-gray-400">成功率</p>
+                <p className="text-gray-400">{t("home.limited_event_section.success_rate")}</p>
               </div>
             </div>
             
@@ -584,8 +590,8 @@ export default function HomePage() {
                   <CheckCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">每日打卡</h3>
-                  <p className="text-gray-400 text-sm">记录每日状态，培养良好习惯，建立戒色信心</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.daily_checkin")}</h3>
+                  <p className="text-gray-400 text-sm">{t("home.limited_event_section.daily_checkin_desc")}</p>
                 </div>
               </div>
               
@@ -594,8 +600,8 @@ export default function HomePage() {
                   <Users className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">社区支持</h3>
-                  <p className="text-gray-400 text-sm">与志同道合的朋友一起努力，互相激励成长</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.community_support")}</h3>
+                  <p className="text-gray-400 text-sm">{t("home.limited_event_section.community_support_desc")}</p>
                 </div>
               </div>
               
@@ -604,8 +610,8 @@ export default function HomePage() {
                   <Trophy className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">成就系统</h3>
-                  <p className="text-gray-400 text-sm">解锁专属徽章，记录你的成长历程</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.achievement_system")}</h3>
+                  <p className="text-gray-400 text-sm">{t("home.limited_event_section.achievement_system_desc")}</p>
                 </div>
               </div>
               
@@ -614,8 +620,8 @@ export default function HomePage() {
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">AI指导</h3>
-                  <p className="text-gray-400 text-sm">智能AI助教提供个性化建议和鼓励</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t("home.limited_event_section.ai_guidance")}</h3>
+                  <p className="text-gray-400 text-sm">{t("home.limited_event_section.ai_guidance_desc")}</p>
                 </div>
               </div>
             </div>
@@ -628,10 +634,10 @@ export default function HomePage() {
                 onClick={() => router.push("/checkin")}
               >
                 <Flame className="w-6 h-6 mr-2" />
-                立即开始挑战
+                {t("home.limited_event_section.start_challenge")}
               </Button>
               <p className="text-gray-400 text-sm mt-4">
-                🎁 完成挑战可获得专属会员体验券
+                {t("home.limited_event_section.reward_note")}
               </p>
             </div>
           </div>
@@ -733,7 +739,7 @@ export default function HomePage() {
           <div className="space-y-4">
             <h4 className="text-white font-medium">{t("footer.tools")}</h4>
             <div className="space-y-2">
-              <a href="/test" className="block text-gray-400 hover:text-white text-sm transition-colors">
+              <a href="/addiction-test" className="block text-gray-400 hover:text-white text-sm transition-colors">
                 {t("footer.test")}
               </a>
               <a href="/checkin" className="block text-gray-400 hover:text-white text-sm transition-colors">

@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { authService } from "@/lib/auth"
 import type { User } from "@supabase/supabase-js"
-import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown, Settings } from "lucide-react"
+import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown, Settings, Users } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,11 +128,12 @@ export default function Navigation() {
     router.push(href)
   }
 
-  // 更新navItems配置，添加定价页面
+  // 更新navItems配置，添加社群页面
   const navItems = [
     { href: "/", label: t("nav.home"), icon: Home, requireAuth: false },
     { href: "/checkin", label: t("nav.checkin"), icon: CheckCircle, requireAuth: false },
     { href: "/leaderboard", label: t("nav.leaderboard"), icon: Trophy, requireAuth: false },
+    { href: "/community", label: t("nav.community"), icon: Users, requireAuth: true },
     { href: "/plans", label: t("nav.plans"), icon: BookOpen, requireAuth: false },
     { href: "/pricing", label: t("nav.pricing"), icon: CreditCard, requireAuth: false },
     { href: "/profile", label: t("nav.profile"), icon: UserIcon, requireAuth: false },
