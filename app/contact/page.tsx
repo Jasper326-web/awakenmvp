@@ -1,9 +1,8 @@
-import { useLanguage } from '@/lib/lang-context'
+"use client"
+
 import { Mail, MessageCircle, HelpCircle, Clock } from 'lucide-react'
 
 export default function ContactPage() {
-  const { t } = useLanguage()
-  
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
@@ -21,7 +20,7 @@ export default function ContactPage() {
                     <Mail className="w-5 h-5 text-blue-400" />
                     <div>
                       <p className="text-white font-medium">Email Support</p>
-                      <p className="text-gray-300">support@awakenhub.org</p>
+                      <p className="text-gray-300">jdfz13zqy@gmail.com</p>
                     </div>
                   </div>
                   
@@ -56,57 +55,26 @@ export default function ContactPage() {
               </div>
             </div>
             
-            {/* Contact Form */}
+            {/* Direct Contact Info */}
             <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6">
-              <h2 className="text-2xl font-semibold text-white mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-semibold text-white mb-6">Contact Us Directly</h2>
               
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Name</label>
-                  <input 
-                    type="text" 
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Your name"
-                  />
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-gray-300 mb-4">Send us an email directly:</p>
+                  <a 
+                    href="mailto:jdfz13zqy@gmail.com"
+                    className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-3 px-6 rounded-md hover:from-blue-700 hover:to-purple-700 transition duration-200"
+                  >
+                    jdfz13zqy@gmail.com
+                  </a>
                 </div>
                 
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Email</label>
-                  <input 
-                    type="email" 
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="your@email.com"
-                  />
+                <div className="text-center text-gray-400 text-sm">
+                  <p>Click the button above to open your email client</p>
+                  <p>We'll respond within 24 hours</p>
                 </div>
-                
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Subject</label>
-                  <select className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>General Inquiry</option>
-                    <option>Technical Support</option>
-                    <option>Payment Issue</option>
-                    <option>Account Problem</option>
-                    <option>Feature Request</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">Message</label>
-                  <textarea 
-                    rows={4}
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Please describe your issue or question..."
-                  ></textarea>
-                </div>
-                
-                <button 
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-2 px-4 rounded-md hover:from-blue-700 hover:to-purple-700 transition duration-200"
-                >
-                  Send Message
-                </button>
-              </form>
+              </div>
             </div>
           </div>
           
@@ -116,32 +84,30 @@ export default function ContactPage() {
             
             <div className="space-y-4">
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-white mb-3">How do I reset my password?</h3>
+                <h3 className="text-xl font-semibold text-white mb-3">How do I log in to my account?</h3>
                 <p className="text-gray-300">
-                  Click on the "Forgot Password" link on the login page. You'll receive a reset link via email.
+                  We use Google and GitHub for secure authentication. Simply click the "Sign in with Google" or "Sign in with GitHub" button on the login page. No password reset is needed as authentication is handled by these trusted providers.
                 </p>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6">
                 <h3 className="text-xl font-semibold text-white mb-3">How do I cancel my subscription?</h3>
                 <p className="text-gray-300">
-                  Go to your profile settings and click on "Subscription Management" to cancel your subscription at any time.
+                  Subscriptions are managed through our payment provider, Creem. To cancel your subscription, please contact us at jdfz13zqy@gmail.com and we'll help you with the cancellation process.
                 </p>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6">
                 <h3 className="text-xl font-semibold text-white mb-3">Is my data secure?</h3>
                 <p className="text-gray-300">
-                  Yes, we use industry-standard encryption and security measures to protect your personal information. 
-                  See our Privacy Policy for more details.
+                  Yes, we use industry-standard encryption and security measures to protect your personal information. Your data is stored securely on Supabase and all communications are encrypted. See our Privacy Policy for more details.
                 </p>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6">
                 <h3 className="text-xl font-semibold text-white mb-3">Can I delete my account?</h3>
                 <p className="text-gray-300">
-                  Yes, you can request account deletion by contacting us at support@awakenhub.org. 
-                  We'll process your request within 30 days.
+                  Yes, you can request account deletion by contacting us at jdfz13zqy@gmail.com. We'll process your request within 30 days and permanently remove all your data from our systems.
                 </p>
               </div>
             </div>

@@ -1,8 +1,4 @@
-import { useLanguage } from '@/lib/lang-context'
-
 export default function PrivacyPage() {
-  const { t } = useLanguage()
-  
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
@@ -27,7 +23,9 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">How We Use Your Information</h2>
               <p className="mb-4">
-                We use the information we collect to provide, maintain, and improve our services:
+                We use the information we collect to provide, maintain, and improve our services, 
+                including providing personalized addiction recovery support, tracking your progress, 
+                processing payments, and more.
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Provide personalized addiction recovery support</li>
@@ -41,7 +39,9 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">Data Protection</h2>
               <p className="mb-4">
-                We implement appropriate security measures to protect your personal information:
+                We implement appropriate security measures to protect your personal information, 
+                including encryption of data in transit and at rest, secure authentication and 
+                access controls, and regular security assessments.
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Encryption of data in transit and at rest</li>
@@ -54,7 +54,9 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">Third-Party Services</h2>
               <p className="mb-4">
-                We use trusted third-party services to support our platform:
+                We use trusted third-party services to support our platform, including Supabase 
+                (database and authentication), Creem (payment processing), Vercel (hosting and 
+                deployment), and Google Analytics (usage analytics).
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Supabase (database and authentication)</li>
@@ -78,7 +80,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">Contact Us</h2>
               <p className="mb-4">
-                If you have any questions about this Privacy Policy, please contact us:
+                If you have any questions about this Privacy Policy, please contact us at support@awakenhub.org
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Email: support@awakenhub.org</li>

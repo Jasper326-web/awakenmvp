@@ -43,7 +43,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [codeSent, setCodeSent] = useState(false)
   const [codeTimer, setCodeTimer] = useState(0)
   const [codeLoading, setCodeLoading] = useState(false)
-  const [guestLoading, setGuestLoading] = useState(false)
 
   const handleGoogleSignIn = async () => {
     setLoading("google")
@@ -98,36 +97,37 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     if (res.ok) {
       setCodeSent(true)
       setRegisterSuccess('验证码已发送到邮箱，请查收')
+      // 开始倒计时
       setCodeTimer(60)
       const timer = setInterval(() => {
-        setCodeTimer(t => {
-          if (t <= 1) { clearInterval(timer); return 0 }
-          return t - 1
+        setCodeTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer)
+            return 0
+          }
+          return prev - 1
         })
       }, 1000)
     } else {
-      setRegisterError('验证码发送失败，请稍后重试')
+      const errorData = await res.json()
+      setRegisterError(errorData.error || '发送验证码失败')
     }
   }
 
-  // 注册
+  // 注册逻辑
   const handleRegister = async () => {
     setRegisterError('')
     setRegisterSuccess('')
-    if (!email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
-      setRegisterError('请输入有效的邮箱地址')
-      return
-    }
-    if (password.length < 6) {
-      setRegisterError('密码至少6位')
+    if (!email || !password || !confirmPassword || !code) {
+      setRegisterError('请填写所有必填字段')
       return
     }
     if (password !== confirmPassword) {
       setRegisterError('两次输入的密码不一致')
       return
     }
-    if (!code) {
-      setRegisterError('请输入验证码')
+    if (password.length < 6) {
+      setRegisterError('密码长度至少6位')
       return
     }
     setRegisterLoading(true)
@@ -139,7 +139,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     })
     setRegisterLoading(false)
     if (res.ok) {
-      setRegisterSuccess('注册成功！请前往邮箱点击激活链接后再登录。')
+      setRegisterSuccess('注册成功！请登录')
       setMode('login')
       setEmail('')
       setPassword('')
@@ -147,70 +147,28 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       setCode('')
       setCodeSent(false)
     } else {
-      const data = await res.json().catch(() => ({}))
-      setRegisterError(data.error || '注册失败，请重试')
+      const errorData = await res.json()
+      setRegisterError(errorData.error || '注册失败')
     }
   }
 
-  // 登录
+  // 登录逻辑
   const handleLogin = async () => {
     setLoginError('')
-    if (!email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
-      setLoginError('请输入有效的邮箱地址')
-      return
-    }
-    if (!password) {
-      setLoginError('请输入密码')
+    if (!email || !password) {
+      setLoginError('请填写邮箱和密码')
       return
     }
     setLoginLoading(true)
-    const result = await authService.signIn(email, password)
+    const { error: authError } = await authService.signIn(email, password)
     setLoginLoading(false)
-    if (result.error) {
-      if (result.error.message && result.error.message.toLowerCase().includes('email not confirmed')) {
-        setLoginError('请先前往邮箱点击激活链接后再登录')
-      } else {
-        setLoginError(result.error.message || '登录失败')
-      }
+    if (authError) {
+      setLoginError(authError.message)
     } else {
       onOpenChange(false)
-      window.location.reload()
+      router.push('/')
+      router.refresh()
     }
-  }
-
-  // 游客登录逻辑
-  const handleGuestLogin = async () => {
-    setGuestLoading(true)
-    setError("")
-    // 检查当前是否已登录
-    const currentUser = await authService.getCurrentUser()
-    if (currentUser) {
-      setGuestLoading(false)
-      return
-    }
-    // 尝试 Supabase 匿名登录
-    let guestResult
-    if (supabase.auth.signInAnonymously) {
-      guestResult = await supabase.auth.signInAnonymously()
-    } else {
-      // 兼容无 signInAnonymously 的 supabase-js 版本，自动注册随机邮箱
-      const guestId = crypto.randomUUID()
-      const guestEmail = `guest_${guestId}@guest.awaken`
-      const guestPassword = crypto.randomUUID().slice(0, 12)
-      guestResult = await authService.signUp(guestEmail, guestPassword)
-    }
-    setGuestLoading(false)
-    if (guestResult.error) {
-      setError(guestResult.error.message || 'Guest login failed')
-      return
-    }
-    // 标记 guest
-    if (guestResult.data?.user) {
-      guestResult.data.user.isGuest = true
-    }
-    onOpenChange(false)
-    router.push('/')
-    router.refresh()
   }
 
   return (
@@ -261,17 +219,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </svg>
                 <span>{t("auth.github_login")}</span>
               </>
-            )}
-          </Button>
-          <Button
-            onClick={handleGuestLogin}
-            disabled={guestLoading}
-            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300 h-11 flex items-center justify-center space-x-3 font-medium shadow-sm hover:shadow-md transition-all duration-150 mt-2"
-          >
-            {guestLoading ? (
-              <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <span>{t("auth.continue_as_guest")}</span>
             )}
           </Button>
         </div>

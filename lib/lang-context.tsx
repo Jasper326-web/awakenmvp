@@ -66,6 +66,8 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.ai_coach_desc": "智能咨询",
     "profile.level_tooltip": `等级说明：\n- Lv.0：当前连签不足7天\n- Lv.1：连签满7天\n- Lv.2：连签满30天\n- Lv.3：连签满90天\n- Lv.4：连签满180天\n- Lv.5：连签满365天\n\n提升等级需要保持连续签到，达到对应天数即可升级。坚持打卡，解锁更高荣誉！`,
 
+
+
     // 排行榜页面
     "leaderboard.title": "排行榜",
     "leaderboard.subtitle": "与其他用户一起进步，互相激励",
@@ -225,9 +227,6 @@ const translations: Record<Language, Record<string, string>> = {
     // 感谢页面
     "thankyou.title": "感谢您的支持！",
     "thankyou.subtitle": "您的反馈对我们非常重要",
-
-    // 隐私政策
-    "privacy.title": "隐私政策",
 
     // 首页英雄区
     "home.world_first": "世界上第一个<span class='highlight'>佛学</span>戒色社群",
@@ -852,9 +851,7 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.member_access": "Premium access enabled",
     "pricing.cancel_info": "Cancel anytime, auto-renewal",
     "pricing.contact_support": "Contact support if you have questions",
-    // 英文分支
-"plans.sample_task 1": "Meditation Practice",
-"plans.sample_task 2": "Exercise & Fitness",
+
     //底部及导航栏登录组件
     "home.awaken_title": "Awaken",
     "home.about_desc": "Awaken helps you build discipline and reshape your life.",
@@ -891,13 +888,7 @@ const translations: Record<Language, Record<string, string>> = {
 "profile.feature_settings": "Settings",
 "profile.feature_settings_desc": "Personalize your experience",
 
-"plans.sample_tasks": "Sample Tasks",
-"plans.sample_task_1": "Meditation Practice",
-"plans.sample_task_1_desc": "Meditate for 10 minutes daily to build focus",
-"plans.sample_button": "Start Task",
-"plans.sample_task_2": "Exercise & Fitness",
-"plans.sample_task_2_desc": "Exercise for 30 minutes daily to improve health",
-"plans.sample_task_desc": "Task Description",
+
 
 // AI 相关
 "ai.remaining": "remaining",
@@ -908,6 +899,8 @@ const translations: Record<Language, Record<string, string>> = {
     "plans.mantra_practice": "Mantra Practice",
     "plans.mantra.title": "Zhunti Mantra",
     "plans.mantra.desc": "Chant daily to strengthen willpower and mindfulness",
+
+
     "plans.mantra.note": "It is recommended to chant once in the morning and once in the evening, persevere for best results.",
     "plans.chanting_method": "Chanting Method",
     "plans.find_quiet_place": "Find a quiet place and relax your body and mind",
@@ -979,6 +972,4 @@ export function useLanguage() {
     throw new Error("useLanguage must be used within a LanguageProvider")
   }
   return context
-}
-
-export default translations 
+} 
