@@ -425,7 +425,15 @@ export default function HomePage() {
           <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">{t("home.copyright")}</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <PrivacyPolicyModal />
+              <a href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Privacy Policy
+              </a>
+              <a href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Terms of Service
+              </a>
+              <a href="/contact" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Contact
+              </a>
             </div>
           </div>
         </footer>
@@ -752,7 +760,15 @@ export default function HomePage() {
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">{t("home.copyright")}</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <PrivacyPolicyModal />
+            <a href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Terms of Service
+            </a>
+            <a href="/contact" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Contact
+            </a>
           </div>
         </div>
       </footer>
@@ -760,81 +776,4 @@ export default function HomePage() {
   )
 }
 
-// 隐私政策弹窗组件
-function PrivacyPolicyModal() {
-  const [open, setOpen] = useState(false)
-  const { t } = useLanguage()
 
-  return (
-    <>
-      <button onClick={() => setOpen(true)} className="text-gray-400 hover:text-white text-sm transition-colors">
-        {t("privacy.title")}
-      </button>
-
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-slate-800 to-purple-900 border border-purple-700/50 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white">{t("privacy.title")}</h2>
-                <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-white transition-colors">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="space-y-4 text-gray-300">
-                <section>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("privacy.collection.title")}</h3>
-                  <p className="text-sm leading-relaxed">
-                    {t("privacy.collection.desc")}
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("privacy.usage.title")}</h3>
-                  <p className="text-sm leading-relaxed">
-                    {t("privacy.usage.desc")}
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("privacy.protection.title")}</h3>
-                  <p className="text-sm leading-relaxed">
-                    {t("privacy.protection.desc")}
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("privacy.third_party.title")}</h3>
-                  <p className="text-sm leading-relaxed">
-                    {t("privacy.third_party.desc")}
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("privacy.deletion.title")}</h3>
-                  <p className="text-sm leading-relaxed">
-                    {t("privacy.deletion.desc")}
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-lg font-semibold text-white mb-2">{t("privacy.contact.title")}</h3>
-                  <p className="text-sm leading-relaxed">
-                    {t("privacy.contact.desc")}
-                  </p>
-                </section>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-purple-700/30">
-                <p className="text-xs text-gray-400 text-center">{t("privacy.last_updated")}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
