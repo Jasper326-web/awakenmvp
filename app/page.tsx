@@ -247,7 +247,7 @@ export default function HomePage() {
                   <p className="text-gray-400">{t("home.limited_event_section.challenge_days")}</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
+                  <div className="text-3xl font-bold text-green-400 mb-2">Growing</div>
                   <p className="text-gray-400">{t("home.limited_event_section.participants")}</p>
                 </div>
                 <div className="text-center">
@@ -582,7 +582,7 @@ export default function HomePage() {
                 <p className="text-gray-400">{t("home.limited_event_section.challenge_days")}</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
+                <div className="text-3xl font-bold text-green-400 mb-2">Growing</div>
                 <p className="text-gray-400">{t("home.limited_event_section.participants")}</p>
               </div>
               <div className="text-center">

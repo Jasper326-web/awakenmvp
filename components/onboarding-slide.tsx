@@ -136,7 +136,7 @@ export default function OnboardingSlide({
           {isLastSlide && (
             <div className="text-center">
               <p className="text-white/70 text-sm">
-                {t("onboarding.community").replace("{count}", "50,000")}
+                {t("onboarding.community").replace("{count}", "thousands of")}
               </p>
             </div>
           )}
