@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
+export const dynamic = 'force-dynamic'
+
 // 默认的中文每日推送内容
 const DEFAULT_DAILY_PUSHES = {
   "2025-01-21": {
