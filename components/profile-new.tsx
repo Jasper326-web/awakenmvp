@@ -31,7 +31,8 @@ import {
   Zap,
   ChevronRight,
   CheckCircle,
-  X
+  X,
+  CreditCard
 } from "lucide-react"
 import { supabase } from "@/lib/supabaseClient"
 import { authService } from "@/lib/auth"
@@ -410,104 +411,167 @@ export default function ProfileNew() {
     }
   }
 
+  // 调用Creem API取消订阅
+  const handleManageSubscription = async () => {
+    try {
+      const response = await fetch('/api/cancel-creem-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      const result = await response.json()
+      
+      if (response.ok) {
+        toast({
+          title: "订阅已取消",
+          description: "您的自动续费已取消，当前会员权限将在到期后失效。感谢您的使用！",
+        })
+      } else {
+        toast({
+          title: "取消失败",
+          description: result.error || "取消订阅时出现错误，请稍后重试",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error("取消订阅过程中出错:", error)
+      toast({
+        title: "取消失败",
+        description: "取消订阅时出现错误，请稍后重试",
+        variant: "destructive"
+      })
+    }
+  }
+
   // 未登录状态友好展示
-  const NotLoggedInBanner = () => (
-    <div className="w-full flex flex-col items-center justify-center py-8">
-      <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseLoginToView")}</div>
-      <button
-        className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
-        onClick={() => setAuthModalOpen(true)}
-      >
-        {t("common.loginButton")}
-      </button>
-    </div>
-  )
+
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-white text-lg">Loading...</div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
       </div>
     )
   }
 
-  // 未登录状态显示友好引导
+  // 未登录状态显示完整个人页面内容，但数据为占位符
   if (!user) {
     return (
-      <div className="space-y-6">
-        <NotLoggedInBanner />
-        
-        {/* 占位内容 - 显示示例个人资料 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Trophy className="h-5 w-5" />
-                {t("profile.current_streak")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-2">--</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Star className="h-5 w-5" />
-                {t("profile.max_streak")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-2">--</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Activity className="h-5 w-5" />
-                {t("profile.total_days")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-2">--</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* 占位功能区域 */}
-        <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <User className="w-6 h-6 mr-2" />
-              {t("profile.features")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-50">
-              {[
-                { icon: Calendar, title: t("profile.feature_daily_checkin"), desc: t("profile.feature_daily_checkin_desc") },
-                { icon: Target, title: t("profile.feature_plans"), desc: t("profile.feature_plans_desc") },
-                { icon: Trophy, title: t("profile.feature_leaderboard"), desc: t("profile.feature_leaderboard_desc") },
-                { icon: Brain, title: t("profile.feature_ai_coach"), desc: t("profile.feature_ai_coach_desc") },
-                { icon: Users, title: t("profile.feature_community"), desc: t("profile.feature_community_desc") },
-                { icon: Settings, title: t("profile.feature_settings"), desc: t("profile.feature_settings_desc") }
-              ].map((item, index) => (
-                <div key={index} className="flex items-center space-x-3 p-4 bg-white/5 rounded-lg">
-                  <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
-                    <item.icon className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-white">{item.title}</h3>
-                    <p className="text-sm text-gray-300">{item.desc}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto space-y-6">
+            
+            {/* 用户信息头部卡片 */}
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative group cursor-pointer" onClick={() => setAuthModalOpen(true)}>
+                      <Avatar className="w-20 h-20 border-4 border-gray-500/50 opacity-60">
+                        <AvatarImage src="/placeholder-user.jpg" />
+                        <AvatarFallback className="bg-gray-600 text-white text-xl">
+                          ?
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <div className="text-center">
+                          <User className="w-6 h-6 text-white mx-auto mb-1" />
+                          <span className="text-xs text-white font-medium">{t("common.clickToLogin")}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl font-bold text-gray-300">{t("profile.not_logged_in_user")}</span>
+                      </div>
+                      <p className="text-gray-400">{t("profile.login_to_view_profile")}</p>
+                    </div>
                   </div>
                 </div>
-              ))}
+              </CardContent>
+            </Card>
+            
+            {/* 统计卡片 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Trophy className="h-5 w-5" />
+                    {t("profile.current_streak")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-2 text-gray-400">--</div>
+                  <p className="text-sm text-gray-500">{t("common.pleaseLoginToView")}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Star className="h-5 w-5" />
+                    {t("profile.max_streak")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-2 text-gray-400">--</div>
+                  <p className="text-sm text-gray-500">{t("common.pleaseLoginToView")}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Activity className="h-5 w-5" />
+                    {t("profile.total_days")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-2 text-gray-400">--</div>
+                  <p className="text-sm text-gray-500">{t("common.pleaseLoginToView")}</p>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-        
-        {/* Auth Modal */}
-        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+
+            {/* 功能区域 */}
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <User className="w-6 h-6 mr-2" />
+                  {t("profile.features")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-60">
+                  {[
+                    { icon: Calendar, title: t("profile.feature_daily_checkin"), desc: t("profile.feature_daily_checkin_desc") },
+                    { icon: Target, title: t("profile.feature_plans"), desc: t("profile.feature_plans_desc") },
+                    { icon: Trophy, title: t("profile.feature_leaderboard"), desc: t("profile.feature_leaderboard_desc") },
+                    { icon: Brain, title: t("profile.feature_ai_coach"), desc: t("profile.feature_ai_coach_desc") },
+                    { icon: Users, title: t("profile.feature_community"), desc: t("profile.feature_community_desc") },
+                    { icon: Settings, title: t("profile.feature_settings"), desc: t("profile.feature_settings_desc") }
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-center space-x-3 p-4 bg-white/5 rounded-lg">
+                      <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                        <item.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-white">{item.title}</h3>
+                        <p className="text-sm text-gray-300">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Auth Modal */}
+            <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+          </div>
+        </div>
       </div>
     )
   }
@@ -521,8 +585,22 @@ export default function ProfileNew() {
         <div className="max-w-6xl mx-auto space-y-6">
           
           {/* 用户信息头部卡片 */}
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white relative">
             <CardContent className="p-6">
+              {/* 会员管理按钮 - 右上角精致图标 */}
+              {(isPremium || isPro) && (
+                <button
+                  className="absolute top-3 right-3 w-8 h-8 bg-coral-500/20 border border-coral-500/50 rounded-full flex items-center justify-center text-coral-400 hover:bg-coral-500/30 hover:text-coral-300 transition-all duration-200 group"
+                  onClick={() => handleManageSubscription()}
+                  title={t('profile.manage_subscription')}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-slate-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {t('profile.manage_subscription')}
+                  </div>
+                </button>
+              )}
+              
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="relative group">
@@ -550,6 +628,7 @@ export default function ProfileNew() {
                           <span>{isPremium ? 'Premium' : 'Pro'}</span>
                         </div>
                       )}
+
                       <button
                         className="ml-2 text-gray-400 hover:text-white"
                         onClick={() => { setNewName(user.username || ''); setEditNameOpen(true) }}

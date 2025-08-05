@@ -4,24 +4,43 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Check, X, Star } from "lucide-react"
+import { Check, X, Star, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { authService } from "@/lib/auth"
+import { supabase } from "@/lib/supabaseClient"
 import Image from "next/image"
 import { useLanguage } from '@/lib/lang-context'
+import AuthModal from '@/components/auth-modal'
 
 export default function PricingPage() {
   const router = useRouter()
   const { t } = useLanguage()
   const [user, setUser] = useState<any>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
       const currentUser = await authService.getCurrentUser()
       setUser(currentUser)
     }
+    
+    // 初始检查
     checkAuth()
+    
+    // 监听认证状态变化
+    const { data: { subscription } } = authService.onAuthStateChange(async (event, session) => {
+      console.log("[Pricing] 认证状态变化:", event, session?.user?.email)
+      if (event === "SIGNED_IN" && session) {
+        setUser(session.user)
+      } else if (event === "SIGNED_OUT") {
+        setUser(null)
+      }
+    })
+    
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   const handleFreeTrial = () => {
@@ -41,7 +60,8 @@ export default function PricingPage() {
     t("pricing.benefit.free.video"),
     t("pricing.benefit.free.ai"),
     t("pricing.benefit.free.professional_test"),
-    t("pricing.benefit.free.professional_analysis")
+    t("pricing.benefit.free.professional_analysis"),
+    t("pricing.benefit.free.community")
   ]
   const premiumFeatures = [
     t("pricing.benefit.premium.all_free"),
@@ -49,8 +69,7 @@ export default function PricingPage() {
     t("pricing.benefit.premium.video"),
     t("pricing.benefit.premium.ai"),
     t("pricing.benefit.premium.plan"),
-    t("pricing.benefit.premium.analytics"),
-    t("pricing.benefit.premium.community")
+    t("pricing.benefit.premium.analytics")
   ]
 
   return (
@@ -70,7 +89,7 @@ export default function PricingPage() {
               <CardTitle className="text-2xl font-bold text-white">{t("pricing.free_plan")}</CardTitle>
               <CardDescription className="text-gray-300 mt-2">{t("pricing.free_desc")}</CardDescription>
               <div className="mt-6">
-                <span className="text-4xl font-bold text-white">¥0</span>
+                <span className="text-4xl font-bold text-white">$0</span>
                 <span className="text-gray-300 ml-2">{t("pricing.forever")}</span>
               </div>
             </CardHeader>
@@ -128,16 +147,49 @@ export default function PricingPage() {
               <Button
                 className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-lg transition-colors"
                 onClick={async () => {
-                  const res = await fetch("/api/create-creem-session", { method: "POST" });
-                  const { checkout_url } = await res.json();
-                  if (checkout_url) {
-                    window.location.href = checkout_url;
-                  } else {
+                  // 重新检查用户状态
+                  const currentUser = await authService.getCurrentUser()
+                  if (!currentUser) {
+                    setAuthModalOpen(true);
+                    return;
+                  }
+                  
+                  try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session?.access_token) {
+                      console.error("无法获取用户认证token");
+                      alert(t("pricing.payment_error"));
+                      return;
+                    }
+                    
+                    const res = await fetch("/api/create-creem-session", { 
+                      method: "POST",
+                      headers: {
+                        "Authorization": `Bearer ${session.access_token}`,
+                        "Content-Type": "application/json"
+                      }
+                    });
+                    
+                    if (!res.ok) {
+                      const errorData = await res.json();
+                      console.error("创建支付会话失败:", errorData);
+                      alert(t("pricing.payment_error"));
+                      return;
+                    }
+                    
+                    const { checkout_url } = await res.json();
+                    if (checkout_url) {
+                      window.location.href = checkout_url;
+                    } else {
+                      alert(t("pricing.payment_error"));
+                    }
+                  } catch (error) {
+                    console.error("支付流程错误:", error);
                     alert(t("pricing.payment_error"));
                   }
                 }}
               >
-                {t("pricing.join_membership")}
+                {t("pricing.subscribe_monthly")}
               </Button>
               <div className="text-center text-yellow-200 text-xs mt-4">
                 {t("pricing.payment_success")}<br />
@@ -156,6 +208,11 @@ export default function PricingPage() {
           </p>
         </div>
       </div>
+
+
+
+      {/* 登录弹窗 */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   )
 }

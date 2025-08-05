@@ -64,6 +64,32 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.feature_community_desc": "与其他用户交流分享",
     "profile.ai_coach": "AI助教",
     "profile.ai_coach_desc": "智能咨询",
+    "profile.cancel_subscription": "取消订阅",
+    "profile.cancel_subscription_en": "Cancel Subscription",
+    "profile.manage_subscription": "取消订阅",
+    "profile.manage_subscription_desc": "取消自动续费，停止后续扣款。",
+    "subscription.manage_title": "Manage Subscription",
+    "subscription.manage_subtitle": "View your subscription status and manage billing",
+    "subscription.current_status": "Current Status",
+    "subscription.type": "Subscription Type",
+    "subscription.status": "Status",
+    "subscription.end_date": "End Date",
+    "subscription.days_remaining": "Days Remaining",
+    "subscription.days": "days",
+    "subscription.cancel_options": "Cancel Subscription",
+    "subscription.method_email": "Email Support",
+    "subscription.method_email_desc": "Send an email to Creem support team to cancel your subscription",
+    "subscription.contact_support": "Contact Support",
+    "subscription.method_website": "Visit Creem Website",
+    "subscription.method_website_desc": "Visit Creem's official website to find support options",
+    "subscription.visit_creem": "Visit Creem",
+    "subscription.method_discord": "Discord Support",
+    "subscription.method_discord_desc": "Join Creem's Discord server for direct support",
+    "subscription.join_discord": "Join Discord",
+    "subscription.important_note": "Important Notes",
+    "subscription.cancel_note_1": "• Your subscription will remain active until the end of the current billing period",
+    "subscription.cancel_note_2": "• You can continue using all premium features until the subscription expires",
+    "subscription.cancel_note_3": "• Contact Creem support for any billing-related questions",
     "profile.level_tooltip": `等级说明：\n- Lv.0：当前连签不足7天\n- Lv.1：连签满7天\n- Lv.2：连签满30天\n- Lv.3：连签满90天\n- Lv.4：连签满180天\n- Lv.5：连签满365天\n\n提升等级需要保持连续签到，达到对应天数即可升级。坚持打卡，解锁更高荣誉！`,
 
 
@@ -159,7 +185,8 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.benefit.free.video": "基础视频功能",
     "pricing.benefit.free.ai": "每日5条AI咨询",
     "pricing.benefit.free.professional_test": "专业测试评估",
-    "pricing.benefit.free.professional_analysis": "基础数据分析",
+"pricing.benefit.free.professional_analysis": "基础数据分析",
+"pricing.benefit.free.community": "社区交流",
     "pricing.benefit.premium.all_free": "所有免费功能",
     "pricing.benefit.premium.daily_push": "每日个性化推送",
     "pricing.benefit.premium.video": "高级视频功能",
@@ -263,6 +290,11 @@ const translations: Record<Language, Record<string, string>> = {
 "common.pleaseLoginToView": "请登录后查看",
 "common.pleaseLoginToUse": "请登录后使用完整功能",
 "common.loginButton": "立即登录",
+"common.takeTest": "开始测试",
+"pricing.please_login_first": "请先登录后再购买会员",
+"pricing.login_required": "需要登录",
+"pricing.login_required_desc": "为了确保您的会员权益能够正确关联到您的账号，请先登录后再购买会员服务。",
+"common.cancel": "取消",
 
 "profile.features": "功能总览",
 "profile.feature_daily_checkin": "每日打卡",
@@ -283,6 +315,8 @@ const translations: Record<Language, Record<string, string>> = {
 "plans.sample_task_2": "运动健身",
 "plans.sample_task_2_desc": "每天运动30分钟，增强体质",
 "plans.sample_task_desc": "任务描述",
+"plans.pleaseCompleteTest": "请先完成戒色测试",
+"plans.startTest": "开始测试",
 
 // AI 相关
 "ai.remaining": "剩余",
@@ -394,6 +428,26 @@ const translations: Record<Language, Record<string, string>> = {
     "community.premium_feature_1": "加入专属成长社群",
     "community.premium_feature_2": "获得专家答疑与专属内容",
     "community.back_to_home": "返回首页",
+    "community.confirmDelete": "确定要删除这条帖子吗？",
+    "community.deleteSuccess": "删除成功",
+    "community.deleteFailed": "删除失败",
+    "community.postDeleted": "帖子已删除",
+    "community.delete": "删除",
+    "community.select_image": "选择图片",
+    "community.click_to_upload": "点击上传",
+    "community.image_formats": "支持 JPG、PNG、GIF、WebP 格式",
+    "community.image_upload_tip": "上传图片增强帖子内容",
+    "community.login_required_to_post": "登录后才能发布帖子",
+    "community.write_comment": "写下你的评论...",
+    "community.send": "发送",
+    "community.sending": "发送中...",
+    "community.page": "第",
+    "community.of": "页，共",
+    "community.pages": "页",
+    "community.previous": "上一页",
+    "community.next": "下一页",
+    "community.confirmDeleteComment": "确定要删除这条评论吗？",
+    "community.deleteComment": "删除评论",
     // 方案页与任务补充
     "task.daily_checkin": "每日打卡",
     "task.daily_checkin_desc": "记录今日状态，养成好习惯",
@@ -416,6 +470,13 @@ const translations: Record<Language, Record<string, string>> = {
     "plans.nofap_audio_library": "戒色音频库",
     "plans.click_to_play": "点击播放",
     "plans.professional_nofap_audio_desc": "专业音频内容，助你科学戒色，提升自律力。",
+    "plans.nofap_article_library": "戒色文章库",
+    "plans.article.chapter1": "第一章：戒色基础知识",
+    "plans.article.chapter2": "第二章：应对冲动的技巧",
+    "plans.article.chapter3": "第三章：长期坚持的方法",
+    "plans.article.chapter4": "第四章：心理建设与自我管理",
+    "plans.article.chapter5": "第五章：社交与人际关系",
+    "plans.article.chapter6": "第六章：生活重建与目标设定",
     // 价格页补充
     "pricing.title": "会员定价",
     "pricing.subtitle": "选择最适合你的成长方案",
@@ -428,11 +489,30 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.recommended": "推荐",
     "pricing.per_month": "/月",
     "pricing.join_membership": "立即开通会员",
+    "pricing.one_time_purchase": "一次性购买",
+    "pricing.subscribe_monthly": "订阅月付",
     "pricing.continuous_update": "持续更新更多功能",
     "pricing.payment_success": "支付成功，欢迎加入会员！",
     "pricing.member_access": "会员专属权限已开启",
     "pricing.cancel_info": "随时可取消，自动续费",
     "pricing.contact_support": "如有疑问请联系客服",
+    "pricing.payment_error": "支付创建失败，请稍后重试",
+    
+    // 支付成功页面
+    "payment.verifying_payment": "验证支付状态",
+    "payment.please_wait": "请稍候，我们正在确认您的支付...",
+    "payment.verification_failed": "支付验证失败",
+    "payment.back_to_pricing": "返回定价页面",
+    "payment.back_to_home": "返回首页",
+    "payment.welcome_premium": "欢迎成为Premium会员！",
+    "payment.payment_successful": "支付成功",
+    "payment.premium_activated": "Premium权限已激活",
+    "payment.you_can_now_enjoy": "您现在可以享受：",
+    "payment.unlimited_ai": "无限制AI助教对话",
+    "payment.all_resources": "所有PDF和音频资源",
+    "payment.exclusive_community": "专属会员社区",
+    "payment.complete_plan": "完整的个性化方案",
+    "payment.experience_complete_plan": "立即体验完整方案",
     //补充
 "task.daily_checkin_desc_moderate": "记录今日状态和日志",
 "task.daily_checkin_desc_heavy": "记录今日状态、日志，并上传视频",
@@ -473,8 +553,38 @@ const translations: Record<Language, Record<string, string>> = {
 "checkinModal.failed": "破戒",
 "checkinModal.todayReflection": "日志记录",
 "checkinModal.saveCheckin": "保存打卡",
-"checkinModal.videoUploaded": "视频已上传",
-"checkinModal.reRecord": "重新录制",
+    "checkinModal.videoUploaded": "视频已上传",
+    "checkinModal.reRecord": "重新录制",
+    "checkinModal.previewMode": "预览模式",
+    "checkinModal.previewModeDesc": "您可以体验打卡功能，但需要登录后才能保存数据",
+    "checkinModal.cameraTip": "摄像头提示",
+    "checkinModal.cameraTipDesc": "请检查并开启电脑前置摄像头，确保摄像头权限已开启",
+    
+    // 日期格式化
+    "date.january": "1月",
+    "date.february": "2月", 
+    "date.march": "3月",
+    "date.april": "4月",
+    "date.may": "5月",
+    "date.june": "6月",
+    "date.july": "7月",
+    "date.august": "8月",
+    "date.september": "9月",
+    "date.october": "10月",
+    "date.november": "11月",
+    "date.december": "12月",
+    "date.sunday": "星期日",
+    "date.monday": "星期一",
+    "date.tuesday": "星期二",
+    "date.wednesday": "星期三",
+    "date.thursday": "星期四",
+    "date.friday": "星期五",
+    "date.saturday": "星期六",
+    "date.day": "日",
+    "date.just_now": "刚刚",
+    "date.minutes_ago": "分钟前",
+    "date.hours_ago": "小时前",
+    "date.days_ago": "天前",
   },
   en: {
     // 公告栏
@@ -528,6 +638,9 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.feature_community_desc": "Connect and share with others",
     "profile.ai_coach": "AI Coach",
     "profile.ai_coach_desc": "Intelligent consultation",
+    "profile.cancel_subscription": "Cancel Subscription",
+    "profile.manage_subscription": "Cancel Subscription",
+    "profile.manage_subscription_desc": "Cancel auto-renewal and stop future charges.",
     "profile.level_tooltip": `Level Guide:\n- Lv.0: Less than 7 consecutive check-ins\n- Lv.1: 7 consecutive check-ins\n- Lv.2: 30 consecutive check-ins\n- Lv.3: 90 consecutive check-ins\n- Lv.4: 180 consecutive check-ins\n- Lv.5: 365 consecutive check-ins\n\nKeep checking in to level up and unlock more honors!`,
 //补充
 "task.daily_checkin_desc": "Log today’s status",
@@ -624,7 +737,8 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.benefit.free.video": "Basic Video Features",
     "pricing.benefit.free.ai": "5 AI Consultations Daily",
     "pricing.benefit.free.professional_test": "Professional Assessment",
-    "pricing.benefit.free.professional_analysis": "Basic Data Analysis",
+"pricing.benefit.free.professional_analysis": "Basic Data Analysis",
+"pricing.benefit.free.community": "Community Support",
     "pricing.benefit.premium.all_free": "All Free Features",
     "pricing.benefit.premium.daily_push": "Daily Personalized Push",
     "pricing.benefit.premium.video": "Advanced Video Features",
@@ -667,6 +781,26 @@ const translations: Record<Language, Record<string, string>> = {
     "community.premium_feature_1": "Join exclusive growth community",
     "community.premium_feature_2": "Get expert Q&A and exclusive content",
     "community.back_to_home": "Back to Home",
+    "community.confirmDelete": "Are you sure you want to delete this post?",
+    "community.deleteSuccess": "Delete Success",
+    "community.deleteFailed": "Delete Failed",
+    "community.postDeleted": "Post has been deleted",
+    "community.delete": "Delete",
+    "community.select_image": "Select Image",
+    "community.click_to_upload": "Click to upload",
+    "community.image_formats": "JPG, PNG, GIF, WebP",
+    "community.image_upload_tip": "Upload images to enhance your post",
+    "community.login_required_to_post": "Please log in to post",
+    "community.write_comment": "Write your comment...",
+    "community.send": "Send",
+    "community.sending": "Sending...",
+    "community.page": "Page",
+    "community.of": "of",
+    "community.pages": "pages",
+    "community.previous": "Previous",
+    "community.next": "Next",
+    "community.confirmDeleteComment": "Are you sure you want to delete this comment?",
+    "community.deleteComment": "Delete Comment",
     // 日记编辑器
     "journal.records": "Journal Records",
     "journal.no_records": "No records yet",
@@ -807,6 +941,7 @@ const translations: Record<Language, Record<string, string>> = {
     "community.subtitle": "Connect and grow with like-minded friends",
     "community.premium": "Premium Only",
     "community.post_placeholder": "Share your thoughts, experiences, or questions...",
+
     "community.post": "Post",
     "community.post_success": "Posted successfully!",
     "community.post_fail": "Failed to post, please try again",
@@ -814,7 +949,6 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Plans page & tasks supplement
     "task.daily_checkin": "Daily Check-in",
-    "task.daily_checkin_desc": "Record today's status and build good habits",
     "task.exercise": "30-Minute Outdoor Walk",
     "task.exercise_desc": "Morning slow walk outdoors for 30 minutes to awaken yang energy",
     "task.audio_listen": "Audio Listening",
@@ -834,6 +968,13 @@ const translations: Record<Language, Record<string, string>> = {
     "plans.nofap_audio_library": "NoFap Audio Library",
     "plans.click_to_play": "Click to Play",
     "plans.professional_nofap_audio_desc": "Professional audio content to help you quit addiction scientifically and improve self-discipline.",
+    "plans.nofap_article_library": "NoFap Article Library",
+    "plans.article.chapter1": "Chapter 1: Basic NoFap Knowledge",
+    "plans.article.chapter2": "Chapter 2: Techniques for Managing Urges",
+    "plans.article.chapter3": "Chapter 3: Long-term Persistence Methods",
+    "plans.article.chapter4": "Chapter 4: Psychological Building and Self-Management",
+    "plans.article.chapter5": "Chapter 5: Social and Interpersonal Relationships",
+    "plans.article.chapter6": "Chapter 6: Life Reconstruction and Goal Setting",
     // Pricing page supplement
     "pricing.title": "Pricing",
     "pricing.subtitle": "Choose the best plan for your growth",
@@ -846,11 +987,14 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.recommended": "Recommended",
     "pricing.per_month": "/month",
     "pricing.join_membership": "Join Membership Now",
+    "pricing.one_time_purchase": "One-time Purchase",
+    "pricing.subscribe_monthly": "Subscribe Monthly",
     "pricing.continuous_update": "Continuous feature updates",
     "pricing.payment_success": "Payment successful, welcome to premium!",
     "pricing.member_access": "Premium access enabled",
     "pricing.cancel_info": "Cancel anytime, auto-renewal",
     "pricing.contact_support": "Contact support if you have questions",
+    "pricing.payment_error": "Payment creation failed, please try again later",
 
     //底部及导航栏登录组件
     "home.awaken_title": "Awaken",
@@ -875,6 +1019,27 @@ const translations: Record<Language, Record<string, string>> = {
 "common.pleaseLoginToView": "Please log in to view",
 "common.pleaseLoginToUse": "Please log in to use all features",
 "common.loginButton": "Log In",
+"common.takeTest": "Take Test",
+    "pricing.please_login_first": "Please log in first before purchasing membership",
+    "pricing.login_required": "Login Required",
+    "pricing.login_required_desc": "To ensure your membership benefits are properly linked to your account, please log in before purchasing membership.",
+    
+    // Payment success page
+    "payment.verifying_payment": "Verifying Payment",
+    "payment.please_wait": "Please wait while we confirm your payment...",
+    "payment.verification_failed": "Payment Verification Failed",
+    "payment.back_to_pricing": "Back to Pricing",
+    "payment.back_to_home": "Back to Home",
+    "payment.welcome_premium": "Welcome to Premium Membership!",
+    "payment.payment_successful": "Payment Successful",
+    "payment.premium_activated": "Premium Access Activated",
+    "payment.you_can_now_enjoy": "You can now enjoy:",
+    "payment.unlimited_ai": "Unlimited AI Assistant Chat",
+    "payment.all_resources": "All PDF and Audio Resources",
+    "payment.exclusive_community": "Exclusive Member Community",
+    "payment.complete_plan": "Complete Personalized Plan",
+    "payment.experience_complete_plan": "Experience Complete Plan Now",
+"common.cancel": "Cancel",
 
 "profile.features": "Features",
 "profile.feature_daily_checkin": "Daily Check-in",
@@ -946,21 +1111,83 @@ const translations: Record<Language, Record<string, string>> = {
 "checkinModal.reflectionPlaceholder": "Write your reflection, summary, or today's thoughts...",
 "checkinModal.videoRecord": "Video Check-in",
 "checkinModal.videoUploaded": "Video Uploaded",
-"checkinModal.reRecord": "Re-record"
+    "checkinModal.reRecord": "Re-record",
+    "checkinModal.previewMode": "Preview Mode",
+    "checkinModal.previewModeDesc": "You can experience the check-in feature, but need to log in to save data",
+    "checkinModal.cameraTip": "Camera Tip",
+    "checkinModal.cameraTipDesc": "Please check and enable your computer's front camera, ensure camera permissions are enabled",
+    
+    // Date formatting
+    "date.january": "January",
+    "date.february": "February",
+    "date.march": "March", 
+    "date.april": "April",
+    "date.may": "May",
+    "date.june": "June",
+    "date.july": "July",
+    "date.august": "August",
+    "date.september": "September",
+    "date.october": "October",
+    "date.november": "November",
+    "date.december": "December",
+    "date.sunday": "Sunday",
+    "date.monday": "Monday",
+    "date.tuesday": "Tuesday",
+    "date.wednesday": "Wednesday",
+    "date.thursday": "Thursday",
+    "date.friday": "Friday",
+    "date.saturday": "Saturday",
+    "date.day": "",
+    "date.just_now": "just now",
+    "date.minutes_ago": "minutes ago",
+    "date.hours_ago": "hours ago",
+    "date.days_ago": "days ago",
+    
+    // Plans page translations
+    "plans.sample_tasks": "Sample Tasks",
+    "plans.sample_task_1": "Meditation Practice",
+    "plans.sample_task_1_desc": "Meditate for 10 minutes daily to cultivate focus",
+    "plans.sample_task_2": "Exercise & Fitness",
+    "plans.sample_task_2_desc": "Exercise for 30 minutes daily to strengthen your body",
+    "plans.sample_button": "Start Task",
+    "plans.pleaseCompleteTest": "Please complete the NoFap test first",
+    "plans.startTest": "Start Test",
+    "profile.not_logged_in_user": "Not Logged In User",
+    "profile.login_to_view_profile": "Log in to view complete personal profile",
+    "common.clickToLogin": "Click to Login",
   }
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>("zh")
+  // 使用useState和useEffect来处理SSR兼容性
+  const [language, setLanguage] = useState<Language>("en") // 默认英文
+  const [mounted, setMounted] = useState(false)
+  
+  // 在客户端挂载后从localStorage读取语言偏好
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language
+    if (savedLanguage) {
+      setLanguage(savedLanguage)
+    }
+    setMounted(true)
+  }, [])
+  
+  // 当语言改变时，保存到localStorage
+  const handleSetLanguage = (lang: Language) => {
+    setLanguage(lang)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang)
+    }
+  }
   
   const t = (key: string) => {
-    return translations[language][key] || translations["zh"][key] || key
+    return translations[language][key] || translations["en"][key] || key
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   )

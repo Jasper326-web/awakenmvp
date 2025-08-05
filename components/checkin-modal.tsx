@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, CheckCircle, XCircle, FileText, Video, Upload, RotateCcw, Save } from "lucide-react"
+import { Calendar, CheckCircle, XCircle, FileText, Video, Upload, RotateCcw, Save, LogIn } from "lucide-react"
 import { toast } from "sonner"
 import { supabase, getCurrentUser } from "@/lib/supabaseClient"
 import VideoRecorder from "./video-recorder"
@@ -31,6 +31,7 @@ interface CheckinModalProps {
   userId?: string
   onVideoSaved?: (videoUrl: string) => void
   onReset?: (date: string) => void
+  isLoggedIn?: boolean
 }
 
 export default function CheckinModal({
@@ -42,8 +43,9 @@ export default function CheckinModal({
   userId,
   onVideoSaved,
   onReset,
+  isLoggedIn = true,
 }: CheckinModalProps) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [status, setStatus] = useState<"success" | "failed">("success")
   const [journalContent, setJournalContent] = useState("")
   const [videoUrl, setVideoUrl] = useState("")
@@ -81,6 +83,14 @@ export default function CheckinModal({
       setJournalContent("")
       setVideoUrl("")
 
+      // 如果用户未登录，只清除本地数据
+      if (!isLoggedIn) {
+        console.log("[打卡弹窗] 用户未登录，只清除本地数据")
+        toast.success(t("checkinModal.existingRecordCleared"))
+        if (typeof onReset === 'function') onReset(selectedDate)
+        return
+      }
+
       // 如果有现有数据，从数据库中删除
       const { user } = await getCurrentUser()
       if (!user) {
@@ -117,6 +127,17 @@ export default function CheckinModal({
       console.log("[打卡弹窗] 开始保存打卡数据")
       setIsSaving(true)
 
+      // 如果用户未登录，直接调用 onSave 让父组件处理登录提示
+      if (!isLoggedIn) {
+        const saveData = {
+          status,
+          journalContent: journalContent.trim() || undefined,
+          videoUrl: videoUrl || undefined,
+        }
+        await onSave(saveData)
+        return
+      }
+
       // 确认用户登录状态
       const { user } = await getCurrentUser()
       if (!user) {
@@ -145,7 +166,8 @@ export default function CheckinModal({
   const formatDate = (dateString: string) => {
     // 直接使用日期字符串，不进行时区转换
     const date = new Date(dateString)
-    return date.toLocaleDateString("zh-CN", {
+    const locale = language === "zh" ? "zh-CN" : "en-US"
+    return date.toLocaleDateString(locale, {
       year: "numeric",
       month: "long", 
       day: "numeric",
@@ -157,7 +179,7 @@ export default function CheckinModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-gray-900/95 backdrop-blur-sm border-white/10">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-gray-900/95 backdrop-blur-sm border-white/10">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between text-white">
             <div className="flex items-center gap-2">
@@ -179,6 +201,19 @@ export default function CheckinModal({
           </DialogTitle>
         </DialogHeader>
 
+        {/* 未登录提示 */}
+        {!isLoggedIn && (
+          <div className="mb-3 p-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-center gap-2 text-yellow-200">
+              <LogIn className="h-3 w-3" />
+              <span className="text-xs font-medium">{t("checkinModal.previewMode")}</span>
+            </div>
+            <p className="text-xs text-yellow-300 mt-0.5">
+              {t("checkinModal.previewModeDesc")}
+            </p>
+          </div>
+        )}
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* 导航标签 */}
           <TabsList className="grid w-full grid-cols-2 bg-gray-800/50 border-white/10">
@@ -199,7 +234,7 @@ export default function CheckinModal({
           </TabsList>
 
           {/* 状态和日志标签页 */}
-          <TabsContent value="status" className="space-y-6 mt-4">
+          <TabsContent value="status" className="space-y-4 mt-4">
             {/* 状态选择 */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300">{t("checkinModal.todayStatus")}</label>
@@ -247,12 +282,23 @@ export default function CheckinModal({
           </TabsContent>
 
           {/* 视频标签页 */}
-          <TabsContent value="video" className="space-y-4 mt-4">
+          <TabsContent value="video" className="space-y-3 mt-4">
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                 <Video className="h-4 w-4" />
                 {t("checkinModal.videoRecord")}
               </label>
+              
+              {/* 摄像头提示 */}
+              <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                <div className="flex items-center gap-2 text-blue-200">
+                  <Video className="h-3 w-3" />
+                  <span className="text-xs font-medium">{t("checkinModal.cameraTip")}</span>
+                </div>
+                <p className="text-xs text-blue-300 mt-0.5">
+                  {t("checkinModal.cameraTipDesc")}
+                </p>
+              </div>
               
               {videoUrl ? (
                 <div className="space-y-2">

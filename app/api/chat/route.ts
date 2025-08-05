@@ -255,11 +255,64 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "请先登录" }, { status: 401 })
     }
 
+    // 从数据库获取用户的真实订阅状态
+    const { data: subscriptions, error: subscriptionError } = await supabase
+      .from("user_subscriptions")
+      .select("subscription_type, status, end_date")
+      .eq("user_id", user.id)
+      .or("status.eq.active,status.eq.cancelled")
+      .order("created_at", { ascending: false })
+
+    console.log(`[Chat API] 原始订阅数据:`, subscriptions)
+
+    // 确定用户类型
+    let actualUserType = 'free'
+    let subscriptionData = null
+    
+    if (subscriptions && subscriptions.length > 0) {
+      const now = new Date()
+      
+      // 找到最新的未过期订阅
+      for (const subscription of subscriptions) {
+        if (subscription.end_date) {
+          const endDate = new Date(subscription.end_date)
+          if (now <= endDate) {
+            subscriptionData = subscription
+            break
+          }
+        }
+      }
+      
+      // 如果没有找到未过期的订阅，使用最新的订阅记录
+      if (!subscriptionData && subscriptions.length > 0) {
+        subscriptionData = subscriptions[0]
+      }
+      
+      // 确定用户类型
+      if (subscriptionData) {
+        const now = new Date()
+        const endDate = new Date(subscriptionData.end_date)
+        const isExpired = now > endDate
+        
+        if (subscriptionData.status === "active" || (subscriptionData.status === "cancelled" && !isExpired)) {
+          actualUserType = subscriptionData.subscription_type
+        }
+      }
+    }
+
+    console.log(`[Chat API] 用户 ${user.email} 的真实订阅状态:`, {
+      subscription_type: subscriptionData?.subscription_type,
+      status: subscriptionData?.status,
+      end_date: subscriptionData?.end_date,
+      actual_user_type: actualUserType,
+      frontend_user_type: userType
+    })
+
     // 检查用户使用次数限制
     const { data: usageCheck, error: usageError } = await supabase
       .rpc('can_user_send_ai_message', {
         user_uuid: user.id,
-        user_type: userType || 'free'
+        user_type: actualUserType
       })
 
     if (usageError) {
@@ -276,9 +329,13 @@ export async function POST(request: NextRequest) {
 
     let userMemory = { profile: null, recentChats: [], preferences: null }
     if (user) {
-      userMemory = await getUserMemory(user.id, supabase)
-      // 更新用户偏好
-      await updateUserPreferences(user.id, message, "", supabase)
+      // 并行获取用户数据以提高速度
+      const [userMemoryResult] = await Promise.all([
+        getUserMemory(user.id, supabase),
+        updateUserPreferences(user.id, message, "", supabase)
+      ])
+      userMemory = userMemoryResult
+      console.log(`[Chat API] 用户记忆数据:`, userMemory)
     }
 
     // 构建个性化的系统提示词
@@ -309,9 +366,9 @@ export async function POST(request: NextRequest) {
         "X-Title": "Jiese Assistant"
       },
       body: JSON.stringify({
-        model: "qwen/qwen3-30b-a3b",
+        model: "anthropic/claude-3.5-sonnet", // 使用更快的模型
         messages: messages,
-        max_tokens: userType === "premium" ? 1000 : 500, // 付费用户获得更详细的回答
+        max_tokens: actualUserType === "premium" ? 800 : 400, // 稍微减少token数量以提高速度
         temperature: 0.7,
         stream: false
       })
@@ -356,7 +413,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       response: aiResponse,
-      userType: userType,
+      userType: actualUserType,
       conversationId: conversationId,
       usage: updatedUsage
     })

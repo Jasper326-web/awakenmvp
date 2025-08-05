@@ -34,6 +34,7 @@ import { authService } from "@/lib/auth"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter } from "next/navigation"
 import { useSubscription } from "@/hooks/use-subscription"
+import { useUser } from "@/hooks/useUser"
 import ReactMarkdown from 'react-markdown'
 import { generateTasksByAddictionLevel } from "../../lib/plan-tasks"
 import { CoralSeparator } from '@/components/ui/separator';
@@ -43,6 +44,7 @@ import AuthModal from '@/components/auth-modal'
 export default function PlansPage() {
   const router = useRouter()
   const { isPro, isPremium, isFree } = useSubscription()
+  const { user: userFromHook, loading: userLoading } = useUser()
   const { t, language } = useLanguage()
   const [authModalOpen, setAuthModalOpen] = useState(false)
 
@@ -138,7 +140,6 @@ export default function PlansPage() {
   const mantraImage = "/mantra/zhouyu.jpg"
   const mantraNote = t("plans.mantra.note")
 
-  const [user, setUser] = useState<any>(null)
   const [userStats, setUserStats] = useState<any>(null)
   const [testData, setTestData] = useState<any>(null)
   const [todayTasks, setTodayTasks] = useState<any[]>([])
@@ -197,8 +198,10 @@ export default function PlansPage() {
   }
 
   useEffect(() => {
-    loadUserData()
-  }, [])
+    if (!userLoading) {
+      loadUserData()
+    }
+  }, [userFromHook, userLoading])
 
   // 只在 testData、t、language 变化时重新生成 todayTasks
   useEffect(() => {
@@ -292,20 +295,18 @@ export default function PlansPage() {
   const loadUserData = async () => {
     try {
       setLoading(true)
-      const currentUser = await authService.getCurrentUser()
-      if (!currentUser) {
-        setUser(null)
+      
+      // 使用 userFromHook 而不是重新获取用户
+      if (!userFromHook) {
         setLoading(false)
         return
       }
-
-      setUser(currentUser)
 
       // 获取用户测试数据
       const { data: testDataResult, error: testError } = await supabase
         .from("addiction_tests")
         .select("*")
-        .eq("user_id", currentUser.id)
+        .eq("user_id", userFromHook.id)
         .order("created_at", { ascending: false })
         .limit(1)
         .single()
@@ -314,10 +315,10 @@ export default function PlansPage() {
         setTestData(testDataResult)
         const tasks = generateTasksByAddictionLevel(testDataResult.addiction_level, t)
         setTodayTasks(tasks)
-        await loadCompletedTasks(currentUser.id, tasks)
+        await loadCompletedTasks(userFromHook.id, tasks)
       }
 
-      await loadUserStats(currentUser.id)
+      await loadUserStats(userFromHook.id)
     } catch (error) {
       console.error("加载用户数据失败:", error)
     } finally {
@@ -384,19 +385,19 @@ export default function PlansPage() {
     }
 
     // 只有登录用户才写入数据库
-    if (user) {
+    if (userFromHook) {
       try {
         const today = new Date().toISOString().slice(0, 10)
         
         console.log("[handleTaskAction] 写入数据库:", {
-          user_id: user.id,
+          user_id: userFromHook.id,
           task_id: task.id,
           date: today
         })
         
         // 写入数据库
         const { error } = await supabase.from("user_task_progress").upsert({
-          user_id: user.id,
+          user_id: userFromHook.id,
           task_id: task.id, // 使用字符串类型的task.id
           date: today,
           completed: true,
@@ -434,14 +435,14 @@ export default function PlansPage() {
       })
 
       // 只有登录用户才操作数据库
-      if (user) {
+      if (userFromHook) {
         if (isCurrentlyCompleted) {
           // 取消任务完成状态
           console.log("[toggleTaskCompletion] 取消任务完成状态")
           const { error } = await supabase
             .from("user_task_progress")
             .delete()
-            .eq("user_id", user.id)
+            .eq("user_id", userFromHook.id)
             .eq("task_id", taskId)
             .eq("date", today)
 
@@ -454,7 +455,7 @@ export default function PlansPage() {
           // 标记任务为已完成
           console.log("[toggleTaskCompletion] 标记任务为已完成")
           const { error } = await supabase.from("user_task_progress").upsert({
-            user_id: user.id,
+            user_id: userFromHook.id,
             task_id: taskId, // 使用字符串类型的taskId
             date: today,
             completed: true,
@@ -502,12 +503,14 @@ export default function PlansPage() {
 
   // 在 useLanguage 解构后添加 addictionLevelText 变量
   const addictionLevelText = (() => {
-    if (!testData?.addiction_level) return "-"
-    const val = testData.addiction_level.toLowerCase()
+    // 检查 addiction_level 或 addictionLevel 字段
+    const level = testData?.addiction_level || testData?.addictionLevel
+    if (!level) return "-"
+    const val = level.toLowerCase()
     if (val.includes("轻度") || val.includes("mild")) return t("plans.level.mild")
     if (val.includes("中度") || val.includes("moderate")) return t("plans.level.moderate")
     if (val.includes("重度") || val.includes("severe")) return t("plans.level.severe")
-    return testData.addiction_level
+    return level
   })()
 
   // 未登录状态友好展示
@@ -536,11 +539,69 @@ export default function PlansPage() {
     </div>
   )
 
+  // 未登录用户的测试结果处理
+  useEffect(() => {
+    if (!userFromHook && !userLoading) {
+      // 检查本地存储的测试结果
+      const localTestResult = localStorage.getItem('awaken_test_result')
+      if (localTestResult) {
+        try {
+          const parsedResult = JSON.parse(localTestResult)
+          setTestData(parsedResult)
+          setLoading(false)
+        } catch (error) {
+          console.error('解析本地测试结果失败:', error)
+          setLoading(false)
+        }
+      } else {
+        setLoading(false)
+      }
+    }
+  }, [userFromHook, userLoading])
+
+  // 监听登录状态变化，登录成功后保存测试结果到数据库
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // 用户登录成功，将localStorage中的测试结果保存到数据库
+        const savedResult = localStorage.getItem('awaken_test_result')
+        if (savedResult) {
+          try {
+            const testData = JSON.parse(savedResult)
+            const { error } = await supabase
+              .from("addiction_tests")
+              .insert([
+                {
+                  user_id: session.user.id,
+                  test_score: testData.score,
+                  addiction_level: testData.addictionLevel,
+                  answers: testData.answers || {},
+                  created_at: new Date().toISOString()
+                }
+              ])
+
+            if (!error) {
+              console.log('测试结果已保存到数据库')
+              // 清除localStorage
+              localStorage.removeItem('awaken_test_result')
+              // 重新加载页面以显示正确的测试结果
+              window.location.reload()
+            }
+          } catch (error) {
+            console.error('保存测试结果失败:', error)
+          }
+        }
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent mx-auto mb-4"></div>
           <p>{t("common.loading")}</p>
         </div>
       </div>
@@ -556,14 +617,24 @@ export default function PlansPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900">
       <div className="container mx-auto px-4 py-8">
-        {/* 未登录提示 */}
-        {!user && <NotLoggedInBanner />}
+        {/* 未登录且无测试结果时，提示进行测试 */}
+        {!userFromHook && !testData && (
+          <div className="w-full flex flex-col items-center justify-center py-8">
+            <div className="text-lg text-gray-200 mb-4 font-semibold">{t("plans.pleaseCompleteTest")}</div>
+            <button
+              className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
+              onClick={() => router.push("/addiction-test")}
+            >
+              {t("plans.startTest")}
+            </button>
+          </div>
+        )}
         
         {/* 已登录但未完成测试提示 */}
-        {user && !testData && <NoTestBanner />}
+        {userFromHook && !testData && <NoTestBanner />}
 
-        {/* 测试结果概览 - 仅登录用户可见 */}
-        {user && testData && (
+        {/* 测试结果概览 - 登录用户和未登录用户（有本地测试结果）可见 */}
+        {(userFromHook || (!userFromHook && testData)) && testData && (
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white mb-8">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -578,14 +649,14 @@ export default function PlansPage() {
                   onClick={() => router.push("/addiction-test")}
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  {t("plans.retest")}
+                  {userFromHook ? t("plans.retest") : t("common.takeTest")}
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-400 mb-2">{testData?.test_score || 0}/300</div>
+                  <div className="text-3xl font-bold text-blue-400 mb-2">{testData?.test_score || testData?.score || 0}/300</div>
                   <p className="text-gray-300">{t("plans.test_score")}</p>
                 </div>
                 <div className="text-center">
@@ -614,8 +685,9 @@ export default function PlansPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold mb-2">
-                {user ? (userStats?.current_streak || 0) : '--'} {t("plans.days")}
+                {userFromHook ? (userStats?.current_streak || 0) : '--'} {t("plans.days")}
               </div>
+              {!userFromHook && <p className="text-sm text-gray-500">{t("common.pleaseLoginToView")}</p>}
             </CardContent>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
@@ -627,8 +699,9 @@ export default function PlansPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold mb-2">
-                {user ? (userStats?.level || 1) : '--'}
+                {userFromHook ? (userStats?.level || 1) : '--'}
               </div>
+              {!userFromHook && <p className="text-sm text-gray-500">{t("common.pleaseLoginToView")}</p>}
             </CardContent>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
@@ -640,9 +713,9 @@ export default function PlansPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold mb-2">
-                {user ? `${completedCount}/${totalTasks}` : '--'}
+                {userFromHook ? `${completedCount}/${totalTasks}` : '--'}
               </div>
-              {user && (
+              {userFromHook && (
                 <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
                   <div 
                     className="bg-yellow-400 h-2 rounded-full transition-all duration-300" 
@@ -650,12 +723,13 @@ export default function PlansPage() {
                   />
                 </div>
               )}
+              {!userFromHook && <p className="text-sm text-gray-500">{t("common.pleaseLoginToView")}</p>}
             </CardContent>
           </Card>
         </div>
 
-        {/* 任务区域 - 仅登录用户可见 */}
-        {user && testData && (
+        {/* 任务区域 - 登录用户和未登录用户（有测试结果）可见 */}
+        {(userFromHook || (!userFromHook && testData)) && testData && (
           <>
             {/* 免费任务 */}
             <Card className="bg-purple-100/20 backdrop-blur-sm border-purple-300/30 text-white mb-6">
@@ -686,6 +760,11 @@ export default function PlansPage() {
                             : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                         }`}
                         onClick={() => {
+                          if (!userFromHook) {
+                            // 未登录用户点击任务时显示登录提示
+                            setAuthModalOpen(true)
+                            return
+                          }
                           if (isTaskCompleted(task.id)) {
                             // 如果任务已完成，点击取消完成状态
                             toggleTaskCompletion(task.id)
@@ -695,7 +774,7 @@ export default function PlansPage() {
                           }
                         }}
                       >
-                        {isTaskCompleted(task.id) ? t("task.completed") : t("task.start")}
+                        {!userFromHook ? t("common.loginButton") : (isTaskCompleted(task.id) ? t("task.completed") : t("task.start"))}
                       </Button>
                     </div>
                   ))}
@@ -725,7 +804,7 @@ export default function PlansPage() {
                             <p className="text-sm text-purple-200">{task.description}</p>
                           </div>
                         </div>
-                        {isPremium && (
+                        {isPremium && userFromHook && (
                           <Button
                             size="sm"
                             className={`w-full ${
@@ -747,9 +826,11 @@ export default function PlansPage() {
                       </div>
                     ))}
                   </div>
-                  {!isPremium && (
+                  {(!isPremium || !userFromHook) && (
                     <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg z-20">
-                      <div className="text-white text-xl font-bold mb-4">{t("plans.upgrade_to_premium")}</div>
+                      <div className="text-white text-xl font-bold mb-4">
+                        {!userFromHook ? t("plans.upgrade_to_premium") : t("plans.upgrade_to_premium")}
+                      </div>
                       <button
                         className="px-6 py-3 rounded bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-medium hover:from-yellow-700 hover:to-orange-700 transition"
                         onClick={() => setShowUpgradeModal && setShowUpgradeModal(true)}
@@ -764,8 +845,8 @@ export default function PlansPage() {
           </>
         )}
 
-        {/* 未登录时显示占位任务 */}
-        {!user && (
+        {/* 未登录且无测试结果时显示占位任务 */}
+        {!userFromHook && !testData && (
           <div className="space-y-6">
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
               <CardHeader>
@@ -783,8 +864,8 @@ export default function PlansPage() {
                           <CheckCircle className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                          <h3 className="font-medium text-white">{t("plans.sample_task")} {index}</h3>
-                          <p className="text-sm text-gray-300">{t("plans.sample_task_desc")}</p>
+                          <h3 className="font-medium text-white">{t(`plans.sample_task_${index}`)}</h3>
+                          <p className="text-sm text-gray-300">{t(`plans.sample_task_${index}_desc`)}</p>
                         </div>
                       </div>
                       <Button

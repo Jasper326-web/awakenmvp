@@ -22,6 +22,7 @@ import { subscriptionService } from "@/lib/database"
 import AuthModal from "@/components/auth-modal"
 import { useLanguage } from '@/lib/lang-context';
 import SolidFlame from "@/components/solid-flame";
+import ClientLanguageWrapper from "@/components/client-language-wrapper";
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -103,13 +104,44 @@ export default function Navigation() {
     }
   }
 
+  // 简单的内存缓存
+  const subscriptionCache = new Map<string, { data: any; timestamp: number }>();
+  const CACHE_DURATION = 30000; // 30秒缓存
+
   const fetchSubscriptionData = async (userId: string) => {
     try {
       console.log("[Navigation] 获取订阅数据:", userId)
-      const subscription = await subscriptionService.getUserSubscription(userId)
-      setSubscriptionData(subscription)
+      
+      // 检查缓存
+      const cached = subscriptionCache.get(userId);
+      const now = Date.now();
+      
+      if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+        console.log("[Navigation] 使用缓存的订阅数据");
+        setSubscriptionData(cached.data);
+        return;
+      }
+      
+      // 使用缓存，避免重复请求
+      const response = await fetch("/api/user-subscription", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        setSubscriptionData(result.data)
+        // 更新缓存
+        subscriptionCache.set(userId, {
+          data: result.data,
+          timestamp: now
+        });
+      } else {
+        setSubscriptionData(null)
+      }
     } catch (error) {
       console.error("[Navigation] 获取订阅数据失败:", error)
+      setSubscriptionData(null)
     }
   }
 
@@ -133,7 +165,7 @@ export default function Navigation() {
     { href: "/", label: t("nav.home"), icon: Home, requireAuth: false },
     { href: "/checkin", label: t("nav.checkin"), icon: CheckCircle, requireAuth: false },
     { href: "/leaderboard", label: t("nav.leaderboard"), icon: Trophy, requireAuth: false },
-    { href: "/community", label: t("nav.community"), icon: Users, requireAuth: true },
+    { href: "/community", label: t("nav.community"), icon: Users, requireAuth: false },
     { href: "/plans", label: t("nav.plans"), icon: BookOpen, requireAuth: false },
     { href: "/pricing", label: t("nav.pricing"), icon: CreditCard, requireAuth: false },
     { href: "/profile", label: t("nav.profile"), icon: UserIcon, requireAuth: false },
@@ -157,7 +189,7 @@ export default function Navigation() {
   }
 
   // 检查是否为VIP用户
-  const isVipUser = subscriptionData?.is_premium || subscriptionData?.subscription_type === "premium"
+  const isVipUser = subscriptionData?.is_premium || subscriptionData?.is_pro || subscriptionData?.subscription_type === "premium"
 
   console.log("[Navigation] 当前状态 - loading:", loading, "user:", user ? user.email : "无用户", "VIP:", isVipUser)
 
@@ -172,34 +204,37 @@ export default function Navigation() {
             </Link>
           </div>
           {/* Navigation Items - 紧凑间距 */}
-          <div className="flex items-center space-x-6 z-10 relative">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href
-              const IconComponent = item.icon
-              return (
-                <button
-                  key={item.href}
-                  onClick={() => handleNavClick(item.href, item.requireAuth)}
-                  className={`text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 px-3 py-1.5 rounded-md hover:bg-white/10 hover:text-white ${
-                    isActive ? "text-white bg-white/10" : "text-slate-300"
-                  }`}
-                  style={{ pointerEvents: "auto" }}
-                >
-                  <IconComponent className="w-3.5 h-3.5" />
-                  <span>{item.label}</span>
-                </button>
-              )
-            })}
-          </div>
+          <ClientLanguageWrapper>
+            <div className="flex items-center space-x-6 z-10 relative">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href
+                const IconComponent = item.icon
+                return (
+                  <button
+                    key={item.href}
+                    onClick={() => handleNavClick(item.href, item.requireAuth)}
+                    className={`text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 px-3 py-1.5 rounded-md hover:bg-white/10 hover:text-white ${
+                      isActive ? "text-white bg-white/10" : "text-slate-300"
+                    }`}
+                    style={{ pointerEvents: "auto" }}
+                  >
+                    <IconComponent className="w-3.5 h-3.5" />
+                    <span>{item.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </ClientLanguageWrapper>
           {/* Auth Section */}
-          <div className="flex items-center space-x-3 z-10 relative">
-            {/* 语言切换按钮 */}
-            <button
-              className={`px-2 py-1 rounded text-xs font-semibold border border-white/20 text-white bg-white/5 hover:bg-white/10 transition ${language === 'en' ? 'ring-2 ring-yellow-400' : ''}`}
-              onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
-            >
-              {language === 'en' ? 'EN' : '中'}
-            </button>
+          <ClientLanguageWrapper>
+            <div className="flex items-center space-x-3 z-10 relative">
+              {/* 语言切换按钮 */}
+              <button
+                className={`px-2 py-1 rounded text-xs font-semibold border border-white/20 text-white bg-white/5 hover:bg-white/10 transition ${language === 'en' ? 'ring-2 ring-yellow-400' : ''}`}
+                onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+              >
+                {language === 'en' ? 'EN' : '中'}
+              </button>
             {/* VIP标识 */}
             {isVipUser && (
               <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs font-semibold text-white">
@@ -252,6 +287,7 @@ export default function Navigation() {
               </Button>
             )}
           </div>
+          </ClientLanguageWrapper>
         </div>
       </nav>
       {/* Auth Modal */}

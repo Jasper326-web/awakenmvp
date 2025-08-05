@@ -181,12 +181,12 @@ export default function DailyCheckin() {
     try {
       console.log("[打卡页面] 开始保存打卡数据:", data)
 
-      // 再次确认用户会话
+      // 检查用户是否登录
       const { user: currentUser, session: currentSession } = await getCurrentUser()
 
       if (!currentUser) {
-        console.error("[打卡页面] 保存时用户未登录")
-        toast.error("用户未登录，请重新登录")
+        console.log("[打卡页面] 用户未登录，显示登录提示")
+        setAuthModalOpen(true)
         return
       }
 
@@ -303,24 +303,14 @@ export default function DailyCheckin() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-lg">{t("checkin.loading")}</div>
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent mx-auto mb-4"></div>
+          <p>{t("checkin.loading")}</p>
+        </div>
       </div>
     )
   }
-
-  // 新的未登录态友好展示
-  const NotLoggedInBanner = () => (
-    <div className="w-full flex flex-col items-center justify-center py-8">
-      <div className="text-lg text-gray-200 mb-4 font-semibold">{t("common.pleaseLoginToUse")}</div>
-      <button
-        className="px-6 py-2 rounded bg-coral text-white font-bold hover:bg-coral/90 transition"
-        onClick={() => setAuthModalOpen(true)}
-      >
-        {t("common.loginButton")}
-      </button>
-    </div>
-  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
@@ -331,11 +321,10 @@ export default function DailyCheckin() {
           <p className="text-gray-300">{t("checkin.subtitle")}</p>
         </div>
 
-        {/* 未登录提示 */}
-        {!user && <NotLoggedInBanner />}
 
-        {/* 统计卡片 - 优化显示 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 opacity-{!user ? '50' : '100'} pointer-events-{!user ? 'none' : 'auto'}">
+
+        {/* 统计卡片 - 未登录时显示占位数据 */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card className="bg-gray-900/50 backdrop-blur-sm border-white/10">
             <CardContent className="p-4 relative">
               <div className="absolute right-4 top-4 text-3xl font-bold text-coral drop-shadow-lg select-none pointer-events-none">
@@ -382,18 +371,16 @@ export default function DailyCheckin() {
           </Card>
         </div>
 
-        {/* 日历组件 - 全宽显示，未登录时加灰色蒙层 */}
-        <div className="w-full relative">
-          <CalendarComponent selectedDate={selectedDate} onDateSelect={user ? handleDateSelect : undefined} checkinData={user ? checkinData : {}} />
-          {!user && (
-            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center z-10 rounded-lg">
-              <div className="text-white text-base mb-2">{t("common.pleaseLoginToUse")}</div>
-            </div>
-          )}
+        {/* 日历组件 - 允许未登录用户点击，但保存时提示登录 */}
+        <div className="w-full">
+          <CalendarComponent 
+            selectedDate={selectedDate} 
+            onDateSelect={handleDateSelect} 
+            checkinData={user ? checkinData : {}} 
+          />
         </div>
 
-        {/* 打卡弹窗，仅登录后可用 */}
-        {user && (
+        {/* 打卡弹窗 - 未登录用户也可以打开，但保存时提示登录 */}
           <CheckinModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -403,8 +390,8 @@ export default function DailyCheckin() {
             userId={user?.id}
             onVideoSaved={handleVideoSaved}
             onReset={handleResetCheckin}
+          isLoggedIn={!!user}
           />
-        )}
       </div>
       {/* Auth Modal */}
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />

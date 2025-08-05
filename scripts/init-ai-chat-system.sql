@@ -159,9 +159,12 @@ BEGIN
     AND usage_date >= CURRENT_DATE - INTERVAL '30 days';
     
     -- 获取用户类型（从user_subscriptions表，如果存在）
-    SELECT plan INTO user_type
+    -- 修改逻辑：允许已取消但未过期的订阅
+    SELECT subscription_type INTO user_type
     FROM user_subscriptions
-    WHERE user_id = user_uuid AND status = 'active'
+    WHERE user_id = user_uuid 
+    AND (status = 'active' OR (status = 'cancelled' AND end_date > NOW()))
+    ORDER BY created_at DESC
     LIMIT 1;
     
     IF user_type IS NULL THEN

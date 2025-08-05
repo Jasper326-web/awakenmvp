@@ -73,26 +73,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '获取用户资料失败' }, { status: 500 })
     }
 
-    // 会员校验：仅允许premium、active、end_date有效的用户发帖
+    // 移除会员校验：现在所有登录用户都可以发帖
     console.log('[API] 当前用户:', currentUser.email, 'ID:', currentUser.id)
-    const { data: subscription, error: subError } = await supabase
-      .from('user_subscriptions')
-      .select('id, end_date')
-      .eq('user_id', currentUser.id)
-      .eq('subscription_type', 'premium')
-      .eq('status', 'active')
-      .order('end_date', { ascending: false })
-      .maybeSingle();
-    console.log('[API] 查到的会员记录:', subscription, '错误:', subError);
-
-    if (
-      subError ||
-      !subscription ||
-      !subscription.end_date ||
-      new Date(subscription.end_date).getTime() <= Date.now()
-    ) {
-      return NextResponse.json({ error: '仅限会员发帖' }, { status: 403 });
-    }
 
     // images 字段类型安全处理和日志
     const safeImages = Array.isArray(images) ? images.filter(x => typeof x === 'string') : []

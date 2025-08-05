@@ -84,4 +84,55 @@ export interface Comment {
   likes: number
 }
 
-export const virtualPosts = [] 
+export const virtualPosts = [
+  {
+    id: 'vp1',
+    userId: 'v1',
+    content: 'Day 120 of my journey! Feeling completely renewed and energized. This platform has helped me find like-minded friends who support each other. 💪',
+    images: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'],
+    likes: 45,
+    comments: 12,
+    createdAt: '2024-01-15T10:30:00Z',
+    isLiked: false
+  },
+  {
+    id: 'vp2',
+    userId: 'v2',
+    content: 'It was really difficult at the beginning, but now I can control my urges much better. Persistence is the key to success! 🔥',
+    images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'],
+    likes: 32,
+    comments: 8,
+    createdAt: '2024-01-14T15:45:00Z',
+    isLiked: false
+  },
+  {
+    id: 'vp3',
+    userId: 'v3',
+    content: 'Sharing a tip: Whenever I feel urges, I go exercise or learn a new skill. Distracting yourself really works! 📚',
+    images: ['https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop'],
+    likes: 28,
+    comments: 15,
+    createdAt: '2024-01-13T09:20:00Z',
+    isLiked: false
+  },
+  {
+    id: 'vp4',
+    userId: 'v4',
+    content: 'New friends, don\'t rush! This is a gradual process. Give yourself time and be patient. 💙',
+    images: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'],
+    likes: 19,
+    comments: 6,
+    createdAt: '2024-01-12T14:10:00Z',
+    isLiked: false
+  },
+  {
+    id: 'vp5',
+    userId: 'v5',
+    content: 'First day check-in! Hope to grow together with everyone here and break this bad habit. 🙏',
+    images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'],
+    likes: 15,
+    comments: 4,
+    createdAt: '2024-01-11T11:00:00Z',
+    isLiked: false
+  }
+] 

@@ -5,18 +5,35 @@ console.log("[Creem] 环境变量测试：", process.env.CREEM_API_KEY, process.
 
 const creem = new Creem();
 
+import { authService } from "@/lib/auth";
+
 export async function POST(req: NextRequest) {
   try {
     console.log("[Creem] 开始创建支付会话");
+    
+    // 获取当前用户
+    const currentUser = await authService.getCurrentUserFromRequest(req);
+    if (!currentUser) {
+      console.error("[Creem] 用户未登录");
+      return NextResponse.json({ error: "用户未登录" }, { status: 401 });
+    }
+    
     const productId = process.env.CREEM_PRODUCT_ID || "prod_68101COr0cq1EFgCUGABrp";
     const xApiKey = process.env.CREEM_API_KEY;
     if (!productId || !xApiKey) {
       console.error("[Creem] 缺少产品ID或API Key", { productId, xApiKey });
       return NextResponse.json({ error: "缺少产品ID或API Key" }, { status: 500 });
     }
+    
+    // 创建支付会话，包含用户信息和成功回调URL
     const checkout = await creem.createCheckout({
       createCheckoutRequest: {
         productId,
+        metadata: {
+          user_id: currentUser.id,
+          user_email: currentUser.email
+        },
+        successUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/creem-success?status=completed&checkout_id={checkout_id}`
       },
       xApiKey,
     });

@@ -105,7 +105,8 @@ export const subscriptionService = {
       const now = new Date()
       const endDate = subscription.end_date ? new Date(subscription.end_date) : null
       const isExpired = endDate ? endDate <= now : false
-      const isActive = subscription.status === "active" && !isExpired
+      // 修改逻辑：已取消但未过期的订阅仍然可以使用功能
+      const isActive = (subscription.status === "active" || (subscription.status === "cancelled" && !isExpired)) && !isExpired
       const daysRemaining = endDate && !isExpired ? Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : null
 
       return {
@@ -206,7 +207,9 @@ export const subscriptionService = {
 
   // 检查功能权限
   checkFeatureAccess(subscription: SubscriptionStatus | null, feature: string): boolean {
-    if (!subscription || subscription.status !== "active" || subscription.is_expired) return false
+    if (!subscription || subscription.is_expired) return false
+    // 允许已取消但未过期的订阅使用功能
+    if (subscription.status !== "active" && subscription.status !== "cancelled") return false
     const proFeatures = [
       "unlimited_checkins",
       "custom_reminders",

@@ -17,6 +17,7 @@ import { CoralSeparator } from '@/components/ui/separator';
 import { useLanguage } from '@/lib/lang-context'
 import SolidFlame from "@/components/solid-flame";
 
+
 const ICON_MAP = { Calendar, FileText, Video, Headphones, BookOpen, Sparkles, Brain, Heart, Activity }
 
 export default function HomePage() {
@@ -129,9 +130,9 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent mx-auto mb-4"></div>
           <p>{t("common.loading")}</p>
         </div>
       </div>

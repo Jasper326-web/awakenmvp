@@ -65,12 +65,50 @@ export default function ChatWidget() {
       setUsageStats(null);
       return;
     }
-    const { data, error } = await supabase.rpc('get_user_ai_usage_stats', { user_uuid: user.id });
-    if (error) {
+    
+    try {
+      // 首先获取用户订阅状态
+      const subscriptionResponse = await fetch("/api/user-subscription", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      
+      let userType = 'free';
+      if (subscriptionResponse.ok) {
+        const subscriptionResult = await subscriptionResponse.json();
+        if (subscriptionResult.data) {
+          const now = new Date();
+          const endDate = new Date(subscriptionResult.data.end_date);
+          const isExpired = now > endDate;
+          
+          if (subscriptionResult.data.status === "active" || 
+              (subscriptionResult.data.status === "cancelled" && !isExpired)) {
+            userType = subscriptionResult.data.subscription_type;
+          }
+        }
+      }
+      
+      // 然后获取AI使用统计
+      const { data, error } = await supabase.rpc('get_user_ai_usage_stats', { user_uuid: user.id });
+      if (error) {
+        console.error("[ChatWidget] 获取使用统计失败:", error);
+        setUsageStats(null);
+        return;
+      }
+      
+      // 合并订阅状态和使用统计
+      const combinedStats = {
+        ...data,
+        user_type: userType,
+        subscription_type: userType
+      };
+      
+      console.log("[ChatWidget] 获取到使用统计:", combinedStats);
+      setUsageStats(combinedStats);
+    } catch (error) {
+      console.error("[ChatWidget] 获取用户信息失败:", error);
       setUsageStats(null);
-      return;
     }
-    setUsageStats(data);
   };
 
   // 生成对话ID
@@ -83,6 +121,15 @@ export default function ChatWidget() {
   // 组件加载时获取使用统计
   useEffect(() => {
     fetchUsageStats()
+  }, [])
+
+  // 监听用户认证状态变化，重新获取使用统计
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      fetchUsageStats()
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   // 监听打开聊天窗口的事件

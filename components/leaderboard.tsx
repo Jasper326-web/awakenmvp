@@ -94,16 +94,10 @@ export default function Leaderboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-        <div className="max-w-2xl mx-auto pt-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">🏆 {t("leaderboard.title")}</h1>
-            <p className="text-white/70">{t("leaderboard.subtitle")}</p>
-          </div>
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-            <p className="mt-4 text-white/70">{t("checkin.loading")}</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent mx-auto mb-4"></div>
+          <p>Loading...</p>
         </div>
       </div>
     )

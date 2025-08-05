@@ -5,20 +5,32 @@ import { authService } from '@/lib/auth'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    let postId = searchParams.get('postId')
-    if (!postId) {
+    const postIdParam = searchParams.get('postId')
+    if (!postIdParam) {
       console.error('缺少帖子ID')
       return NextResponse.json({ error: '缺少帖子ID' }, { status: 400 })
     }
-    postId = parseInt(postId, 10)
+    const postId = parseInt(postIdParam, 10)
     if (isNaN(postId)) {
-      console.error('帖子ID格式错误:', postId)
+      console.error('帖子ID格式错误:', postIdParam)
       return NextResponse.json({ error: '帖子ID格式错误' }, { status: 400 })
     }
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
     const { data: comments, error } = await supabase
       .from('community_comments')
-      .select(`*, users:users(id, username, avatar_url, level, current_streak, total_days, max_streak, personal_motto)`)
+      .select(`
+        *,
+        users!community_comments_user_id_fkey(
+          id, 
+          username, 
+          avatar_url, 
+          level, 
+          current_streak, 
+          total_days, 
+          max_streak, 
+          personal_motto
+        )
+      `)
       .eq('post_id', postId)
       .order('created_at', { ascending: true })
     console.log('comments:', comments)
@@ -33,6 +45,7 @@ export async function GET(request: NextRequest) {
     }
     const formattedComments = comments.map(comment => ({
       id: comment.id,
+      user_id: comment.user_id,
       content: comment.content,
       created_at: comment.created_at,
       username: comment.users?.username || '用户',
@@ -58,12 +71,12 @@ export async function POST(request: NextRequest) {
     if (!currentUser) {
       return NextResponse.json({ error: '未登录' }, { status: 401 })
     }
-    let { postId, content } = await request.json()
-    if (!postId || !content?.trim()) {
+    const { postId: postIdParam, content } = await request.json()
+    if (!postIdParam || !content?.trim()) {
       return NextResponse.json({ error: '缺少必要参数' }, { status: 400 })
     }
     // postId 转为 integer
-    postId = parseInt(postId, 10)
+    const postId = parseInt(postIdParam, 10)
     if (isNaN(postId)) {
       return NextResponse.json({ error: '帖子ID格式错误' }, { status: 400 })
     }
@@ -78,12 +91,42 @@ export async function POST(request: NextRequest) {
         user_id: currentUser.id,
         content: content.trim()
       })
-      .select()
+      .select(`
+        *,
+        users!community_comments_user_id_fkey(
+          id, 
+          username, 
+          avatar_url, 
+          level, 
+          current_streak, 
+          total_days, 
+          max_streak, 
+          personal_motto
+        )
+      `)
       .single()
     if (commentError) {
       return NextResponse.json({ error: '添加评论失败' }, { status: 500 })
     }
-    return NextResponse.json({ success: true, comment: newComment })
+    
+    // 格式化返回的评论数据
+    const formattedComment = {
+      id: newComment.id,
+      user_id: newComment.user_id,
+      content: newComment.content,
+      created_at: newComment.created_at,
+      username: newComment.users?.username || '用户',
+      avatar_url: newComment.users?.avatar_url || '/placeholder-user.jpg',
+      level: newComment.users?.level,
+      current_streak: newComment.users?.current_streak,
+      total_days: newComment.users?.total_days,
+      max_streak: newComment.users?.max_streak,
+      personal_motto: newComment.users?.personal_motto,
+      isVerified: false,
+      likes: 0
+    }
+    
+    return NextResponse.json(formattedComment)
   } catch (error) {
     return NextResponse.json({ error: '服务器错误' }, { status: 500 })
   }
