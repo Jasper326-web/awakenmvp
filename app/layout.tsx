@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "Awaken - 戒色成长平台",
   description: "专业的戒色成长平台，帮助您重新掌控人生",
   generator: "v0.dev",
+  icons: {
+    icon: '/fire.png',
+    shortcut: '/fire.png',
+    apple: '/fire.png',
+  },
 }
 
 /**
