@@ -500,6 +500,11 @@ export default function Community() {
 
   // 提交帖子
   const handleSubmitPost = async () => {
+    // Plausible Analytics: 追踪发布帖子事件
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible('post_submit')
+    }
+    
     if (!newPostContent.trim() || submitting) return
 
     setSubmitting(true)

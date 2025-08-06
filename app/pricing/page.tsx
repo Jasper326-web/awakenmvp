@@ -147,6 +147,11 @@ export default function PricingPage() {
               <Button
                 className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-lg transition-colors"
                 onClick={async () => {
+                  // Plausible Analytics: 追踪订阅购买事件
+                  if (typeof window !== 'undefined' && window.plausible) {
+                    window.plausible('subscribe_click')
+                  }
+                  
                   // 重新检查用户状态
                   const currentUser = await authService.getCurrentUser()
                   if (!currentUser) {

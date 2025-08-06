@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+
+
 import {
   Dialog,
   DialogContent,
@@ -45,6 +47,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [codeLoading, setCodeLoading] = useState(false)
 
   const handleGoogleSignIn = async () => {
+    // Plausible Analytics: 追踪登录点击事件
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible('login_click')
+    }
+    
     setLoading("google")
     setError("")
     const { error: authError } = await authService.signInWithGoogle()
@@ -59,6 +66,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   }
 
   const handleGitHubSignIn = async () => {
+    // Plausible Analytics: 追踪登录点击事件
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible('login_click')
+    }
+    
     setLoading("github")
     setError("")
     const { error: authError } = await authService.signInWithGitHub()
@@ -74,6 +86,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   // Email sign-in will redirect to a new page, so we just close the modal before redirecting.
   const handleEmailSignInClick = () => {
+    // Plausible Analytics: 追踪登录点击事件
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible('login_click')
+    }
+    
     onOpenChange(false);
     router.push('/auth/email');
   }

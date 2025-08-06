@@ -417,6 +417,11 @@ const AddictionTest = () => {
   }
 
   const handleSubmit = async () => {
+    // Plausible Analytics: 追踪色瘾测试点击事件
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible('lust_test_click')
+    }
+    
     setIsSubmitting(true)
     
     try {

@@ -178,6 +178,11 @@ export default function DailyCheckin() {
     journalContent?: string
     videoUrl?: string
   }) => {
+    // Plausible Analytics: 追踪打卡点击事件
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible('checkin_click')
+    }
+    
     try {
       console.log("[打卡页面] 开始保存打卡数据:", data)
 

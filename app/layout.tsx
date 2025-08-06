@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh">
+      <head>
+        <script async defer data-domain="awakenhub.org" src="https://plausible.io/js/plausible.js"></script>
+      </head>
       <body className="bg-background min-h-screen overflow-x-hidden">
         <RootLayoutClient>
           {children}
