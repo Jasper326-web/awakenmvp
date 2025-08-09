@@ -127,7 +127,7 @@ async function handleCheckoutCompleted(object: any, supabase: any) {
   console.log("[Creem Webhook] metadata:", metadata)
   console.log("[Creem Webhook] subscription?.metadata:", subscription?.metadata)
   console.log("[Creem Webhook] customer:", customer)
-  
+
   // 方法1: 从metadata中获取（根据官方文档）
   if (metadata?.internal_customer_id) {
     user_id = metadata.internal_customer_id
@@ -180,6 +180,24 @@ async function handleCheckoutCompleted(object: any, supabase: any) {
   console.log("[Creem Webhook] 处理首次购买:", user_id, user_email)
   
   try {
+    // 检查是否已存在相同的订阅记录
+    const creem_subscription_id = subscription?.id || checkout_id
+    console.log("[Creem Webhook] 检查是否已存在订阅记录:", creem_subscription_id)
+    
+    const { data: existingSubscription, error: checkError } = await supabase
+      .from("user_subscriptions")
+      .select("*")
+      .eq("user_id", user_id)
+      .eq("creem_subscription_id", creem_subscription_id)
+      .maybeSingle()
+    
+    if (checkError) {
+      console.error("[Creem Webhook] 检查现有订阅失败:", checkError)
+    } else if (existingSubscription) {
+      console.log("[Creem Webhook] 订阅记录已存在，跳过创建:", existingSubscription.id)
+      return NextResponse.json({ success: true, message: "订阅记录已存在，跳过处理" })
+    }
+    
     // 使用订阅的结束日期或默认30天
     const now = new Date()
     let endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
@@ -198,14 +216,14 @@ async function handleCheckoutCompleted(object: any, supabase: any) {
       created_at: now.toISOString(),
       updated_at: now.toISOString(),
       end_date: endDate.toISOString(),
-      creem_subscription_id: subscription?.id || checkout_id
+      creem_subscription_id: creem_subscription_id
     })
     
-    const { data, error } = await supabase.from("user_subscriptions").upsert({
+    const { data, error } = await supabase.from("user_subscriptions").insert({
       user_id,
       subscription_type: "premium",
       status: "active",
-      creem_subscription_id: subscription?.id || checkout_id, // 保存Creem的订阅ID
+      creem_subscription_id: creem_subscription_id,
       created_at: now.toISOString(),
       updated_at: now.toISOString(),
       end_date: endDate.toISOString(),
@@ -284,30 +302,77 @@ async function handleSubscriptionPaid(object: any, supabase: any) {
   
   console.log("[Creem Webhook] 处理订阅支付:", user_id, user_email)
   
-  // 使用订阅的结束日期或延长30天
-  const now = new Date()
-  let endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-  
-  if (current_period_end_date) {
-    endDate = new Date(current_period_end_date)
+  try {
+    // 检查是否已存在相同的订阅记录
+    console.log("[Creem Webhook] 检查是否已存在订阅记录:", subscription_id)
+    
+    const { data: existingSubscription, error: checkError } = await supabase
+      .from("user_subscriptions")
+      .select("*")
+      .eq("user_id", user_id)
+      .eq("creem_subscription_id", subscription_id)
+      .maybeSingle()
+    
+    if (checkError) {
+      console.error("[Creem Webhook] 检查现有订阅失败:", checkError)
+    } else if (existingSubscription) {
+      console.log("[Creem Webhook] 订阅记录已存在，更新状态:", existingSubscription.id)
+      
+      // 更新现有记录
+      const now = new Date()
+      let endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+      
+      if (current_period_end_date) {
+        endDate = new Date(current_period_end_date)
+      }
+      
+      const { error: updateError } = await supabase
+        .from("user_subscriptions")
+        .update({
+          status: "active",
+          updated_at: now.toISOString(),
+          end_date: endDate.toISOString(),
+        })
+        .eq("id", existingSubscription.id)
+      
+      if (updateError) {
+        console.error("[Creem Webhook] 更新订阅失败:", updateError)
+        return NextResponse.json({ success: true, message: "更新订阅失败，但webhook已接收" })
+      }
+      
+      console.log("[Creem Webhook] 订阅更新成功:", user_id)
+      return NextResponse.json({ success: true, message: "订阅更新成功" })
+    }
+    
+    // 使用订阅的结束日期或延长30天
+    const now = new Date()
+    let endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+    
+    if (current_period_end_date) {
+      endDate = new Date(current_period_end_date)
+    }
+    
+    const { error } = await supabase.from("user_subscriptions").insert({
+      user_id,
+      subscription_type: "premium",
+      status: "active",
+      creem_subscription_id: subscription_id,
+      created_at: now.toISOString(),
+      updated_at: now.toISOString(),
+      end_date: endDate.toISOString(),
+    })
+    
+    if (error) {
+      console.error("[Creem Webhook] 订阅支付处理失败:", error)
+      return NextResponse.json({ success: true, message: "订阅支付处理失败，但webhook已接收" })
+    }
+    
+    console.log("[Creem Webhook] 订阅支付处理成功:", user_id, "结束日期:", endDate.toISOString())
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("[Creem Webhook] 处理异常:", error)
+    return NextResponse.json({ success: true, message: "处理异常，但webhook已接收" })
   }
-  
-  const { error } = await supabase.from("user_subscriptions").upsert({
-    user_id,
-    subscription_type: "premium",
-    status: "active",
-    creem_subscription_id: subscription_id,
-    updated_at: now.toISOString(),
-    end_date: endDate.toISOString(),
-  })
-  
-  if (error) {
-    console.error("[Creem Webhook] 订阅支付处理失败:", error)
-    return NextResponse.json({ success: true, message: "订阅支付处理失败，但webhook已接收" })
-  }
-  
-  console.log("[Creem Webhook] 订阅支付处理成功:", user_id, "结束日期:", endDate.toISOString())
-  return NextResponse.json({ success: true })
 }
 
 // 处理订阅激活
