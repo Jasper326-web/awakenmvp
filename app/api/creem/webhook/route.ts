@@ -74,6 +74,11 @@ export async function POST(req: NextRequest) {
       case "subscription.trialing":
         return await handleSubscriptionTrialing(object, supabase)
       
+      case "simple_test":
+        // 处理测试事件
+        console.log("[Creem Webhook] 处理测试事件:", eventType)
+        return await handleCheckoutCompleted(object, supabase)
+      
       default:
         console.log("[Creem Webhook] 未处理的事件类型:", eventType)
         // 根据官方文档，即使不处理也要返回200 OK
@@ -118,23 +123,33 @@ async function handleCheckoutCompleted(object: any, supabase: any) {
   let user_id = null
   let user_email = null
   
+  console.log("[Creem Webhook] 开始获取用户ID...")
+  console.log("[Creem Webhook] metadata:", metadata)
+  console.log("[Creem Webhook] subscription?.metadata:", subscription?.metadata)
+  console.log("[Creem Webhook] customer:", customer)
+  
   // 方法1: 从metadata中获取（根据官方文档）
   if (metadata?.internal_customer_id) {
     user_id = metadata.internal_customer_id
+    console.log("[Creem Webhook] 从metadata.internal_customer_id获取到用户ID:", user_id)
   } else if (metadata?.user_id) {
     user_id = metadata.user_id
+    console.log("[Creem Webhook] 从metadata.user_id获取到用户ID:", user_id)
   }
   
   // 方法2: 从subscription.metadata中获取
   if (!user_id && subscription?.metadata?.internal_customer_id) {
     user_id = subscription.metadata.internal_customer_id
+    console.log("[Creem Webhook] 从subscription.metadata.internal_customer_id获取到用户ID:", user_id)
   }
   
   // 方法3: 从customer中获取email，然后查询用户ID
   if (customer?.email) {
     user_email = customer.email
+    console.log("[Creem Webhook] 从customer获取到email:", user_email)
     if (!user_id) {
       // 通过email查询用户ID
+      console.log("[Creem Webhook] 尝试通过email查询用户ID...")
       const { data: userData, error: userError } = await supabase
         .from('auth.users')
         .select('id')
@@ -144,6 +159,8 @@ async function handleCheckoutCompleted(object: any, supabase: any) {
       if (!userError && userData) {
         user_id = userData.id
         console.log("[Creem Webhook] 通过email查询到用户ID:", user_id)
+      } else {
+        console.error("[Creem Webhook] 通过email查询用户ID失败:", userError)
       }
     }
   }
