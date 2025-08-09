@@ -5,8 +5,8 @@ import RootLayoutClient from "./root-layout-client"
 import { Toaster } from "sonner"
 
 export const metadata: Metadata = {
-  title: "Awaken - 戒色成长平台",
-  description: "专业的戒色成长平台，帮助您重新掌控人生",
+  title: "Nofap Growth Hub",
+  description: "Professional abstinence growth platform, helping you regain control of your life",
   generator: "v0.dev",
   icons: {
     icon: '/fire.png',
