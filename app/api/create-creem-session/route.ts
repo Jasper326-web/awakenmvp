@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Creem } from "creem";
+import { getBaseUrl } from "@/lib/constants";
 
 console.log("[Creem] 环境变量测试：", process.env.CREEM_API_KEY, process.env.CREEM_PRODUCT_ID);
 
@@ -26,6 +27,17 @@ export async function POST(req: NextRequest) {
     }
     
     // 创建支付会话，包含用户信息和成功回调URL
+    const baseUrl = getBaseUrl();
+    console.log("[Creem] 使用的baseUrl:", baseUrl);
+    console.log("[Creem] 环境变量检查:", {
+      NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+      NODE_ENV: process.env.NODE_ENV
+    });
+    
+    const successUrl = `${baseUrl}/payment/creem-success?status=completed&checkout_id={checkout_id}`;
+    console.log("[Creem] 生成的successUrl:", successUrl);
+    
     const checkout = await creem.createCheckout({
       createCheckoutRequest: {
         productId,
@@ -33,7 +45,7 @@ export async function POST(req: NextRequest) {
           user_id: currentUser.id,
           user_email: currentUser.email
         },
-        successUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/creem-success?status=completed&checkout_id={checkout_id}`
+        successUrl: successUrl
       },
       xApiKey,
     });

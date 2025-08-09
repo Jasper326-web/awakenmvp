@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Creem } from "creem";
+import { getBaseUrl } from "@/lib/constants";
 
 console.log("[Creem Subscription] 环境变量测试：", process.env.CREEM_API_KEY, process.env.CREEM_SUBSCRIPTION_PRODUCT_ID);
 
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     }
     
     // 创建订阅支付会话
+    const baseUrl = getBaseUrl();
     const checkout = await creem.createCheckout({
       createCheckoutRequest: {
         productId: subscriptionProductId,
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
           user_id: currentUser.id,
           user_email: currentUser.email
         },
-        successUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/creem-success?status=completed&checkout_id={checkout_id}`
+        successUrl: `${baseUrl}/payment/creem-success?status=completed&checkout_id={checkout_id}`
       },
       xApiKey,
     });

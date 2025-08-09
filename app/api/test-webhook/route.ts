@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getBaseUrl } from "@/lib/constants"
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,7 +23,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 调用webhook处理函数
-    const webhookResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/creem/webhook`, {
+    const baseUrl = getBaseUrl()
+    const webhookResponse = await fetch(`${baseUrl}/api/creem/webhook`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +38,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       webhook_result: result,
-      message: "手动触发webhook完成"
+      message: "手动触发webhook完成",
+      base_url_used: baseUrl
     })
   } catch (error) {
     console.error("[Test Webhook] 错误:", error)

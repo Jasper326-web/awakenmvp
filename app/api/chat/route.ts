@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 import { SupabaseClient } from "@supabase/supabase-js"
+import { getBaseUrl } from "@/lib/constants"
 
 // NoFap Professional Knowledge Base
 const KNOWLEDGE_BASE = `
@@ -362,7 +363,7 @@ export async function POST(request: NextRequest) {
       headers: {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+        "HTTP-Referer": getBaseUrl(),
         "X-Title": "Jiese Assistant"
       },
       body: JSON.stringify({

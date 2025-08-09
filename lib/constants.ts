@@ -10,6 +10,17 @@ if (APP_CONFIG.IS_PRODUCTION && APP_CONFIG.SITE_URL.includes("localhost")) {
   console.error("[Config] Production environment detected but SITE_URL still contains localhost")
 }
 
+// URL utility function to ensure consistent URL generation
+export function getBaseUrl(): string {
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://awakenhub.org'
+  }
+  
+  return process.env.NEXT_PUBLIC_SITE_URL || 
+         process.env.NEXT_PUBLIC_BASE_URL || 
+         'https://awakenhub.org'
+}
+
 // Cache durations
 export const CACHE_DURATIONS = {
   TEST_RESULTS: 10 * 60 * 1000, // 10 minutes
