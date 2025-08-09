@@ -35,9 +35,9 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full mx-auto text-center">
-          <Loader2 className="w-20 h-20 text-blue-400 mx-auto mb-6 animate-spin" />
-          <h2 className="text-2xl font-semibold text-white mb-3">{t("payment.verifying_payment")}</h2>
-          <p className="text-gray-300 text-lg">{t("payment.please_wait")}</p>
+            <Loader2 className="w-20 h-20 text-blue-400 mx-auto mb-6 animate-spin" />
+            <h2 className="text-2xl font-semibold text-white mb-3">{t("payment.verifying_payment")}</h2>
+            <p className="text-gray-300 text-lg">{t("payment.please_wait")}</p>
         </div>
       </div>
     )
@@ -47,19 +47,19 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full mx-auto text-center">
-          <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-red-400 text-3xl">✕</span>
-          </div>
-          <h2 className="text-2xl font-semibold text-white mb-3">{t("payment.verification_failed")}</h2>
-          <p className="text-gray-300 mb-8 text-lg">{error}</p>
-          <div className="space-y-3">
-            <Button onClick={() => router.push("/pricing")} className="w-full text-lg py-3">
-              {t("payment.back_to_pricing")}
-            </Button>
-            <Button onClick={() => router.push("/")} variant="outline" className="w-full text-lg py-3">
-              {t("payment.back_to_home")}
-            </Button>
-          </div>
+            <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-red-400 text-3xl">✕</span>
+            </div>
+            <h2 className="text-2xl font-semibold text-white mb-3">{t("payment.verification_failed")}</h2>
+            <p className="text-gray-300 mb-8 text-lg">{error}</p>
+            <div className="space-y-3">
+              <Button onClick={() => router.push("/pricing")} className="w-full text-lg py-3">
+                {t("payment.back_to_pricing")}
+              </Button>
+              <Button onClick={() => router.push("/")} variant="outline" className="w-full text-lg py-3">
+                {t("payment.back_to_home")}
+              </Button>
+            </div>
         </div>
       </div>
     )
@@ -69,9 +69,9 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-4xl w-full mx-auto text-center">
-          <div className="w-32 h-32 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Crown className="w-16 h-16 text-white" />
-          </div>
+            <div className="w-32 h-32 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Crown className="w-16 h-16 text-white" />
+            </div>
           <h1 className="text-4xl text-white mb-4">{t("payment.welcome_premium")}</h1>
           
           <div className="space-y-8">
@@ -99,7 +99,7 @@ function PaymentSuccessContent() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Users className="w-6 h-6 text-purple-400" />
-                  <span className="text-gray-300 text-lg">{t("payment.exclusive_community")}</span>
+                  <span className="text-gray-300 text-lg">{t("payment.daily_push")}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Crown className="w-6 h-6 text-yellow-400" />

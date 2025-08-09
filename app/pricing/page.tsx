@@ -18,6 +18,7 @@ export default function PricingPage() {
   const [user, setUser] = useState<any>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -145,21 +146,24 @@ export default function PricingPage() {
                 </li>
               </ul>
               <Button
-                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-lg transition-colors"
+                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-lg transition-colors disabled:opacity-50"
+                disabled={isProcessingPayment}
                 onClick={async () => {
                   // Plausible Analytics: 追踪订阅购买事件
                   if (typeof window !== 'undefined' && window.plausible) {
                     window.plausible('subscribe_click')
                   }
                   
-                  // 重新检查用户状态
-                  const currentUser = await authService.getCurrentUser()
-                  if (!currentUser) {
-                    setAuthModalOpen(true);
-                    return;
-                  }
+                  setIsProcessingPayment(true)
                   
                   try {
+                    // 重新检查用户状态
+                    const currentUser = await authService.getCurrentUser()
+                    if (!currentUser) {
+                      setAuthModalOpen(true);
+                      return;
+                    }
+                    
                     const { data: { session } } = await supabase.auth.getSession();
                     if (!session?.access_token) {
                       console.error("无法获取用户认证token");
@@ -191,10 +195,19 @@ export default function PricingPage() {
                   } catch (error) {
                     console.error("支付流程错误:", error);
                     alert(t("pricing.payment_error"));
+                  } finally {
+                    setIsProcessingPayment(false)
                   }
                 }}
               >
-                {t("pricing.subscribe_monthly")}
+                {isProcessingPayment ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    {t("pricing.processing")}
+                  </>
+                ) : (
+                  t("pricing.subscribe_monthly")
+                )}
               </Button>
               <div className="text-center text-yellow-200 text-xs mt-4">
                 {t("pricing.payment_success")}<br />

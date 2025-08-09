@@ -49,7 +49,7 @@ export default function CreemPaymentPage() {
         
         // 延迟跳转，给用户一些时间看到提示
         setTimeout(() => {
-          window.location.href = checkout_url;
+        window.location.href = checkout_url;
         }, 1000);
       } else {
         setError("支付链接生成失败，请稍后重试");
