@@ -184,6 +184,12 @@ async function handleCheckoutCompleted(object: any, supabase: any) {
     const creem_subscription_id = subscription?.id || checkout_id
     console.log("[Creem Webhook] 检查是否已存在订阅记录:", creem_subscription_id)
     
+    // 如果没有有效的订阅ID（subscription.id为空且checkout_id是占位符），跳过创建记录
+    if (!subscription?.id && (!checkout_id || checkout_id.includes('{') || checkout_id.includes('checkout_id'))) {
+      console.log("[Creem Webhook] 没有有效的订阅ID，跳过创建记录")
+      return NextResponse.json({ success: true, message: "没有有效的订阅ID，跳过处理" })
+    }
+    
     const { data: existingSubscription, error: checkError } = await supabase
       .from("user_subscriptions")
       .select("*")
