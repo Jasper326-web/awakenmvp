@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { authService } from "@/lib/auth"
 import type { User } from "@supabase/supabase-js"
-import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown, Settings, Users } from "lucide-react"
+import { LogOut, Flame, UserIcon, Home, CheckCircle, BookOpen, Trophy, CreditCard, Crown, Settings, Users, Gift } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,7 @@ import AuthModal from "@/components/auth-modal"
 import { useLanguage } from '@/lib/lang-context';
 import SolidFlame from "@/components/solid-flame";
 import ClientLanguageWrapper from "@/components/client-language-wrapper";
+import { RedeemCodeDialog } from "@/components/redeem-code-dialog";
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -235,6 +236,12 @@ export default function Navigation() {
               >
                 {language === 'en' ? 'EN' : '中'}
               </button>
+            
+            {/* 兑换码按钮 - 仅登录用户显示 */}
+            {user && (
+              <RedeemCodeDialog />
+            )}
+            
             {/* VIP标识 */}
             {isVipUser && (
               <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs font-semibold text-white">

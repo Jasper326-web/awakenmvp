@@ -40,6 +40,26 @@ export function useSubscription() {
   const isPremium = subscription?.is_premium || false
   const isFree = !isPro && !isPremium
 
+  const refresh = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const user = await authService.getCurrentUser()
+
+      if (!user) {
+        setSubscription(null)
+        return
+      }
+
+      const subscriptionData = await subscriptionService.getUserSubscriptionStatus(user.id)
+      setSubscription(subscriptionData)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "刷新订阅信息失败")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return {
     subscription,
     loading,
@@ -48,10 +68,6 @@ export function useSubscription() {
     isPremium,
     isFree,
     checkFeatureAccess,
-    refetch: () => {
-      setLoading(true)
-      setError(null)
-      // 重新获取订阅信息的逻辑
-    },
+    refresh,
   }
 }
