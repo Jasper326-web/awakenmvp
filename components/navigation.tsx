@@ -23,7 +23,6 @@ import AuthModal from "@/components/auth-modal"
 import { useLanguage } from '@/lib/lang-context';
 import SolidFlame from "@/components/solid-flame";
 import ClientLanguageWrapper from "@/components/client-language-wrapper";
-import { RedeemCodeDialog } from "@/components/redeem-code-dialog";
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -237,10 +236,7 @@ export default function Navigation() {
                 {language === 'en' ? 'EN' : '中'}
               </button>
             
-            {/* 兑换码按钮 - 仅登录用户显示 */}
-            {user && (
-              <RedeemCodeDialog />
-            )}
+
             
             {/* VIP标识 */}
             {isVipUser && (

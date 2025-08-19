@@ -92,6 +92,22 @@ const translations: Record<Language, Record<string, string>> = {
     "subscription.cancel_note_3": "• Contact Creem support for any billing-related questions",
     "profile.level_tooltip": `等级说明：\n- Lv.0：当前连签不足7天\n- Lv.1：连签满7天\n- Lv.2：连签满30天\n- Lv.3：连签满90天\n- Lv.4：连签满180天\n- Lv.5：连签满365天\n\n提升等级需要保持连续签到，达到对应天数即可升级。坚持打卡，解锁更高荣誉！`,
 
+    // 兑换码相关
+    "redeem.title": "输入兑换码",
+    "redeem.description.member": "输入兑换码可以延长您的会员时长",
+    "redeem.description.guest": "输入兑换码可以获得免费会员体验",
+    "redeem.placeholder": "请输入兑换码",
+    "redeem.button": "兑换",
+    "redeem.button.loading": "兑换中...",
+    "redeem.cancel": "取消",
+    "redeem.success.title": "兑换成功！",
+    "redeem.success.description": "兑换成功",
+    "redeem.error.title": "兑换失败",
+    "redeem.error.invalid_code": "请输入兑换码",
+    "redeem.error.invalid_code_desc": "兑换码不能为空",
+    "redeem.error.general": "请检查兑换码是否正确",
+    "redeem.button.text": "兑换码",
+
 
 
     // 排行榜页面
@@ -644,6 +660,22 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.manage_subscription": "Cancel Subscription",
     "profile.manage_subscription_desc": "Cancel auto-renewal and stop future charges.",
     "profile.level_tooltip": `Level Guide:\n- Lv.0: Less than 7 consecutive check-ins\n- Lv.1: 7 consecutive check-ins\n- Lv.2: 30 consecutive check-ins\n- Lv.3: 90 consecutive check-ins\n- Lv.4: 180 consecutive check-ins\n- Lv.5: 365 consecutive check-ins\n\nKeep checking in to level up and unlock more honors!`,
+
+    // 兑换码相关
+    "redeem.title": "Enter Redeem Code",
+    "redeem.description.member": "Enter a redeem code to extend your membership",
+    "redeem.description.guest": "Enter a redeem code to get free membership trial",
+    "redeem.placeholder": "Enter redeem code",
+    "redeem.button": "Redeem",
+    "redeem.button.loading": "Redeeming...",
+    "redeem.cancel": "Cancel",
+    "redeem.success.title": "Redeem Successful!",
+    "redeem.success.description": "Redeem successful",
+    "redeem.error.title": "Redeem Failed",
+    "redeem.error.invalid_code": "Please enter redeem code",
+    "redeem.error.invalid_code_desc": "Redeem code cannot be empty",
+    "redeem.error.general": "Please check if the redeem code is correct",
+    "redeem.button.text": "Redeem Code",
 //补充
 "task.daily_checkin_desc": "Log today's status",
 "task.daily_checkin_desc_moderate": "Log today's status and journal",

@@ -12,23 +12,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Gift, Loader2 } from "lucide-react"
 import { useSubscription } from "@/hooks/use-subscription"
+import { useLanguage } from "@/lib/lang-context"
 
-export function RedeemCodeDialog() {
+interface RedeemCodeDialogProps {
+  variant?: "default" | "large"
+}
+
+export function RedeemCodeDialog({ variant = "default" }: RedeemCodeDialogProps) {
   const [open, setOpen] = useState(false)
   const [code, setCode] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
   const { subscription, refresh } = useSubscription()
+  const { t } = useLanguage()
 
   const handleRedeem = async () => {
     if (!code.trim()) {
-      toast({
-        title: "请输入兑换码",
-        description: "兑换码不能为空",
-        variant: "destructive",
+      toast.error(t("redeem.error.invalid_code_desc"), {
+        description: t("redeem.error.invalid_code"),
       })
       return
     }
@@ -49,10 +52,15 @@ export function RedeemCodeDialog() {
         throw new Error(data.error || "兑换失败")
       }
 
-      toast({
-        title: "兑换成功！",
-        description: `已获得 ${data.days_added} 天 ${data.subscription_type === 'premium' ? 'Premium' : 'Pro'} 会员`,
+      console.log("[Redeem Code] 兑换成功，显示提示:", data)
+
+      // 先显示成功提示
+      toast.success(t("redeem.success.description"), {
+        duration: 3000, // 确保提示显示3秒
       })
+
+      // 等待一小段时间确保toast显示
+      await new Promise(resolve => setTimeout(resolve, 500))
 
       // 刷新订阅状态
       await refresh()
@@ -60,12 +68,19 @@ export function RedeemCodeDialog() {
       // 关闭弹窗并清空输入
       setOpen(false)
       setCode("")
+      
+      // 延迟刷新页面
+      setTimeout(() => {
+        console.log("[Redeem Code] 准备刷新页面")
+        window.location.reload()
+      }, 2000) // 增加到2秒，确保用户能看到提示
     } catch (error) {
-      toast({
-        title: "兑换失败",
-        description: error instanceof Error ? error.message : "请检查兑换码是否正确",
-        variant: "destructive",
-      })
+      toast.error(
+        error instanceof Error ? error.message : t("redeem.error.general"),
+        {
+          description: t("redeem.error.title"),
+        }
+      )
     } finally {
       setIsLoading(false)
     }
@@ -81,25 +96,25 @@ export function RedeemCodeDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button 
-          variant="outline" 
-          size="sm"
-          className="flex items-center gap-2 text-sm"
+          variant={variant === "large" ? "default" : "outline"}
+          size={variant === "large" ? "lg" : "sm"}
+          className={`flex items-center gap-2 ${variant === "large" ? "bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" : "text-sm"}`}
         >
-          <Gift className="w-4 h-4" />
-          兑换码
+          <Gift className={variant === "large" ? "w-6 h-6" : "w-4 h-4"} />
+          {t("redeem.button.text")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Gift className="w-5 h-5" />
-            输入兑换码
+            {t("redeem.title")}
           </DialogTitle>
           <DialogDescription>
             {subscription?.is_premium || subscription?.is_pro ? (
-              "输入兑换码可以延长您的会员时长"
+              t("redeem.description.member")
             ) : (
-              "输入兑换码可以获得免费会员体验"
+              t("redeem.description.guest")
             )}
           </DialogDescription>
         </DialogHeader>
@@ -107,7 +122,7 @@ export function RedeemCodeDialog() {
         <div className="space-y-4">
           <div className="space-y-2">
             <Input
-              placeholder="请输入兑换码"
+              placeholder={t("redeem.placeholder")}
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               onKeyPress={handleKeyPress}
@@ -124,7 +139,7 @@ export function RedeemCodeDialog() {
             onClick={() => setOpen(false)}
             disabled={isLoading}
           >
-            取消
+            {t("redeem.cancel")}
           </Button>
           <Button
             onClick={handleRedeem}
@@ -134,10 +149,10 @@ export function RedeemCodeDialog() {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                兑换中...
+                {t("redeem.button.loading")}
               </>
             ) : (
-              "兑换"
+              t("redeem.button")
             )}
           </Button>
         </DialogFooter>

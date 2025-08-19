@@ -16,6 +16,7 @@ import { CoralButton } from '@/components/ui/button';
 import { CoralSeparator } from '@/components/ui/separator';
 import { useLanguage } from '@/lib/lang-context'
 import SolidFlame from "@/components/solid-flame";
+import { RedeemCodeDialog } from "@/components/redeem-code-dialog";
 
 
 const ICON_MAP = { Calendar, FileText, Video, Headphones, BookOpen, Sparkles, Brain, Heart, Activity }
@@ -144,7 +145,14 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Hero Section 重构 */}
-        <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
+        <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center relative">
+          {/* 兑换码按钮 - 右上角 */}
+          {user && (
+            <div className="absolute top-8 right-8 z-10">
+              <RedeemCodeDialog />
+            </div>
+          )}
+          
           {/* 主标题+火焰 */}
           <div className="flex items-center justify-center mb-4">
             <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent leading-tight tracking-wide">
@@ -463,7 +471,12 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* 英雄区 - 登录用户版本 */}
-      <section className="container mx-auto px-4 pt-28 pb-20 flex flex-col items-center justify-center text-center">
+      <section className="container mx-auto px-4 pt-28 pb-20 flex flex-col items-center justify-center text-center relative">
+        {/* 兑换码按钮 - 右上角 */}
+        <div className="absolute top-8 right-8 z-10">
+          <RedeemCodeDialog />
+        </div>
+        
         {/* 主标题 */}
         <h1 className="text-5xl md:text-6xl font-extrabold text-gradient-coral tracking-wide mb-4 drop-shadow-lg">
           Awaken
