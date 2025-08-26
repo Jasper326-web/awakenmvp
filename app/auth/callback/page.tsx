@@ -16,12 +16,28 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // 获取 URL 参数
+        const urlSearchParams = new URLSearchParams(window.location.search)
+        const params: any = {}
+        for (const [key, value] of urlSearchParams.entries()) {
+          params[key] = value
+        }
+
         // 获取 URL 中的认证信息
         const { data, error } = await supabase.auth.getSession()
 
         setDebugInfo({
+          url: window.location.href,
+          urlParams: params,
           hasSession: !!data.session,
           hasUser: !!data.session?.user,
+          sessionUser: data.session?.user ? {
+            id: data.session.user.id,
+            email: data.session.user.email,
+            email_confirmed_at: data.session.user.email_confirmed_at,
+            created_at: data.session.user.created_at,
+            last_sign_in_at: data.session.user.last_sign_in_at
+          } : null,
           error: error?.message,
           timestamp: new Date().toISOString(),
         })
