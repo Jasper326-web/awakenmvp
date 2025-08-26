@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-
 import {
   Dialog,
   DialogContent,
@@ -51,11 +50,9 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [emailVerificationSuccess, setEmailVerificationSuccess] = useState('')
 
   const handleGoogleSignIn = async () => {
-    // Plausible Analytics: 追踪登录点击事件
-    if (typeof window !== 'undefined' && window.plausible) {
-      window.plausible('login_click')
+    if (typeof window !== 'undefined' && (window as any).plausible) {
+      (window as any).plausible('login_click')
     }
-    
     setLoading("google")
     setError("")
     const { error: authError } = await authService.signInWithGoogle()
@@ -63,43 +60,13 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       setError(authError.message)
       setLoading(null)
     } else {
-      onOpenChange(false) // Close modal on success
-      router.push('/') // Redirect to homepage
-      router.refresh() // Refresh page to reflect login state
-    }
-  }
-
-  const handleGitHubSignIn = async () => {
-    // Plausible Analytics: 追踪登录点击事件
-    if (typeof window !== 'undefined' && window.plausible) {
-      window.plausible('login_click')
-    }
-    
-    setLoading("github")
-    setError("")
-    const { error: authError } = await authService.signInWithGitHub()
-    if (authError) {
-      setError(authError.message)
-      setLoading(null)
-    } else {
-      onOpenChange(false) // Close modal on success
-      router.push('/') // Redirect to homepage
+      onOpenChange(false)
+      router.push('/')
       router.refresh()
     }
   }
 
-  // Email sign-in will redirect to a new page, so we just close the modal before redirecting.
-  const handleEmailSignInClick = () => {
-    // Plausible Analytics: 追踪登录点击事件
-    if (typeof window !== 'undefined' && window.plausible) {
-      window.plausible('login_click')
-    }
-    
-    onOpenChange(false);
-    router.push('/auth/email');
-  }
-
-  // 发送邮箱验证码
+  // Email OTP
   const handleSendEmailVerificationCode = async () => {
     setEmailVerificationError('')
     setEmailVerificationSuccess('')
@@ -108,7 +75,6 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       return
     }
     setCodeLoading(true)
-    
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
@@ -116,13 +82,11 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       })
-      
       if (error) {
         setEmailVerificationError(error.message)
       } else {
         setCodeSent(true)
         setEmailVerificationSuccess('验证码已发送到邮箱，请查收')
-        // 开始倒计时
         setCodeTimer(60)
         const timer = setInterval(() => {
           setCodeTimer((prev) => {
@@ -141,48 +105,16 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
     }
   }
 
-  // 发送注册验证码
-  const handleSendCode = async () => {
-    setRegisterError('')
-    setRegisterSuccess('')
-    if (!email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
-      setRegisterError('请输入有效的邮箱地址')
-      return
-    }
-    setCodeLoading(true)
-    // 假设有API /api/send-register-code
-    const res = await fetch('/api/send-register-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    })
-    setCodeLoading(false)
-    if (res.ok) {
-      setCodeSent(true)
-      setRegisterSuccess('验证码已发送到邮箱，请查收')
-      // 开始倒计时
-      setCodeTimer(60)
-      const timer = setInterval(() => {
-        setCodeTimer((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    } else {
-      const errorData = await res.json()
-      setRegisterError(errorData.error || '发送验证码失败')
-    }
-  }
-
-  // 注册逻辑
+  // Password register using Supabase
   const handleRegister = async () => {
     setRegisterError('')
     setRegisterSuccess('')
-    if (!email || !password || !confirmPassword || !code) {
+    if (!email || !password || !confirmPassword) {
       setRegisterError('请填写所有必填字段')
+      return
+    }
+    if (!email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
+      setRegisterError('请输入有效的邮箱地址')
       return
     }
     if (password !== confirmPassword) {
@@ -194,28 +126,26 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       return
     }
     setRegisterLoading(true)
-    // 假设有API /api/register
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, code })
-    })
-    setRegisterLoading(false)
-    if (res.ok) {
-      setRegisterSuccess('注册成功！请登录')
-      setMode('login')
-      setEmail('')
-      setPassword('')
-      setConfirmPassword('')
-      setCode('')
-      setCodeSent(false)
-    } else {
-      const errorData = await res.json()
-      setRegisterError(errorData.error || '注册失败')
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      if (signUpError) {
+        setRegisterError(signUpError.message)
+      } else {
+        setRegisterSuccess('注册成功！请前往邮箱完成验证')
+        setMode('login')
+      }
+    } finally {
+      setRegisterLoading(false)
     }
   }
 
-  // 登录逻辑
+  // Password login using Supabase
   const handleLogin = async () => {
     setLoginError('')
     if (!email || !password) {
@@ -223,7 +153,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
       return
     }
     setLoginLoading(true)
-    const { error: authError } = await authService.signIn(email, password)
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
     setLoginLoading(false)
     if (authError) {
       setLoginError(authError.message)
@@ -246,26 +176,26 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {t("auth.login_description")}
           </DialogDescription>
         </DialogHeader>
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-6">
           {/* 邮箱验证登录 - 最上面 */}
           <div className="space-y-3">
             <div className="text-center">
               <h3 className="text-lg font-semibold text-foreground mb-2">{t("auth.email_verification_title")}</h3>
               <p className="text-sm text-muted-foreground">{t("auth.email_verification_desc")}</p>
             </div>
-            
+
             {emailVerificationError && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md">
                 {emailVerificationError}
               </div>
             )}
-            
+
             {emailVerificationSuccess && (
               <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-600 text-sm rounded-md">
                 {emailVerificationSuccess}
               </div>
             )}
-            
+
             <div className="space-y-3">
               <Input
                 type="email"
@@ -275,7 +205,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 disabled={codeSent}
                 className="h-11"
               />
-              
+
               {!codeSent ? (
                 <Button
                   onClick={handleSendEmailVerificationCode}
@@ -301,7 +231,7 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               )}
             </div>
           </div>
-          
+
           {/* 分割线 */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -311,8 +241,69 @@ export default function AuthModal({ open, onOpenChange }: AuthModalProps) {
               <span className="bg-background px-2 text-muted-foreground">{t("auth.or")}</span>
             </div>
           </div>
-          
-          {/* Google登录 */}
+
+          {/* 邮箱+密码 登录/注册 */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-center space-x-3">
+              <Button variant={mode === 'login' ? 'default' : 'outline'} size="sm" onClick={() => setMode('login')}>账号登录</Button>
+              <Button variant={mode === 'register' ? 'default' : 'outline'} size="sm" onClick={() => setMode('register')}>创建账号</Button>
+            </div>
+
+            {mode === 'login' ? (
+              <div className="space-y-3">
+                <Input
+                  type="email"
+                  placeholder="邮箱"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11"
+                />
+                <Input
+                  type="password"
+                  placeholder="密码"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11"
+                />
+                {loginError && <div className="p-2 text-sm text-destructive bg-destructive/10 rounded border border-destructive/20">{loginError}</div>}
+                <Button onClick={handleLogin} disabled={loginLoading} className="w-full h-11">
+                  {loginLoading ? '登录中...' : '登录'}
+                </Button>
+                <Button variant="ghost" className="w-full h-10" onClick={() => router.push('/auth/reset')}>忘记密码？</Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Input
+                  type="email"
+                  placeholder="邮箱"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11"
+                />
+                <Input
+                  type="password"
+                  placeholder="密码（至少6位）"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11"
+                />
+                <Input
+                  type="password"
+                  placeholder="确认密码"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="h-11"
+                />
+                {registerError && <div className="p-2 text-sm text-destructive bg-destructive/10 rounded border border-destructive/20">{registerError}</div>}
+                {registerSuccess && <div className="p-2 text-sm text-green-600 bg-green-500/10 rounded border border-green-500/20">{registerSuccess}</div>}
+                <Button onClick={handleRegister} disabled={registerLoading} className="w-full h-11">
+                  {registerLoading ? '创建中...' : '创建账号'}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Google 登录 */}
           {error && <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md">{error}</div>}
           <Button
             onClick={handleGoogleSignIn}

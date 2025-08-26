@@ -16,75 +16,93 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // 获取 URL 参数
-        const urlSearchParams = new URLSearchParams(window.location.search)
-        const params: any = {}
-        for (const [key, value] of urlSearchParams.entries()) {
-          params[key] = value
+        // 收集 URL 参数与 hash 参数
+        const searchParams = new URLSearchParams(window.location.search)
+        const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash
+        const hashParams = new URLSearchParams(hash)
+        const params: Record<string, string> = {}
+        searchParams.forEach((v, k) => (params[k] = v))
+        hashParams.forEach((v, k) => (params[k] = v))
+
+        // 先尝试获取现有会话
+        let { data: sessionData } = await supabase.auth.getSession()
+
+        // 若没有会话且hash里有token，显式恢复会话
+        if (!sessionData.session && hashParams.get("access_token") && hashParams.get("refresh_token")) {
+          const access_token = hashParams.get("access_token") as string
+          const refresh_token = hashParams.get("refresh_token") as string
+          const { data: setData, error: setErr } = await supabase.auth.setSession({ access_token, refresh_token })
+          if (setErr) {
+            setStatus("error")
+            setMessage(`设置会话失败: ${setErr.message}`)
+            setDebugInfo({ step: "setSession", params, error: setErr.message })
+            return
+          }
+          sessionData = setData
         }
 
-        // 获取 URL 中的认证信息
-        const { data, error } = await supabase.auth.getSession()
+        // 若依然没有会话，但有 code（PKCE 场景），尝试交换 code
+        if (!sessionData.session && searchParams.get("code")) {
+          const code = searchParams.get("code") as string
+          const { data: exData, error: exErr } = await supabase.auth.exchangeCodeForSession(code)
+          if (exErr) {
+            setStatus("error")
+            setMessage(`交换授权码失败: ${exErr.message}`)
+            setDebugInfo({ step: "exchangeCodeForSession", params, error: exErr.message })
+            return
+          }
+          sessionData = exData as any
+        }
 
+        // 记录调试信息
         setDebugInfo({
           url: window.location.href,
           urlParams: params,
-          hasSession: !!data.session,
-          hasUser: !!data.session?.user,
-          sessionUser: data.session?.user ? {
-            id: data.session.user.id,
-            email: data.session.user.email,
-            email_confirmed_at: data.session.user.email_confirmed_at,
-            created_at: data.session.user.created_at,
-            last_sign_in_at: data.session.user.last_sign_in_at
-          } : null,
-          error: error?.message,
+          hasSession: !!sessionData.session,
+          hasUser: !!sessionData.session?.user,
+          sessionUser: sessionData.session?.user
+            ? {
+                id: sessionData.session.user.id,
+                email: sessionData.session.user.email,
+                email_confirmed_at: sessionData.session.user.email_confirmed_at,
+                created_at: sessionData.session.user.created_at,
+                last_sign_in_at: sessionData.session.user.last_sign_in_at,
+              }
+            : null,
           timestamp: new Date().toISOString(),
         })
 
-        if (error) {
-          console.error("Auth callback error:", error)
-          setStatus("error")
-          setMessage(`认证失败: ${error.message}`)
-          return
-        }
-
-        if (data.session && data.session.user) {
-          // 检查用户是否已存在于我们的数据库中
-          const { data: userData, error: userError } = await supabase
+        // 会话校验与后续初始化
+        if (sessionData.session && sessionData.session.user) {
+          // 写入 users 表（若不存在）
+          const { error: userError } = await supabase
             .from("users")
-            .select("*")
-            .eq("id", data.session.user.id)
-            .single()
-
-          if (userError && userError.code === "PGRST116") {
-            // 用户不存在，创建新用户
-            const { error: insertError } = await supabase.from("users").insert({
-              id: data.session.user.id,
-              email: data.session.user.email,
-              username: data.session.user.user_metadata?.full_name || data.session.user.email?.split("@")[0],
-              current_streak: 0,
-              total_days: 0,
-            })
-
-            if (insertError) {
-              console.error("Error creating user:", insertError)
-              setStatus("error")
-              setMessage(`创建用户失败: ${insertError.message}`)
-              return
-            }
+            .upsert(
+              {
+                id: sessionData.session.user.id,
+                email: sessionData.session.user.email,
+                username:
+                  (sessionData.session.user as any)?.user_metadata?.full_name ||
+                  sessionData.session.user.email?.split("@")[0],
+                current_streak: 0,
+                total_days: 0,
+              },
+              { onConflict: "id" }
+            )
+          if (userError && userError.code !== "23505") {
+            setStatus("error")
+            setMessage(`创建/更新用户失败: ${userError.message}`)
+            return
           }
 
           setStatus("success")
           setMessage("登录成功！正在跳转...")
-
-          // 延迟跳转，让用户看到成功消息
           setTimeout(() => {
-            router.push("/") // 修改为跳转到首页
-          }, 2000)
+            router.push("/")
+          }, 1500)
         } else {
           setStatus("error")
-          setMessage("未获取到用户信息，请重试")
+          setMessage("未获取到会话，请重试或检查回调URL配置")
         }
       } catch (err) {
         console.error("Unexpected error:", err)
@@ -127,10 +145,10 @@ export default function AuthCallbackPage() {
                 <h2 className="text-xl font-semibold mb-2 text-red-600">登录失败</h2>
                 <p className="text-muted-foreground mb-4">{message}</p>
                 <div className="space-y-2">
-                  <Button onClick={() => router.push("/auth/signin")} className="w-full">
-                    重新登录
+                  <Button onClick={() => router.push("/auth/test")} className="w-full">
+                    打开认证测试
                   </Button>
-                  <Button variant="outline" onClick={() => router.push("/auth/test")} className="w-full">
+                  <Button onClick={() => router.push("/auth/debug")} variant="outline" className="w-full">
                     查看调试信息
                   </Button>
                 </div>
@@ -138,7 +156,6 @@ export default function AuthCallbackPage() {
             </>
           )}
 
-          {/* 调试信息 (仅在开发环境显示) */}
           {process.env.NODE_ENV === "development" && debugInfo && (
             <details className="text-left text-xs bg-gray-50 p-4 rounded">
               <summary className="cursor-pointer font-medium">调试信息</summary>
