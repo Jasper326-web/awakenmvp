@@ -107,6 +107,15 @@ const translations: Record<Language, Record<string, string>> = {
     "redeem.error.invalid_code_desc": "兑换码不能为空",
     "redeem.error.general": "请检查兑换码是否正确",
     "redeem.button.text": "兑换码",
+    
+    // 邮箱验证登录
+    "auth.email_verification_title": "邮箱验证登录",
+    "auth.email_verification_desc": "输入邮箱，我们将发送验证码到您的邮箱",
+    "auth.email_placeholder": "请输入邮箱地址",
+    "auth.send_code": "发送验证码",
+    "auth.code_sent": "验证码已发送，请查收邮箱",
+    "auth.code_sent_timer": "验证码已发送，请查收邮箱 ({timer}s后可重新发送)",
+    "auth.or": "或",
 
 
 
@@ -676,6 +685,15 @@ const translations: Record<Language, Record<string, string>> = {
     "redeem.error.invalid_code_desc": "Redeem code cannot be empty",
     "redeem.error.general": "Please check if the redeem code is correct",
     "redeem.button.text": "Redeem Code",
+    
+    // 邮箱验证登录
+    "auth.email_verification_title": "Email Verification Login",
+    "auth.email_verification_desc": "Enter your email, we'll send a verification code to your inbox",
+    "auth.email_placeholder": "Enter email address",
+    "auth.send_code": "Send Code",
+    "auth.code_sent": "Code sent, please check your email",
+    "auth.code_sent_timer": "Code sent, please check your email (resend in {timer}s)",
+    "auth.or": "OR",
 //补充
 "task.daily_checkin_desc": "Log today's status",
 "task.daily_checkin_desc_moderate": "Log today's status and journal",
